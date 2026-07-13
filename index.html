@@ -1,0 +1,1287 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script defer src="./support.js"></script>
+
+
+
+
+
+
+
+
+
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Mulish:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* EverydayDragon webfonts
+   Brand spec: Gotham (headers) + Avenir (body).
+   Neither is free/webfont-licensed, so we substitute the closest geometric-
+   humanist Google Fonts: Montserrat for Gotham, Mulish for Avenir.
+   Swap these @font-face/import lines for licensed Gotham/Avenir kits in prod. */
+
+@keyframes ed-bounce-down {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(8px); }
+}
+
+@keyframes ed-swirl {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.ed-portal {
+  position: absolute;
+  top: -50%; left: -50%; width: 200%; height: 200%;
+  background: conic-gradient(from 0deg, var(--color-primary), var(--ed-crimson), #000, #fff, var(--color-primary));
+  animation: ed-swirl 3s linear infinite;
+  z-index: 0;
+}
+
+@keyframes ed-burst-flame {
+  0% { color: inherit; text-shadow: none; transform: scale(1) translateY(0); opacity: 1; filter: blur(0px); }
+  20% { color: #ffeb3b; text-shadow: 0 -10px 20px #ff9800, 0 -20px 40px #ff5722; transform: scale(1.02) translateY(-2px); opacity: 1; filter: blur(1px); }
+  60% { color: #ff5722; text-shadow: 0 -20px 40px #f44336, 0 -40px 60px #e91e63; transform: scale(1.05) translateY(-8px); opacity: 0.5; filter: blur(3px); }
+  100% { color: transparent; text-shadow: 0 -50px 80px transparent; transform: scale(1.1) translateY(-15px); opacity: 0; filter: blur(8px); }
+}
+</style>
+<link rel="stylesheet" href="assets/style.css">
+<script defer src="assets/bundle.js"></script>
+</head>
+<body>
+<!-- {% raw %} -->
+<x-dc>
+<helmet>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+</helmet>
+
+<div style="position:relative;background:#000;">
+
+  <div aria-hidden="true" style="position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(140% 120% at 78% -6%, #0d1050 0%, #04051c 45%, #000 100%);"></div>
+  <div aria-hidden="true" style="position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(50% 45% at 92% 4%, rgba(48,102,190,0.35), transparent 70%);"></div>
+  <div aria-hidden="true" style="{{ flashStyle }}"></div>
+  <div ref="{{ setDotRef }}" style="{{ dotStyle }}" aria-hidden="true"></div>
+
+  <div style="position:relative;z-index:2;">
+    <!-- HERO GROUP -->
+    <section style="{{ heroSectionStyle }}">
+      <div style="{{ heroStickyStyle }}">
+        <div style="{{ heroInnerStyle }}">
+          <div style="{{ beats[0].innerStyle }}">
+            <p style="{{ beats[0].style }}">{{ typedText }}<span style="{{ cursorStyle }}">|</span></p>
+          </div>
+          <div style="margin-top: 3vh; width: 100%;">
+            <div style="{{ beats[1].innerStyle }}">
+              <p style="{{ beats[1].style }}">{{ typedText2 }}<span style="{{ cursorStyle2 }}">|</span></p>
+            </div>
+          </div>
+          <div style="margin-top: 8vh; width: 100%;">
+            <div style="{{ beats[2].innerStyle }}">
+              <p style="{{ beats[2].style }}">{{ beats[2].text }}</p>
+            </div>
+          </div>
+        </div>
+        <div style="{{ hintStyle }}">
+          <p style="margin:0; font-family:var(--font-body); font-weight: 600; font-size: 13px; opacity: 0.5; letter-spacing: 0.15em; text-transform: uppercase;">Feeling Adventurous?</p>
+          <svg width="20" height="20" viewBox="0 0 24 24" style="margin-top: 10px; opacity: 0.5; animation: ed-bounce-down 2s infinite ease-in-out;">
+            <path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M12 5v14M19 12l-7 7-7-7"/>
+          </svg>
+        </div>
+      </div>
+      <!-- Spacers to trigger IntersectionObserver as you scroll down -->
+      <div ref="{{ beats[0].setRef }}" style="height: 100vh; scroll-snap-align: start;"></div>
+      <div ref="{{ beats[1].setRef }}" style="height: 100vh; scroll-snap-align: start;"></div>
+      <div ref="{{ beats[2].setRef }}" style="height: 100vh; scroll-snap-align: start;"></div>
+    </section>
+
+    <!-- BURN GROUP -->
+    <section style="{{ burnSectionStyle }}">
+      <div style="{{ burnStickyStyle }}">
+        <div style="{{ burnInnerStyle }}">
+          <div style="{{ beats[3].innerStyle }}">
+            <p style="{{ beats[3].style }}">{{ beats[3].text }}</p>
+          </div>
+          <div style="{{ beats[4].innerStyle }}">
+            <p style="{{ beats[4].style }}">{{ beats[4].text }}</p>
+          </div>
+        </div>
+      </div>
+      <!-- Spacers for Burn Group -->
+      <div ref="{{ beats[3].setRef }}" style="height: 100vh; scroll-snap-align: start;"></div>
+      <div ref="{{ beats[4].setRef }}" style="height: 100vh; scroll-snap-align: start;"></div>
+    </section>
+
+    <!-- CIRCLE GROUP -->
+    <section style="{{ circleSectionStyle }}" ref="{{ circleGroupRef }}">
+      <div style="{{ circleStickyStyle }}">
+        <!-- Map Title (I DON'T NEED A MAP.) -->
+        <p ref="{{ mapTitleRef }}" style="{{ mapTitleStyle }}">{{ beats[8].text }}</p>
+        
+        <!-- Forge Title (I FORGE THE PATH.) -->
+        <p ref="{{ mapForgeTitleRef }}" style="{{ mapForgeTitleStyle }}">{{ beats[9].text }}</p>
+        
+        <!-- Beat 10 Title -->
+        <p ref="{{ mapBeat10TitleRef }}" style="{{ mapBeat10TitleStyle }}">I RUN WITH THE SIGNAL</p>
+        <p ref="{{ mapBeat10Title2Ref }}" style="{{ mapBeat10Title2Style }}">WHILE THE ROOM IS<br>TERRIFIED OF THE NOISE.</p>
+
+        <!-- Static Overlay -->
+        <div ref="{{ staticNoiseRef }}" style="position:absolute; inset:0; width:100vw; height:100vh; z-index:4; pointer-events:none; opacity:0; will-change:opacity; overflow:hidden;">
+          <style>
+            @keyframes ed-static-anim {
+              0% { transform: translate(0,0) }
+              10% { transform: translate(-2%,-2%) }
+              20% { transform: translate(-4%,2%) }
+              30% { transform: translate(2%,-4%) }
+              40% { transform: translate(-2%,6%) }
+              50% { transform: translate(-4%,2%) }
+              60% { transform: translate(6%,0) }
+              70% { transform: translate(0,6%) }
+              80% { transform: translate(-6%,0) }
+              90% { transform: translate(4%,2%) }
+              100% { transform: translate(2%,0) }
+            }
+            @keyframes ed-rumble {
+      0% { transform: translate(0, 0); }
+      10% { transform: translate(-3px, 2px); }
+      20% { transform: translate(4px, -3px); }
+      30% { transform: translate(-4px, 4px); }
+      40% { transform: translate(5px, -4px); }
+      50% { transform: translate(-3px, 3px); }
+      60% { transform: translate(4px, -2px); }
+      70% { transform: translate(-2px, 2px); }
+      80% { transform: translate(2px, -1px); }
+      90% { transform: translate(-1px, 1px); }
+      100% { transform: translate(0, 0); }
+    }
+  </style>
+          <div style="position:absolute; top:-10%; left:-10%; width:120%; height:120%; animation: ed-static-anim 300ms steps(10) infinite;">
+            <svg width="100%" height="100%">
+              <filter id="noiseFilter">
+                <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" stitchTiles="stitch"/>
+                <feColorMatrix type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0.33 0.33 0.33 0 0" />
+              </filter>
+              <rect width="100%" height="100%" filter="url(#noiseFilter)"/>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Full Screen Map Overlay -->
+        <svg style="position:absolute; inset:0; width:100vw; height:100vh; pointer-events:none; z-index:5; overflow:visible;" aria-hidden="true">
+           <path ref="{{ mapLineRef }}" fill="none" stroke="#fff" stroke-width="4" stroke-dasharray="1000" stroke-dashoffset="1000" pathLength="1000" style="opacity:0.8; filter:drop-shadow(0 0 8px #fff);" />
+           <g ref="{{ mapHereGroupRef }}" style="opacity:0; will-change:opacity;">
+             <circle r="6" fill="var(--color-primary)" filter="drop-shadow(0 0 8px var(--color-primary))" />
+             <text ref="{{ mapHereTextRef }}" fill="var(--color-primary)" font-size="16" font-family="var(--font-display)" font-weight="800" letter-spacing="0.05em" text-anchor="middle">HERE</text>
+           </g>
+           <g ref="{{ mapThereGroupRef }}" style="will-change:transform;">
+             <circle r="6" fill="var(--color-primary)" filter="drop-shadow(0 0 8px var(--color-primary))" />
+             <text ref="{{ mapThereTextRef }}" fill="var(--color-primary)" font-size="16" font-family="var(--font-display)" font-weight="800" letter-spacing="0.05em" text-anchor="middle" style="opacity:0; will-change:opacity;">THERE</text>
+           </g>
+        </svg>
+
+        <div style="{{ circleInnerStyle }}">
+          <!-- Left: Text -->
+          <div style="{{ circleLeftStyle }}" ref="{{ circleLeftRef }}">
+            <p style="{{ beats[5].style }}">{{ beats[5].text }}</p>
+          </div>
+          
+          <!-- Right: Rotating SVG & Map Overlay -->
+          <div style="{{ circleRightStyle }}">
+             <p ref="{{ circleTheyWantRef }}" style="font-family: var(--font-display); font-weight: 800; font-size: clamp(20px, 3vw, 32px); color: rgba(255,255,255,0.7); margin-bottom: 2vh; text-transform: uppercase; text-align: center;">They want</p>
+             <div style="position:relative; width: 380px; height: 380px; max-width: 100%;">
+               <svg viewBox="0 0 200 200" style="{{ circleSvgStyle }}" aria-hidden="true" ref="{{ circleSvgRef }}">
+                 <defs>
+                   <path id="textCircle" d="M 100, 25 A 75 75 0 0 1 100 175 A 75 75 0 0 1 100 25" />
+                 </defs>
+                 <text font-family="var(--font-display)" font-weight="800" font-size="15" fill="#fff" letter-spacing="0.08em">
+                   <textPath href="#textCircle" startOffset="0%">
+                     TO BE COMFORTABLE.<tspan dx="26">A GUARANTEE.</tspan><tspan dx="26">A MAP.</tspan>
+                   </textPath>
+                 </text>
+               </svg>
+             </div>
+          </div>
+        </div>
+      </div>
+      <div ref="{{ beats[5].setRef }}" style="height: 100vh; scroll-snap-align: start;"></div>
+      <div ref="{{ beats[6].setRef }}" style="height: 100vh; scroll-snap-align: start;"></div>
+      <div ref="{{ beats[7].setRef }}" style="height: 100vh; scroll-snap-align: start;"></div>
+      <div ref="{{ beats[8].setRef }}" style="height: 100vh; scroll-snap-align: start;"></div>
+      <div ref="{{ beats[9].setRef }}" style="height: 100vh; scroll-snap-align: start;"></div>
+      <div ref="{{ mapLineSpacerRef }}" style="height: 100vh; scroll-snap-align: start;"></div>
+      <div ref="{{ beats[10].setRef }}" style="height: 100vh; scroll-snap-align: start;"></div>
+      <div style="height: 100vh; scroll-snap-align: start;"></div>
+    </section>
+
+    <!-- CEMENT TRUCK SCENE (Beat 11) -->
+    <section style="{{ cementSectionStyle }}" ref="{{ cementSectionRef }}">
+      <div style="{{ cementStickyStyle }}" ref="{{ cementStickyRef }}">
+        <p ref="{{ cementTopLeftRef }}" style="{{ cementTopLeftStyle }}">WHILE EVERYONE ELSE IS<br>DEBATING THE RISK</p>
+        <p ref="{{ cementMidRightRef }}" style="{{ cementMidRightStyle }}">I AM CEMENTING<br>THE OUTCOME.</p>
+        
+        <div ref="{{ truckContainerRef }}" style="{{ truckContainerStyle }}">
+          <svg viewBox="0 0 250 150" width="100%" height="100%" style="overflow:visible">
+            <!-- Cabin -->
+            <path d="M 20 60 L 60 60 L 80 20 L 120 20 L 120 120 L 20 120 Z" fill="var(--color-primary)" />
+            <path d="M 65 60 L 75 30 L 110 30 L 110 60 Z" fill="#000" />
+            <!-- Pouring Concrete -->
+            <rect ref="{{ concretePourRef }}" x="240" y="85" width="15" height="105" fill="#87CEEB" style="transform-origin: top center; will-change: transform, opacity; opacity: 0;" />
+            <!-- Drum -->
+            <g ref="{{ truckDrumRef }}" style="transform-origin: 220px 100px; will-change: transform;">
+              <ellipse cx="170" cy="70" rx="60" ry="40" transform="rotate(-15 170 70)" fill="#fff" />
+              <!-- Hatch -->
+              <path d="M 215 50 L 240 55 L 230 75 L 210 70 Z" fill="#666" ref="{{ truckHatchRef }}" style="transform-origin: 225px 65px; will-change: transform;" />
+            </g>
+            <!-- Frame -->
+            <rect x="20" y="110" width="240" height="15" fill="#333" />
+            <!-- Wheels -->
+            <circle cx="50" cy="125" r="15" fill="#111" stroke="#333" stroke-width="3" />
+            <circle cx="160" cy="125" r="15" fill="#111" stroke="#333" stroke-width="3" />
+            <circle cx="200" cy="125" r="15" fill="#111" stroke="#333" stroke-width="3" />
+          </svg>
+        </div>
+        
+        <!-- Ground Concrete Layer -->
+        <div ref="{{ groundConcreteRef }}" style="{{ groundConcreteStyle }}"></div>
+      </div>
+      
+      <!-- Free-scroll spacer for the cinematic scene -->
+      <div ref="{{ beats[11].setRef }}" style="height: 400vh; width: 100%;"></div>
+    </section>
+
+    <!-- AVALANCHE SCENE -->
+    <section style="{{ avalancheSectionStyle }}" ref="{{ avalancheSectionRef }}">
+      <div style="{{ avalancheStickyStyle }}" ref="{{ avalancheStickyRef }}">
+        
+        <!-- Mountain Wrapper for Zoom -->
+        <div ref="{{ avalancheZoomWrapperRef }}" style="{{ avalancheZoomWrapperStyle }}">
+          <!-- Mountain SVG -->
+          <div ref="{{ avalancheMountainRef }}" style="{{ avalancheMountainStyle }}">
+          <svg viewBox="0 0 1000 1000" width="100%" height="100%" preserveAspectRatio="xMinYMid slice" style="overflow:visible">
+            <!-- Mountain base -->
+            <path d="M 0 1000 L 0 500 L 1000 1000 Z" fill="#fff" stroke="#000" stroke-width="6" stroke-linejoin="round" />
+            <path d="M 0 500 L 400 700 L 800 1000" fill="none" stroke="#000" stroke-width="4" />
+            <path d="M 0 700 L 200 850 L 300 1000" fill="none" stroke="#000" stroke-width="4" />
+            <!-- Ski Ramp -->
+            <path d="M 700 850 Q 750 850 800 800 L 800 1000 L 700 1000 Z" fill="#fff" stroke="#000" stroke-width="4" stroke-linejoin="round" />
+            
+            <!-- Trees -->
+            <path d="M 100 800 L 120 700 L 140 800 Z" fill="#fff" stroke="#000" stroke-width="3" />
+            <path d="M 300 850 L 320 750 L 340 850 Z" fill="#fff" stroke="#000" stroke-width="3" />
+            <path d="M 500 950 L 530 830 L 560 950 Z" fill="#fff" stroke="#000" stroke-width="3" />
+
+            <!-- Stick figure skiers (to be animated down) -->
+            <g ref="{{ avalancheSkiersRef }}" style="will-change: transform; transform: translate(150px, 600px);">
+              <!-- Skier 1 -->
+              <circle cx="0" cy="0" r="8" fill="#000" />
+              <line x1="0" y1="8" x2="0" y2="30" stroke="#000" stroke-width="4" stroke-linecap="round" />
+              <line x1="0" y1="30" x2="-15" y2="50" stroke="#000" stroke-width="4" stroke-linecap="round" />
+              <line x1="0" y1="30" x2="15" y2="50" stroke="#000" stroke-width="4" stroke-linecap="round" />
+              <line x1="-15" y1="15" x2="20" y2="25" stroke="#000" stroke-width="4" stroke-linecap="round" />
+              <line x1="-25" y1="50" x2="35" y2="65" stroke="#000" stroke-width="4" stroke-linecap="round" /> <!-- Skis -->
+              
+              <!-- Skier 2 -->
+              <g transform="translate(-60, -40)">
+                <circle cx="0" cy="0" r="8" fill="#000" />
+                <line x1="0" y1="8" x2="0" y2="30" stroke="#000" stroke-width="4" stroke-linecap="round" />
+                <line x1="0" y1="30" x2="-15" y2="50" stroke="#000" stroke-width="4" stroke-linecap="round" />
+                <line x1="0" y1="30" x2="15" y2="50" stroke="#000" stroke-width="4" stroke-linecap="round" />
+                <line x1="-15" y1="15" x2="20" y2="25" stroke="#000" stroke-width="4" stroke-linecap="round" />
+                <line x1="-25" y1="50" x2="35" y2="65" stroke="#000" stroke-width="4" stroke-linecap="round" /> <!-- Skis -->
+              </g>
+            </g>
+
+            <!-- Avalanche Snow Layer (Fluffy Clouds) -->
+            <g ref="{{ avalancheSnowRef }}" style="will-change: transform; transform: translate(-100px, 0px);">
+               <!-- A large fluffy mass (Scaled down by 50%) -->
+               <path d="M 50 150 Q 75 100 125 125 Q 175 75 225 125 Q 275 100 300 175 Q 325 225 275 250 Q 225 300 175 275 Q 100 325 50 250 Q 0 200 50 150 Z" fill="#fff" stroke="#000" stroke-width="4" stroke-linejoin="round" />
+               <!-- Some interior detail lines for volume -->
+               <path d="M 125 125 Q 150 150 125 175" fill="none" stroke="#000" stroke-width="2" />
+               <path d="M 225 125 Q 200 175 225 200" fill="none" stroke="#000" stroke-width="2" />
+               <path d="M 75 200 Q 100 225 75 250" fill="none" stroke="#000" stroke-width="2" />
+               <path d="M 275 175 Q 250 200 275 225" fill="none" stroke="#000" stroke-width="2" />
+            </g>
+          </svg>
+        </div>
+
+        <!-- Text Lines -->
+        <div ref="{{ avalancheTextContainerRef }}" style="{{ avalancheTextContainerStyle }}">
+          <p ref="{{ avalancheText1Ref }}" style="{{ avalancheText1Style }}">You caught the before.</p>
+          <p ref="{{ avalancheText2Ref }}" style="{{ avalancheText2Style }}">THE MOMENT</p>
+          <p ref="{{ avalancheText3Ref }}" style="{{ avalancheText3Style }}">BEFORE THE AVALANCHE</p>
+        </div>
+
+        </div> <!-- End Zoom Wrapper -->
+
+        <!-- Screenshot Overlay (Flash & Text) -->
+        <div ref="{{ avalancheFlashRef }}" style="{{ avalancheFlashStyle }}"></div>
+        <p ref="{{ avalancheShotTextRef }}" style="{{ avalancheShotTextStyle }}">SO <span style="{{ avalancheShutterStyle }}">SCREENSHOT</span> IT.</p>
+
+      </div>
+      <!-- Scroll Spacer -->
+      <div style="height: 800vh; width: 100%;"></div>
+    </section>
+
+    <!-- REST OF BEATS -->
+    <sc-for list="{{ remainingBeats }}" as="b" hint-placeholder-count="14">
+      <section ref="{{ b.setRef }}" style="{{ b.sectionStyle }}">
+        <div style="{{ b.wrapStyle }}">
+
+          <sc-if value="{{ b.isTyping }}" hint-placeholder-val="{{ false }}">
+            <div style="{{ b.innerStyle }}"><p style="{{ b.style }}">{{ typedText }}<span style="{{ cursorStyle }}">|</span></p></div>
+          </sc-if>
+
+          <sc-if value="{{ b.isSlam }}" hint-placeholder-val="{{ false }}">
+            <div style="{{ b.slamOuterStyle }}">
+              <span style="{{ b.slamWrapStyle }}">
+                <svg viewBox="0 0 200 200" style="{{ b.crackSvgStyle }}" aria-hidden="true">
+                  <g stroke="#fff" stroke-width="3" stroke-linecap="round">
+                    <line x1="100" y1="100" x2="30" y2="60"></line>
+                    <line x1="100" y1="100" x2="170" y2="50"></line>
+                    <line x1="100" y1="100" x2="20" y2="130"></line>
+                    <line x1="100" y1="100" x2="180" y2="140"></line>
+                    <line x1="100" y1="100" x2="100" y2="10"></line>
+                    <line x1="100" y1="100" x2="100" y2="195"></line>
+                    <line x1="100" y1="100" x2="55" y2="175"></line>
+                    <line x1="100" y1="100" x2="150" y2="180"></line>
+                  </g>
+                </svg>
+                <p style="{{ b.style }}">{{ b.text }}</p>
+              </span>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ b.isScreenshot }}" hint-placeholder-val="{{ false }}">
+            <div style="{{ b.innerStyle }}">
+              <p style="{{ b.style }}">SO <span style="{{ b.underlineStyle }}">SCREENSHOT</span> IT.</p>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ b.isPlain }}" hint-placeholder-val="{{ true }}">
+            <div style="{{ b.innerStyle }}"><p style="{{ b.style }}">{{ b.text }}</p></div>
+          </sc-if>
+        </div>
+      </section>
+    </sc-for>
+
+    <!-- GRAFFITI BLOCK -->
+    <section style="position:relative; width:100%; height:100vh; scroll-snap-align:start; background-image:url('assets/graffiti_gritty.jpg'); background-size:cover; background-position:center; display:flex; align-items:center; justify-content:center;">
+    </section>
+
+    <!-- CTA BLOCK -->
+    <section style="{{ ctaSectionStyle }}">
+      <div style="max-width:1080px;margin:0 auto;width:100%;">
+        <p style="{{ ctaHeaderStyle }}">DON'T JUST STAND THERE.<br><span style="color:#fff">KICK DOWN A DOOR.</span></p>
+
+        <div style="display:flex;gap:34px;flex-wrap:wrap;justify-content:center;margin-top:7vh;align-items:flex-end;">
+
+          <!-- DOOR A -->
+          <div style="{{ doorColStyleA }}">
+            <span style="{{ doorLabelStyle }}">WHAT I'M HUNTING</span>
+            <div style="{{ doorWrapStyleA }}" onMouseEnter="{{ onEnterA }}" onMouseLeave="{{ onLeaveA }}">
+              <div style="{{ doorFrameStyle }}">
+                <div class="ed-portal" style="{{ portalStyleA }}"></div>
+                <sc-if value="{{ showGoatA }}" hint-placeholder-val="{{ false }}"><span style="{{ goatStyle }}">🐐</span></sc-if>
+              </div>
+              <a href="#" style="{{ doorPanelStyleA }}" onClick="{{ onClickA }}">
+                <svg viewBox="0 0 100 150" preserveAspectRatio="none" style="width:100%;height:100%;display:block;overflow:visible" aria-hidden="true">
+                  <rect x="4" y="3" width="92" height="144" rx="6" fill="#12143a" stroke="#fff" stroke-width="3"></rect>
+                  <rect x="13" y="14" width="74" height="52" rx="2" fill="rgba(0,0,0,0.3)"></rect>
+                  <rect x="13" y="78" width="74" height="52" rx="2" fill="rgba(0,0,0,0.3)"></rect>
+                  <circle cx="80" cy="76" r="4.5" fill="#fff"></circle>
+
+                </svg>
+              </a>
+            </div>
+          </div>
+
+          <!-- DOOR B -->
+          <div style="{{ doorColStyleB }}">
+            <span style="{{ doorLabelStyle }}">BATTLE SCARS</span>
+            <div style="{{ doorWrapStyleB }}" onMouseEnter="{{ onEnterB }}" onMouseLeave="{{ onLeaveB }}">
+              <div style="{{ doorFrameStyle }}">
+                <div class="ed-portal" style="{{ portalStyleB }}"></div>
+                <sc-if value="{{ showGoatB }}" hint-placeholder-val="{{ false }}"><span style="{{ goatStyle }}">🐐</span></sc-if>
+              </div>
+              <a href="#" style="{{ doorPanelStyleB }}" onClick="{{ onClickB }}">
+                <svg viewBox="0 0 100 150" preserveAspectRatio="none" style="width:100%;height:100%;display:block;overflow:visible" aria-hidden="true">
+                  <rect x="3" y="2" width="93" height="145" rx="6" fill="#12143a" stroke="#fff" stroke-width="3"></rect>
+                  <rect x="12" y="13" width="75" height="53" rx="2" fill="rgba(0,0,0,0.3)"></rect>
+                  <rect x="12" y="79" width="75" height="53" rx="2" fill="rgba(0,0,0,0.3)"></rect>
+                  <circle cx="18" cy="77" r="4.5" fill="#fff"></circle>
+
+                </svg>
+              </a>
+            </div>
+          </div>
+
+          <!-- DOOR C — loudest -->
+          <div style="{{ doorColStyleC }}">
+            <span style="{{ doorLabelStyleC }}">SUMMON ME</span>
+            <div style="{{ doorWrapStyleC }}" onMouseEnter="{{ onEnterC }}" onMouseLeave="{{ onLeaveC }}">
+              <div style="{{ doorFrameStyle }}">
+                <a href="https://www.linkedin.com/in/dragonchan/" target="_blank" rel="noopener" class="ed-portal" style="{{ portalStyleC }}"></a>
+                <sc-if value="{{ showGoatC }}" hint-placeholder-val="{{ false }}"><span style="{{ goatStyle }}">🐐</span></sc-if>
+              </div>
+              <a href="https://www.linkedin.com/in/dragonchan/" target="_blank" rel="noopener" style="{{ doorPanelStyleC }}" onClick="{{ onClickC }}">
+                <svg viewBox="0 0 100 150" preserveAspectRatio="none" style="width:100%;height:100%;display:block;overflow:visible" aria-hidden="true">
+                  <rect x="2" y="1" width="95" height="147" rx="7" fill="var(--color-primary)" stroke="#fff" stroke-width="4"></rect>
+                  <rect x="12" y="12" width="76" height="55" rx="2" fill="rgba(0,0,0,0.22)"></rect>
+                  <rect x="12" y="80" width="76" height="55" rx="2" fill="rgba(0,0,0,0.22)"></rect>
+                  <circle cx="82" cy="76" r="5.5" fill="#fff"></circle>
+
+                </svg>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <p style="{{ footerStyle }}">You were early. Don't forget it. 🐉</p>
+      </div>
+    </section>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;: null}">
+const FULL_TEXT = 'WAIT.';
+
+const BEATS = [
+  { text: 'WAIT.', tone: 'hero', typing: true, styleOverrides: { textAlign: 'center' } },
+  { text: 'YOU ACTUALLY TYPED IT.', tone: 'huge', styleOverrides: { textAlign: 'center' } },
+  { text: 'I RESPECT YOUR COMPLETE LACK OF HESITATION.', tone: 'med', styleOverrides: { textAlign: 'center', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 800, color: 'rgba(255,255,255,0.85)' } },
+  { text: 'Let\'s Burn The', tone: 'hero', styleOverrides: { textAlign: 'left', whiteSpace: 'nowrap', fontSize: 'clamp(40px, 8vw, 110px)' } },
+  { text: 'Small Talk', tone: 'huge', styleOverrides: { textAlign: 'left', fontSize: 'clamp(28px, 5.5vw, 75px)' } },
+  { text: 'Most people are busy waiting for permission.', tone: 'med', styleOverrides: { textAlign: 'left', maxWidth: '100%', fontSize: 'clamp(26px, 4.5vw, 48px)' } },
+  { text: '', tone: 'body' },
+  { text: '', tone: 'body' },
+  { text: 'I DON\'T NEED A MAP.', tone: 'accentBig', slam: true },
+  { text: 'I FORGE THE PATH.', tone: 'accentBig', slam: true },
+  { text: 'I run with the signal while the room is terrified of the noise.', tone: 'huge', glitch: true },
+  { text: 'While everyone else is debating the risk, I am cementing the outcome.', tone: 'body' }
+];
+
+const TONE_STYLE = {
+  hero: { fontFamily: 'var(--font-display)', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '-0.03em', lineHeight: 0.9, color: '#fff', margin: 0, fontSize: 'clamp(72px,14vw,220px)' },
+  huge: { fontFamily: 'var(--font-display)', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '-0.03em', lineHeight: 0.98, color: '#fff', margin: 0, fontSize: 'clamp(36px,7.2vw,88px)' },
+  med: { fontFamily: 'var(--font-display)', fontWeight: 800, color: '#fff', margin: 0, fontSize: 'clamp(22px,3.6vw,36px)', lineHeight: 1.2 },
+  body: { fontFamily: 'var(--font-body)', fontWeight: 500, color: 'rgba(255,255,255,0.72)', margin: 0, fontSize: 'clamp(22px,3.4vw,34px)', lineHeight: 1.45, maxWidth: '26ch' },
+  accentBig: { fontFamily: 'var(--font-display)', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '-0.02em', color: 'var(--color-primary)', margin: 0, fontSize: 'clamp(40px,7vw,96px)' },
+  mega: { fontFamily: 'var(--font-display)', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '-0.03em', lineHeight: 0.94, color: 'var(--color-primary)', margin: 0, fontSize: 'clamp(46px,9.5vw,120px)' },
+};
+
+function hash(n) {
+  const x = Math.sin(n * 12.9898) * 43758.5453;
+  return x - Math.floor(x);
+}
+const JUSTIFY = ['center', 'flex-start', 'center', 'flex-end', 'center'];
+
+class Component extends DCLogic {
+  state = {
+    typedText: '', typedText2: '', flash: false, activeIdx: -1,
+    glitchOn: {}, slamOn: {}, screenshotOn: {},
+    goatDoor: ['a', 'b', 'c'][Math.floor(Math.random() * 3)],
+    doorOpen: { a: false, b: false, c: false },
+    battering: { a: 0, b: 0, c: 0 },
+  };
+  beatEls = [];
+  dotEl = null;
+  linkedinRectTarget = null;
+  playedTyping = false;
+  circleGroupRef = (el) => { this.circleGroupEl = el; };
+  circleSvgRef = (el) => { this.circleSvgEl = el; };
+
+  componentDidMount() {
+    this.reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    this.io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        if (e.isIntersecting && e.intersectionRatio > 0.55) {
+          const idx = Number(e.target.getAttribute('data-idx'));
+          if (idx !== this.state.activeIdx) this.onActivate(idx);
+        }
+      });
+    }, { threshold: [0.55] });
+    this.beatEls.forEach((el) => el && this.io.observe(el));
+
+    if (!this.reducedMotion) {
+      this.onMove = (e) => {
+        if (this.dotEl) {
+          this.dotEl.style.left = e.clientX + 'px';
+          this.dotEl.style.top = e.clientY + 'px';
+        }
+        if (this.linkedinRectTarget && this.dotEl) {
+          const r = this.linkedinRectTarget.getBoundingClientRect();
+          const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+          const dist = Math.hypot(e.clientX - cx, e.clientY - cy);
+          const near = Math.max(0, Math.min(1, 1 - dist / 420));
+          const scale = 1 + near * 2.2;
+          this.dotEl.style.transform = `translate(-50%,-50%) scale(${scale})`;
+          this.dotEl.style.opacity = String(0.5 + near * 0.5);
+          this.dotEl.style.background = near > 0.55 ? 'var(--ed-crimson)' : 'var(--color-primary)';
+        }
+      };
+      window.addEventListener('mousemove', this.onMove, { passive: true });
+
+      this.onScroll = () => {
+        if (this.circleGroupEl && this.circleSvgEl) {
+          const rect = this.circleGroupEl.getBoundingClientRect();
+          const startScroll = window.innerHeight; // Offset for sticky 100vh
+          let scrolledVh = (-rect.top - startScroll) / window.innerHeight;
+          if (scrolledVh < 0) scrolledVh = 0;
+          
+          let cProg = Math.min(1, Math.max(0, scrolledVh / 2));
+          
+          let angle = 0;
+          if (cProg <= 0.5) {
+            angle = -75 + (cProg * 2) * -146;
+          } else {
+            angle = -221 + ((cProg - 0.5) * 2) * -95;
+          }
+          this.circleSvgEl.style.transform = `rotate(${angle}deg)`;
+          
+          let mProg = Math.min(1, Math.max(0, scrolledVh - 2));
+          let earlyFadeOut = Math.min(1, Math.max(0, (scrolledVh - 4.5) / 0.5));
+          let mFade = Math.max(0, mProg - earlyFadeOut);
+          
+          if (this.circleLeftEl) {
+            const fade = 1 - Math.min(1, mProg * 2);
+            this.circleSvgEl.style.opacity = fade;
+            this.circleLeftEl.style.opacity = fade;
+            if (this.circleTheyWantEl) this.circleTheyWantEl.style.opacity = fade;
+          }
+          if (this.mapTitleEl) {
+            this.mapTitleEl.style.opacity = mFade;
+            this.mapTitleEl.style.transform = `translateY(${(1 - mProg) * 20}px)`;
+          }
+          
+          const w = window.innerWidth;
+          const h = window.innerHeight;
+          const isMobile = w < 768;
+          const hereX = isMobile ? w * 0.15 : w * 0.15;
+          const hereY = isMobile ? h * 0.75 : h * 0.85;
+          const endX = isMobile ? w * 0.85 : w * 0.85;
+          const endY = isMobile ? h * 0.3 : h * 0.15;
+          
+          let b10FadeIn = Math.min(1, Math.max(0, scrolledVh - 5));
+          
+          if (this.mapHereGroupEl) {
+            this.mapHereGroupEl.style.opacity = Math.max(0, mProg - b10FadeIn);
+            this.mapHereGroupEl.setAttribute('transform', `translate(${hereX}, ${hereY})`);
+          }
+          if (this.mapHereTextEl) this.mapHereTextEl.setAttribute('y', 25);
+          
+          if (this.mapThereGroupEl && this.circleSvgEl) {
+             const cRect = this.circleSvgEl.getBoundingClientRect();
+             const startX = cRect.left + cRect.width / 2;
+             const startY = cRect.top + cRect.height / 2;
+             const currentX = startX + (endX - startX) * mProg;
+             const currentY = startY + (endY - startY) * mProg;
+             this.mapThereGroupEl.setAttribute('transform', `translate(${currentX}, ${currentY})`);
+             this.mapThereGroupEl.style.opacity = 1 - b10FadeIn; 
+          }
+          if (this.mapThereTextEl) {
+             this.mapThereTextEl.style.opacity = Math.max(0, mProg - b10FadeIn);
+             this.mapThereTextEl.setAttribute('y', -20);
+          }
+          
+          let lProg = Math.min(1, Math.max(0, (scrolledVh - 3) / 2));
+          
+          if (this.mapLineEl) {
+            const path = `M ${hereX} ${hereY} 
+                          C ${w*0.3} ${h*0.95}, ${w*0.35} ${h*0.2}, ${w*0.3} ${h*0.5}
+                          C ${w*0.2} ${h*0.7}, ${w*0.4} ${h*0.6}, ${w*0.5} ${h*0.45}
+                          C ${w*0.6} ${h*0.35}, ${w*0.7} ${h*0.4}, ${w*0.65} ${h*0.55}
+                          C ${w*0.5} ${h*0.75}, ${w*0.65} ${h*0.8}, ${w*0.75} ${h*0.6}
+                          C ${w*0.85} ${h*0.5}, ${w*0.9} ${h*0.3}, ${endX} ${endY}`;
+            this.mapLineEl.setAttribute('d', path);
+            this.mapLineEl.style.strokeDashoffset = 1000 - (1000 * lProg);
+            
+            const r = Math.round(255 - (255 - 48) * b10FadeIn);
+            const g = Math.round(255 - (255 - 102) * b10FadeIn);
+            const b = Math.round(255 - (255 - 190) * b10FadeIn);
+            this.mapLineEl.style.stroke = `rgb(${r},${g},${b})`;
+            this.mapLineEl.style.filter = `drop-shadow(0 0 8px rgb(${r},${g},${b}))`;
+          }
+          
+          let fProg = Math.min(1, Math.max(0, (lProg - 0.25) / 0.25));
+          let fFade = Math.max(0, fProg - b10FadeIn);
+          if (this.mapForgeTitleEl) {
+            this.mapForgeTitleEl.style.opacity = fFade;
+            this.mapForgeTitleEl.style.transform = `translateY(${(1 - fProg) * 20}px)`;
+          }
+          
+          if (this.staticNoiseEl) {
+            this.staticNoiseEl.style.opacity = b10FadeIn;
+          }
+          if (this.mapBeat10TitleEl) {
+            let title1Fade = Math.min(1, Math.max(0, scrolledVh - 5));
+            this.mapBeat10TitleEl.style.opacity = title1Fade;
+            this.mapBeat10TitleEl.style.transform = `translateY(${(1 - title1Fade) * 20}px)`;
+          }
+          if (this.mapBeat10Title2El) {
+            let title2Fade = Math.min(1, Math.max(0, scrolledVh - 6));
+            this.mapBeat10Title2El.style.opacity = title2Fade;
+            this.mapBeat10Title2El.style.transform = `translateY(${(1 - title2Fade) * 20}px)`;
+          }
+        }
+        
+        if (this.cementSectionEl) {
+          const rect = this.cementSectionEl.getBoundingClientRect();
+          const vh = window.innerHeight;
+          
+          let entryProgress = 1 - (rect.top / vh);
+          if (entryProgress < 0) entryProgress = 0;
+          if (entryProgress > 1) entryProgress = 1;
+          
+          const scrollRange = Math.max(1, rect.height - vh); 
+          let pinnedProgress = -rect.top / scrollRange;
+          if (pinnedProgress < 0) pinnedProgress = 0;
+          if (pinnedProgress > 1) pinnedProgress = 1;
+          
+          // Fades in automatically as the section enters the screen
+          if (this.cementTopLeftEl) {
+            let topLeftFade = Math.min(1, Math.max(0, (entryProgress - 0.2) / 0.6));
+            this.cementTopLeftEl.style.opacity = topLeftFade;
+            this.cementTopLeftEl.style.transform = `translateY(${(1 - topLeftFade) * 20}px)`;
+          }
+          
+          // 0 to 0.15: Mid Right Text fades in (triggered by pin scrolling)
+          if (this.cementMidRightEl) {
+            let midRightFade = Math.min(1, Math.max(0, pinnedProgress / 0.15));
+            this.cementMidRightEl.style.opacity = midRightFade;
+            this.cementMidRightEl.style.transform = `translateY(${(1 - midRightFade) * 20}px)`;
+          }
+          
+          // 0.15 to 0.45: Truck drives in
+          let driveProg = Math.min(1, Math.max(0, (pinnedProgress - 0.15) / 0.3));
+          let truckTranslateX = driveProg * -(window.innerWidth * 0.75);
+          if (this.truckContainerEl) {
+            this.truckContainerEl.style.transform = `translateX(${truckTranslateX}px)`;
+          }
+          
+          // 0.45 to 0.6: Lift drum and Tilt hatch
+          let liftProg = Math.min(1, Math.max(0, (pinnedProgress - 0.45) / 0.15));
+          let drumRot = liftProg * 25;
+          if (this.truckDrumEl) {
+            this.truckDrumEl.style.transform = `rotate(${drumRot}deg)`;
+          }
+          
+          let tiltProg = liftProg;
+          let hatchRot = tiltProg * 45; // Positive angle to point DOWN
+          if (this.truckHatchEl) {
+            this.truckHatchEl.style.transform = `rotate(${hatchRot}deg)`;
+          }
+          
+          // 0.6 to 0.75: Pour
+          let pourProg = Math.min(1, Math.max(0, (pinnedProgress - 0.6) / 0.15));
+          if (this.concretePourEl) {
+            this.concretePourEl.style.opacity = pourProg;
+            this.concretePourEl.style.transform = `scaleY(${pourProg})`;
+          }
+          
+          // 0.75 to 0.9: Fill ground
+          let groundProg = Math.min(1, Math.max(0, (pinnedProgress - 0.75) / 0.15));
+          if (this.groundConcreteEl) {
+            this.groundConcreteEl.style.height = `${groundProg * 20}px`;
+          }
+        }
+
+        if (this.avalancheSectionEl) {
+          const rect = this.avalancheSectionEl.getBoundingClientRect();
+          const vh = window.innerHeight;
+          const scrollRange = Math.max(1, rect.height - vh); 
+          let pinnedProgress = -rect.top / scrollRange;
+          if (pinnedProgress < 0) pinnedProgress = 0;
+          if (pinnedProgress > 1) pinnedProgress = 1;
+
+          let t1Fade = 1;
+          let t2Fade = Math.min(1, Math.max(0, (pinnedProgress - 0.15) / 0.15));
+          let t3Fade = Math.min(1, Math.max(0, (pinnedProgress - 0.30) / 0.15));
+          
+          let flyUpProg = Math.min(1, Math.max(0, (pinnedProgress - 0.45) / 0.15));
+          let yOffset = flyUpProg * -100;
+          let fadeOut = 1 - flyUpProg;
+
+          if (this.avalancheText1El) {
+            this.avalancheText1El.style.opacity = t1Fade * fadeOut;
+            this.avalancheText1El.style.transform = `translateY(${yOffset}px)`;
+          }
+          if (this.avalancheText2El) {
+            this.avalancheText2El.style.opacity = t2Fade * fadeOut;
+            this.avalancheText2El.style.transform = `translateY(${yOffset + (1 - t2Fade) * 20}px)`;
+          }
+          if (this.avalancheText3El) {
+            this.avalancheText3El.style.opacity = t3Fade * fadeOut;
+            this.avalancheText3El.style.transform = `translateY(${yOffset + (1 - t3Fade) * 20}px)`;
+          }
+
+          if (this.avalancheMountainEl) {
+            // Rumble stops at 0.70
+            if (pinnedProgress > 0.30 && pinnedProgress < 0.70) {
+              this.avalancheMountainEl.style.animation = 'ed-rumble 200ms infinite';
+            } else {
+              this.avalancheMountainEl.style.animation = 'none';
+            }
+          }
+
+          // Avalanche Progress (Sliding down)
+          // 0.35 to 0.75
+          let slideProg = Math.min(1, Math.max(0, (pinnedProgress - 0.35) / 0.40));
+          if (this.avalancheSnowEl) {
+            this.avalancheSnowEl.style.transform = `translate(${slideProg * 400}px, ${350 + slideProg * 200}px)`;
+          }
+
+          // Skiers slide, then jump!
+          let skierX = 350;
+          let skierY = 675;
+          let skierRot = 0;
+          if (pinnedProgress > 0.35 && pinnedProgress <= 0.75) {
+            // Slide down to X=700, Y=850
+            let p = (pinnedProgress - 0.35) / 0.40;
+            skierX = 350 + p * 350;
+            skierY = 675 + p * 175;
+          } else if (pinnedProgress > 0.75) {
+            // Jump!
+            let p = Math.min(1, (pinnedProgress - 0.75) / 0.20);
+            skierX = 700 + p * 300; 
+            // Parabola trajectory
+            skierY = 850 - p * 500 + p * p * 200;
+            skierRot = p * -45;
+          }
+          if (this.avalancheSkiersEl) {
+            this.avalancheSkiersEl.style.transform = `translate(${skierX}px, ${skierY}px) rotate(${skierRot}deg)`;
+          }
+
+          // Camera Zoom
+          if (this.avalancheZoomWrapperEl) {
+            let zoomProg = Math.min(1, Math.max(0, (pinnedProgress - 0.65) / 0.25));
+            let scale = 1 + zoomProg * 1.5;
+            this.avalancheZoomWrapperEl.style.transformOrigin = '40vw 80vh';
+            this.avalancheZoomWrapperEl.style.transform = `scale(${scale})`;
+          }
+
+          // Flash and text
+          let textProg = Math.min(1, Math.max(0, (pinnedProgress - 0.90) / 0.05));
+          if (this.avalancheShotTextEl) {
+            this.avalancheShotTextEl.style.opacity = textProg;
+          }
+
+          if (this.avalancheFlashEl) {
+            let flashOpacity = 0;
+            if (pinnedProgress > 0.95 && pinnedProgress <= 1.0) {
+              let fProg = (pinnedProgress - 0.95) / 0.05;
+              // Flash goes to 1 quickly then fades slightly, or just quick spike
+              flashOpacity = 1 - fProg; 
+            }
+            this.avalancheFlashEl.style.opacity = flashOpacity;
+          }
+        }
+      };
+      window.addEventListener('scroll', this.onScroll, { passive: true });
+      this.onScroll();
+    }
+  }
+
+  componentWillUnmount() {
+    if (this.io) this.io.disconnect();
+    if (this.typeTimer) clearInterval(this.typeTimer);
+    if (this.typeTimer2) clearInterval(this.typeTimer2);
+    if (this.onMove) window.removeEventListener('mousemove', this.onMove);
+    if (this.onScroll) window.removeEventListener('scroll', this.onScroll);
+    if (this.goatTimer) clearTimeout(this.goatTimer);
+  }
+
+  onActivate(idx) {
+    this.setState({ activeIdx: idx });
+    const beat = BEATS[idx];
+    if (!beat) return;
+    if (beat.typing && !this.playedTyping) {
+      this.playedTyping = true;
+      if (this.reducedMotion) {
+        this.setState({ typedText: FULL_TEXT });
+      } else {
+        let i = 0;
+        this.typeTimer = setInterval(() => {
+          i++;
+          this.setState({ typedText: FULL_TEXT.slice(0, i) });
+          if (i >= FULL_TEXT.length) clearInterval(this.typeTimer);
+        }, 140);
+      }
+    }
+    if (idx === 1 && !this.playedTyping2) {
+      this.playedTyping2 = true;
+      if (this.reducedMotion) {
+        this.setState({ typedText2: BEATS[1].text });
+      } else {
+        let i = 0;
+        this.typeTimer2 = setInterval(() => {
+          i++;
+          this.setState({ typedText2: BEATS[1].text.slice(0, i) });
+          if (i >= BEATS[1].text.length) clearInterval(this.typeTimer2);
+        }, 60);
+      }
+    }
+    if (beat.glitch && !this.reducedMotion) {
+      this.setState((s) => ({ glitchOn: { ...s.glitchOn, [idx]: true } }));
+      setTimeout(() => this.setState((s) => ({ glitchOn: { ...s.glitchOn, [idx]: false } })), 900);
+    }
+    if (beat.slam && !this.reducedMotion) {
+      this.setState((s) => ({ slamOn: { ...s.slamOn, [idx]: true } }));
+      setTimeout(() => this.setState((s) => ({ slamOn: { ...s.slamOn, [idx]: false } })), 700);
+    }
+    if (beat.screenshot) {
+      this.setState((s) => ({ screenshotOn: { ...s.screenshotOn, [idx]: true } }));
+      if (!this.reducedMotion) {
+        setTimeout(() => {
+          this.setState({ flash: true });
+          setTimeout(() => this.setState({ flash: false }), 130);
+        }, 350);
+      }
+    }
+  }
+
+  openDoor(id, href, external) {
+    if (this.reducedMotion) {
+      if (external) window.open(href, '_blank', 'noopener'); else if (href) window.location.href = href;
+      return;
+    }
+    if (this.batterTimers && this.batterTimers[id]) clearInterval(this.batterTimers[id]);
+    this.setState((s) => ({ doorOpen: { ...s.doorOpen, [id]: true } }));
+    this.revealGoatIfNeeded(id);
+    setTimeout(() => {
+      if (external) window.open(href, '_blank', 'noopener'); else if (href) window.location.href = href;
+      setTimeout(() => this.setState((s) => s.battering[id] >= 4 ? null : ({ doorOpen: { ...s.doorOpen, [id]: false } })), 500);
+    }, 480);
+  }
+
+  revealGoatIfNeeded(id) {
+    // The goat stays put once discovered!
+  }
+
+  onDoorHoverStart(id) {
+    if (this.reducedMotion || this.state.battering[id] >= 4) return;
+    this.batterTimers = this.batterTimers || {};
+    if (this.batterTimers[id]) return;
+    this.setState((s) => ({ battering: { ...s.battering, [id]: 1 } }));
+    this.batterTimers[id] = setInterval(() => {
+      this.setState((s) => {
+        const hits = (s.battering[id] || 0) + 1;
+        if (hits >= 4) {
+          clearInterval(this.batterTimers[id]);
+          delete this.batterTimers[id];
+          this.revealGoatIfNeeded(id);
+          return { battering: { ...s.battering, [id]: 4 }, doorOpen: { ...s.doorOpen, [id]: true } };
+        }
+        return { battering: { ...s.battering, [id]: hits } };
+      });
+    }, 230);
+  }
+
+  onDoorHoverEnd(id) {
+    if (this.batterTimers && this.batterTimers[id]) {
+      clearInterval(this.batterTimers[id]);
+      delete this.batterTimers[id];
+    }
+    this.setState((s) => s.battering[id] >= 4 ? null : ({ battering: { ...s.battering, [id]: 0 }, doorOpen: { ...s.doorOpen, [id]: false } }));
+  }
+
+  renderVals() {
+    this.beatEls = [];
+    const active = this.state.activeIdx;
+    const reduced = this.reducedMotion;
+
+    const beats = BEATS.map((beat, i) => {
+      let isActive = reduced ? true : i === active;
+      // Hero group overrides: stay visible while within the first 3 beats
+      if (i === 0) isActive = reduced ? true : active >= 0 && active <= 2;
+      if (i === 1) isActive = reduced ? true : active >= 1 && active <= 2;
+      if (i === 2) isActive = reduced ? true : active >= 2 && active <= 2;
+
+      // Burn group overrides: 
+      if (i === 3) isActive = reduced ? true : active >= 3 && active <= 4;
+      if (i === 4) isActive = reduced ? true : active >= 3 && active <= 4;
+
+      // Circle group overrides:
+      if (i >= 5 && i <= 7) isActive = reduced ? true : active >= 5 && active <= 7;
+
+      const toneStyle = TONE_STYLE[beat.tone];
+      const isSpecial = !!beat.slam;
+      let rot = isSpecial ? 0 : (hash(i * 3 + 1) - 0.5) * 12;
+      let txPx = isSpecial ? 0 : (hash(i) - 0.5) * 60;
+
+      // Force line 3 to be perfectly straight and centered
+      if (i === 2) {
+        rot = 0;
+        txPx = 0;
+      }
+      // Force burn group (3 and 4) to be straight
+      if (i === 3 || i === 4) {
+        rot = 0;
+        txPx = 0;
+      }
+      const justify = beat.tone === 'body' ? 'center' : JUSTIFY[Math.floor(hash(i * 5 + 2) * JUSTIFY.length)];
+      const textAlign = justify === 'flex-start' ? 'left' : justify === 'flex-end' ? 'right' : 'center';
+      
+      let currentAnim = this.state.glitchOn[i] ? 'ed-glitch 900ms ease-in-out' : 'none';
+      if (i === 4 && active >= 4 && !reduced) {
+        currentAnim = 'ed-burst-flame 900ms forwards ease-in-out';
+      }
+
+      const style = {
+        ...toneStyle,
+        textAlign,
+        animation: currentAnim,
+        ...(beat.whiteBg ? { color: '#000' } : {}),
+        ...(beat.styleOverrides || {})
+      };
+      return {
+        setRef: (el) => { if (el) { el.setAttribute('data-idx', String(i)); this.beatEls.push(el); } },
+        sectionStyle: {
+          minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: justify,
+          padding: '0 9vw', scrollSnapAlign: 'start',
+          ...(beat.whiteBg ? { backgroundColor: '#fff' } : {})
+        },
+        wrapStyle: { maxWidth: '90%', position: 'relative' },
+        innerStyle: {
+          opacity: isActive ? 1 : 0,
+          transform: `translateX(${txPx}px) rotate(${rot}deg)${isActive ? '' : ' translateY(22px)'}`,
+          transition: 'opacity 550ms cubic-bezier(0.16,1,0.3,1), transform 550ms cubic-bezier(0.16,1,0.3,1)',
+        },
+        text: beat.text,
+        style,
+        isTyping: !!beat.typing,
+        isSlam: !!beat.slam,
+        isScreenshot: !!beat.screenshot,
+        isPlain: !beat.typing && !beat.slam && !beat.screenshot,
+
+        slamOuterStyle: { display: 'flex', justifyContent: 'center', width: '100%' },
+        slamWrapStyle: { position: 'relative', display: 'inline-block' },
+        crackSvgStyle: {
+          position: 'absolute', left: '50%', top: '50%', width: 260, height: 260,
+          transform: 'translate(-50%,-50%)', pointerEvents: 'none',
+          animation: this.state.slamOn[i] && !reduced ? 'ed-crack 650ms ease-out' : 'none',
+          opacity: 0,
+        },
+
+        underlineStyle: {
+          backgroundImage: 'linear-gradient(var(--ed-crimson), var(--ed-crimson))',
+          backgroundRepeat: 'no-repeat',
+          backgroundPosition: 'left bottom',
+          backgroundSize: this.state.screenshotOn[i] ? '100% 7px' : '0% 7px',
+          transition: 'background-size 550ms ease-out 200ms',
+          paddingBottom: 4,
+        },
+      };
+    });
+
+    const open = this.state.doorOpen;
+    const goat = this.state.goatDoor;
+    const bat = this.state.battering;
+
+    const doorFrameStyle = {
+      position: 'absolute', inset: '4% 7%', borderRadius: '6px',
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      overflow: 'hidden', zIndex: 0
+    };
+    const panelBase = () => ({
+      position: 'absolute', inset: 0, display: 'flex', alignItems: 'flex-end', justifyContent: 'center',
+      textDecoration: 'none', cursor: 'inherit',
+      transformOrigin: 'bottom center', transformStyle: 'preserve-3d',
+      transition: 'transform 220ms cubic-bezier(0.5,0,0.2,1)',
+    });
+    const doorRotation = (id, full) => {
+      if (open[id]) return full;
+      const hits = bat[id] || 0;
+      return (hits / 4) * full * 0.7;
+    };
+    const batterAnim = (id) => 'none';
+    const doorCrackProgress = (id) => Math.min(100, (bat[id] || 0) * 25);
+    const bootCursor = `url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='40'%20height='40'%20viewBox='0%200%2040%2040'%3E%3Cpath%20d='M14,6%20L22,6%20L22,18%20L34,20%20L34,28%20L14,28%20Z'%20fill='%233066BE'%20stroke='%23fff'%20stroke-width='2'%20stroke-linejoin='round'/%3E%3Cpath%20d='M12,28%20L36,28%20L36,32%20L12,32%20Z'%20fill='%23050505'%20stroke='%23fff'%20stroke-width='2'%20stroke-linejoin='round'/%3E%3C/svg%3E") 36 30, pointer`;
+    const kickCursor = (hits) => {
+      if (!hits) return bootCursor;
+      const rot = hits % 2 === 1 ? -25 : 10;
+      return `url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='40'%20height='40'%20viewBox='0%200%2040%2040'%3E%3Cg%20transform='rotate(${rot}%2018%206)'%3E%3Cpath%20d='M14,6%20L22,6%20L22,18%20L34,20%20L34,28%20L14,28%20Z'%20fill='%233066BE'%20stroke='%23fff'%20stroke-width='2'%20stroke-linejoin='round'/%3E%3Cpath%20d='M12,28%20L36,28%20L36,32%20L12,32%20Z'%20fill='%23050505'%20stroke='%23fff'%20stroke-width='2'%20stroke-linejoin='round'/%3E%3C/g%3E%3C/svg%3E") 36 30, pointer`;
+    };
+
+    return {
+      heroSectionStyle: { position: 'relative', width: '100%' },
+      heroStickyStyle: { 
+        position: 'sticky', top: 0, height: '100vh', 
+        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', 
+        overflow: 'hidden', padding: '0 9vw'
+      },
+      heroInnerStyle: {
+        display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%',
+        transform: `translateY(${active === 0 ? '15vh' : active === 1 ? '6vh' : '0'})`,
+        transition: 'transform 550ms cubic-bezier(0.16,1,0.3,1)',
+      },
+      beats,
+      remainingBeats: beats.slice(12),
+      burnSectionStyle: { position: 'relative', width: '100%' },
+      burnStickyStyle: { 
+        position: 'sticky', top: 0, height: '100vh', 
+        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', 
+        overflow: 'hidden', padding: '0 9vw'
+      },
+      burnInnerStyle: {
+        display: 'flex', flexDirection: 'column', alignItems: 'flex-start', width: '100%',
+        maxWidth: '900px', margin: '0 auto', gap: '2vh'
+      },
+      circleGroupRef: this.circleGroupRef,
+      circleSvgRef: this.circleSvgRef,
+      circleLeftRef: (el) => { this.circleLeftEl = el; },
+      circleTheyWantRef: (el) => { this.circleTheyWantEl = el; },
+      mapTitleRef: (el) => { this.mapTitleEl = el; },
+      mapForgeTitleRef: (el) => { this.mapForgeTitleEl = el; },
+      mapBeat10TitleRef: (el) => { this.mapBeat10TitleEl = el; },
+      mapBeat10Title2Ref: (el) => { this.mapBeat10Title2El = el; },
+      staticNoiseRef: (el) => { this.staticNoiseEl = el; },
+      mapLineRef: (el) => { this.mapLineEl = el; },
+      mapLineSpacerRef: (el) => { this.mapLineSpacerEl = el; },
+      cementSectionRef: (el) => { this.cementSectionEl = el; },
+      cementStickyRef: (el) => { this.cementStickyEl = el; },
+      cementTopLeftRef: (el) => { this.cementTopLeftEl = el; },
+      cementMidRightRef: (el) => { this.cementMidRightEl = el; },
+      truckContainerRef: (el) => { this.truckContainerEl = el; },
+      truckDrumRef: (el) => { this.truckDrumEl = el; },
+      truckHatchRef: (el) => { this.truckHatchEl = el; },
+      concretePourRef: (el) => { this.concretePourEl = el; },
+      groundConcreteRef: (el) => { this.groundConcreteEl = el; },
+      mapHereGroupRef: (el) => { this.mapHereGroupEl = el; },
+      mapHereTextRef: (el) => { this.mapHereTextEl = el; },
+      mapThereGroupRef: (el) => { this.mapThereGroupEl = el; },
+      mapThereTextRef: (el) => { this.mapThereTextEl = el; },
+      
+      avalancheSectionRef: (el) => { this.avalancheSectionEl = el; },
+      avalancheStickyRef: (el) => { this.avalancheStickyEl = el; },
+      avalancheZoomWrapperRef: (el) => { this.avalancheZoomWrapperEl = el; },
+      avalancheMountainRef: (el) => { this.avalancheMountainEl = el; },
+      avalancheSkiersRef: (el) => { this.avalancheSkiersEl = el; },
+      avalancheSnowRef: (el) => { this.avalancheSnowEl = el; },
+      avalancheTextContainerRef: (el) => { this.avalancheTextContainerEl = el; },
+      avalancheText1Ref: (el) => { this.avalancheText1El = el; },
+      avalancheText2Ref: (el) => { this.avalancheText2El = el; },
+      avalancheText3Ref: (el) => { this.avalancheText3El = el; },
+      avalancheFlashRef: (el) => { this.avalancheFlashEl = el; },
+      avalancheShotTextRef: (el) => { this.avalancheShotTextEl = el; },
+
+      avalancheSectionStyle: { position: 'relative', width: '100%', backgroundColor: '#87CEEB', color: '#000', scrollSnapAlign: 'start' },
+      avalancheStickyStyle: { 
+        position: 'sticky', top: 0, height: '100vh', 
+        overflow: 'hidden', padding: 0
+      },
+      avalancheZoomWrapperStyle: {
+        position: 'absolute', left: 0, top: 0, width: '100%', height: '100%', pointerEvents: 'none', willChange: 'transform'
+      },
+      avalancheMountainStyle: {
+        position: 'absolute', left: 0, top: 0, width: '50vw', height: '100vh', pointerEvents: 'none'
+      },
+      avalancheTextContainerStyle: {
+        position: 'absolute', right: '5vw', top: '50%', transform: 'translateY(-50%)',
+        display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '3vh',
+        width: '60vw', zIndex: 10
+      },
+      avalancheText1Style: {
+        textAlign: 'right', margin: 0,
+        fontFamily: 'var(--font-med)', fontWeight: 800, fontSize: 'clamp(20px, 3vw, 30px)',
+        opacity: 0, willChange: 'opacity, transform'
+      },
+      avalancheText2Style: {
+        textAlign: 'right', margin: 0,
+        fontFamily: 'var(--font-display)', fontWeight: 900, textTransform: 'uppercase',
+        fontSize: 'clamp(24px, 4.5vw, 54px)', lineHeight: 1.1, opacity: 0, willChange: 'opacity, transform',
+        maxWidth: '100%'
+      },
+      avalancheText3Style: {
+        textAlign: 'right', margin: 0,
+        fontFamily: 'var(--font-display)', fontWeight: 900, textTransform: 'uppercase', color: 'var(--ed-crimson)',
+        fontSize: 'clamp(24px, 4.5vw, 54px)', lineHeight: 1.1, opacity: 0, willChange: 'opacity, transform',
+        maxWidth: '100%'
+      },
+      avalancheFlashStyle: {
+        position: 'absolute', top: 0, left: 0, width: '100vw', height: '100vh',
+        backgroundColor: '#fff', zIndex: 100, pointerEvents: 'none',
+        opacity: 0, willChange: 'opacity'
+      },
+      avalancheShotTextStyle: {
+        position: 'absolute', bottom: '10%', right: '5%',
+        fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: 'clamp(40px, 8vw, 100px)',
+        color: '#000', textTransform: 'uppercase', margin: 0,
+        zIndex: 101, opacity: 0, willChange: 'opacity', pointerEvents: 'none',
+        textAlign: 'right', lineHeight: 1.1, textShadow: '4px 4px 0 #fff, -4px -4px 0 #fff, 4px -4px 0 #fff, -4px 4px 0 #fff'
+      },
+      avalancheShutterStyle: {
+        display: 'inline-block',
+        border: '6px solid #000',
+        padding: '0px 15px',
+        margin: '0 5px',
+        lineHeight: 1
+      },
+
+      mapTitleStyle: {
+        position: 'absolute', top: '10vh', left: '9vw',
+        fontFamily: 'var(--font-display)', fontWeight: 900, textTransform: 'uppercase', 
+        letterSpacing: '-0.02em', color: 'var(--color-primary)', margin: 0, 
+        fontSize: 'clamp(40px,7vw,96px)', opacity: 0, willChange: 'opacity, transform',
+        transform: 'translateY(20px)', maxWidth: '400px', lineHeight: 1, zIndex: 10
+      },
+      mapForgeTitleStyle: {
+        position: 'absolute', bottom: '10vh', right: '9vw',
+        fontFamily: 'var(--font-display)', fontWeight: 900, textTransform: 'uppercase', 
+        letterSpacing: '-0.02em', color: '#fff', margin: 0, 
+        fontSize: 'clamp(28px, 4.5vw, 75px)', opacity: 0, willChange: 'opacity, transform',
+        transform: 'translateY(20px)', whiteSpace: 'nowrap', lineHeight: 1, zIndex: 10, textAlign: 'right'
+      },
+      mapBeat10TitleStyle: {
+        position: 'absolute', top: '10vh', left: '9vw',
+        fontFamily: 'var(--font-display)', fontWeight: 900, textTransform: 'uppercase', 
+        letterSpacing: '-0.02em', color: 'var(--color-primary)', margin: 0, 
+        fontSize: 'clamp(40px,7vw,96px)', opacity: 0, willChange: 'opacity, transform',
+        transform: 'translateY(20px)', maxWidth: '900px', lineHeight: 1, zIndex: 10
+      },
+      mapBeat10Title2Style: {
+        position: 'absolute', bottom: '10vh', right: '12vw',
+        fontFamily: 'var(--font-display)', fontWeight: 900, textTransform: 'uppercase', 
+        letterSpacing: '-0.02em', color: 'var(--color-primary)', margin: 0, 
+        fontSize: 'clamp(18px, 4.5vw, 56px)', opacity: 0, willChange: 'opacity, transform',
+        transform: 'translateY(20px)', maxWidth: '600px', lineHeight: 1.1, zIndex: 10, textAlign: 'right', whiteSpace: 'nowrap'
+      },
+      cementSectionStyle: { position: 'relative', width: '100%', zIndex: 6, scrollSnapAlign: 'start' },
+      cementStickyStyle: {
+        position: 'sticky', top: 0, height: '100vh', 
+        overflow: 'hidden', pointerEvents: 'none'
+      },
+      cementTopLeftStyle: {
+        position: 'absolute', top: '10vh', left: '9vw',
+        fontFamily: 'var(--font-display)', fontWeight: 900, textTransform: 'uppercase',
+        letterSpacing: '-0.02em', color: 'var(--color-primary)', margin: 0,
+        fontSize: 'clamp(28px, 5.5vw, 64px)', maxWidth: '600px', lineHeight: 1.1, whiteSpace: 'nowrap',
+        willChange: 'opacity, transform', opacity: 0, transform: 'translateY(20px)'
+      },
+      cementMidRightStyle: {
+        position: 'absolute', top: '45vh', right: '9vw',
+        fontFamily: 'var(--font-display)', fontWeight: 900, textTransform: 'uppercase',
+        letterSpacing: '-0.02em', color: '#fff', margin: 0,
+        fontSize: 'clamp(32px, 6vw, 76px)', maxWidth: '600px', lineHeight: 1.1, textAlign: 'right', whiteSpace: 'nowrap',
+        willChange: 'opacity, transform', opacity: 0, transform: 'translateY(20px)'
+      },
+      truckContainerStyle: {
+        position: 'absolute', bottom: '2vh', right: '-300px',
+        width: '300px', height: '180px', willChange: 'transform'
+      },
+      groundConcreteStyle: {
+        position: 'absolute', bottom: 0, left: 0, right: 0, height: '0px',
+        background: '#87CEEB', willChange: 'height'
+      },
+      circleSectionStyle: { position: 'relative', width: '100%' },
+      circleStickyStyle: { 
+        position: 'sticky', top: 0, height: '100vh', 
+        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', 
+        overflow: 'hidden', padding: '0 9vw'
+      },
+      circleInnerStyle: {
+        display: 'flex', flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between',
+        width: '100%', maxWidth: '1100px', margin: '0 auto', gap: '4vw',
+        opacity: (active >= 5 && active <= 10) ? 1 : 0,
+        transform: `translateY(${(active >= 5 && active <= 10) ? '0' : '22px'})`,
+        transition: 'opacity 550ms cubic-bezier(0.16,1,0.3,1), transform 550ms cubic-bezier(0.16,1,0.3,1)'
+      },
+      circleLeftStyle: {
+        flex: '1 1 40%', minWidth: '280px'
+      },
+      circleRightStyle: {
+        flex: '1 1 40%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', minWidth: '280px'
+      },
+      circleSvgStyle: {
+        width: '380px', height: '380px', maxWidth: '100%',
+        willChange: 'transform'
+      },
+      ctaSectionStyle: { minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '6vh 26px 6vh', scrollSnapAlign: 'start', cursor: bootCursor },
+      typedText: this.state.typedText,
+      typedText2: this.state.typedText2,
+      cursorStyle: { animation: reduced ? 'none' : 'ed-blink 1s steps(1) infinite', color: 'var(--color-primary)', fontWeight: 400, display: active === 0 ? 'inline' : 'none' },
+      cursorStyle2: { animation: reduced ? 'none' : 'ed-blink 1s steps(1) infinite', color: 'var(--color-primary)', fontWeight: 400, display: active === 1 ? 'inline' : 'none' },
+      hintStyle: {
+        position: 'absolute', bottom: '6vh', left: 0, right: 0,
+        display: 'flex', flexDirection: 'column', alignItems: 'center',
+        opacity: active === 0 ? 1 : 0, pointerEvents: 'none',
+        transition: 'opacity 400ms ease-in-out', color: '#fff',
+      },
+      flashStyle: {
+        position: 'fixed', inset: 0, zIndex: 50, pointerEvents: 'none',
+        background: '#fff', opacity: this.state.flash ? 0.9 : 0,
+        transition: this.state.flash ? 'none' : 'opacity 260ms ease-out',
+      },
+      setDotRef: (el) => { this.dotEl = el; },
+      dotStyle: reduced ? { display: 'none' } : {
+        position: 'fixed', top: 0, left: 0, width: 14, height: 14, borderRadius: '50%',
+        background: 'var(--color-primary)', pointerEvents: 'none', zIndex: 40,
+        transform: 'translate(-50%,-50%)', transition: 'background 200ms ease, opacity 200ms ease',
+        boxShadow: '0 0 18px 4px rgba(48,102,190,0.55)', opacity: 0.6,
+      },
+      ctaHeaderStyle: {
+        fontFamily: 'var(--font-display)', fontWeight: 900, textTransform: 'uppercase',
+        color: 'var(--color-primary)', fontSize: 'clamp(26px,4.2vw,44px)', letterSpacing: '-0.02em',
+        lineHeight: 1.15, transform: 'rotate(-1.5deg)', margin: 0, textAlign: 'center',
+      },
+
+      bat,
+      doorFrameStyle,
+      portalStyleA: { opacity: bat.a > 0 || open.a ? 0.9 : 0, transition: 'opacity 0.3s' },
+      portalStyleB: { opacity: bat.b > 0 || open.b ? 0.9 : 0, transition: 'opacity 0.3s' },
+      portalStyleC: { opacity: bat.c > 0 || open.c ? 0.9 : 0, transition: 'opacity 0.3s', display: 'block' },
+      goatStyle: { fontSize: 52, zIndex: 2, position: 'relative' },
+
+      doorColStyleA: { display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 },
+      doorColStyleB: { display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 },
+      doorColStyleC: { display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 },
+
+      doorWrapStyleA: { position: 'relative', width: 190, height: 240, perspective: '900px', transform: 'rotate(-3deg)', cursor: kickCursor(bat.a) },
+      showGoatA: open.a && goat === 'a',
+      doorPanelStyleA: { ...panelBase(), transform: `rotateX(${doorRotation('a', 85)}deg)`, animation: batterAnim('a') },
+      onEnterA: () => this.onDoorHoverStart('a'),
+      onLeaveA: () => this.onDoorHoverEnd('a'),
+      onClickA: (e) => { e.preventDefault(); this.openDoor('a', null, false); },
+
+      doorWrapStyleB: { position: 'relative', width: 190, height: 240, perspective: '900px', transform: 'rotate(2.5deg)', cursor: kickCursor(bat.b) },
+      showGoatB: open.b && goat === 'b',
+      doorPanelStyleB: { ...panelBase(), transform: `rotateX(${doorRotation('b', 85)}deg)`, animation: batterAnim('b') },
+      onEnterB: () => this.onDoorHoverStart('b'),
+      onLeaveB: () => this.onDoorHoverEnd('b'),
+      onClickB: (e) => { e.preventDefault(); this.openDoor('b', null, false); },
+
+      doorWrapStyleC: { position: 'relative', width: 220, height: 280, perspective: '900px', transform: 'rotate(-1.5deg)', cursor: kickCursor(bat.c) },
+      showGoatC: open.c && goat === 'c',
+      doorPanelStyleC: { ...panelBase(), transform: `rotateX(${doorRotation('c', 85)}deg)`, animation: batterAnim('c') },
+      onEnterC: () => this.onDoorHoverStart('c'),
+      onLeaveC: () => this.onDoorHoverEnd('c'),
+      onClickC: (e) => { e.preventDefault(); this.openDoor('c', 'https://www.linkedin.com/in/dragonchan/', true); },
+
+      doorLabelStyle: { fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 15, color: '#fff', textTransform: 'uppercase', letterSpacing: '0.01em', textAlign: 'center', lineHeight: 1.25, transform: 'rotate(-1.5deg)' },
+      doorLabelStyleC: { fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: 19, color: '#fff', textTransform: 'uppercase', letterSpacing: '0.01em', textAlign: 'center', lineHeight: 1.25, transform: 'rotate(1deg)' },
+
+      footerStyle: {
+        fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 13,
+        color: 'rgba(255,255,255,0.4)', transform: 'rotate(-2deg)',
+        textAlign: 'right', marginTop: '9vh',
+      },
+    };
+  }
+}
+</script>
+</x-dc>
+<!-- {% endraw %} -->
+</body>
+</html>

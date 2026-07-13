@@ -1,0 +1,275 @@
+/* ============================================================
+   COLORS — EverydayDragon
+   Palette straight from the May 2023 Brand Guidelines.
+   Named brand colors + semantic aliases.
+   ============================================================ */
+:root {
+  /* ---- Brand palette (canonical names) ---- */
+  --ed-midnight:    #000000; /* Mythical Midnight */
+  --ed-snow:        #FFFFFF; /* Stoic Snow */
+  --ed-blurple:     #3066BE; /* Bodacious Blurple */
+  --ed-periwinkle:  #090C9B; /* Poised Periwinkle */
+  --ed-wisteria:    #CCC9DC; /* Witty Wisteria */
+  --ed-moss:        #6E9075; /* Meaningful Moss */
+  --ed-battleship:  #7C7C7C; /* Brave Battleship */
+  --ed-crimson:     #D7263D; /* Crafty Crimson */
+
+  /* ---- Tints & shades (derived, oklch-harmonized) ---- */
+  --ed-blurple-700:   #22488a;
+  --ed-blurple-600:   #2a5aa8;
+  --ed-blurple-100:   #dbe6f6;
+  --ed-blurple-050:   #eef3fb;
+  --ed-periwinkle-600:#0a0d7a;
+  --ed-wisteria-200:  #e2e0eb;
+  --ed-wisteria-050:  #f5f4f9;
+  --ed-moss-100:      #e3ebe4;
+  --ed-crimson-050:   #fbe6e9;
+  --ed-ink-800:       #1a1a1a;
+  --ed-ink-600:       #3d3d3d;
+  --ed-line:          #e6e6e9;
+  --ed-line-strong:   #cfcfd6;
+
+  /* ---- Semantic aliases ---- */
+  --color-primary:        var(--ed-blurple);
+  --color-primary-hover:  var(--ed-blurple-700);
+  --color-primary-press:  var(--ed-periwinkle);
+  --color-primary-tint:   var(--ed-blurple-050);
+
+  --color-ink:            var(--ed-midnight);
+  --color-ink-soft:       var(--ed-ink-800);
+  --color-text-body:      var(--ed-ink-600);
+  --color-text-muted:     var(--ed-battleship);
+  --color-text-invert:    var(--ed-snow);
+
+  --color-bg:             var(--ed-snow);
+  --color-surface:        var(--ed-snow);
+  --color-surface-subtle: var(--ed-wisteria-050);
+  --color-surface-lav:    var(--ed-wisteria-200);
+  --color-surface-ink:    var(--ed-midnight);
+
+  --color-border:         var(--ed-line);
+  --color-border-strong:  var(--ed-line-strong);
+
+  --color-success:        var(--ed-moss);
+  --color-success-tint:   var(--ed-moss-100);
+  --color-danger:         var(--ed-crimson);
+  --color-danger-tint:    var(--ed-crimson-050);
+  --color-info:           var(--ed-blurple);
+  --color-accent-deep:    var(--ed-periwinkle);
+
+  --color-focus-ring:     color-mix(in oklch, var(--ed-blurple) 55%, transparent);
+}
+/* ============================================================
+   TYPOGRAPHY — EverydayDragon
+   Display: Montserrat (Gotham substitute) — bold, geometric, uppercase-friendly.
+   Body:    Mulish (Avenir substitute) — humanist, calm, legible.
+   Mono:    JetBrains Mono — utility only.
+   ============================================================ */
+:root {
+  --font-display: 'Montserrat', 'Gotham', system-ui, sans-serif;
+  --font-body:    'Mulish', 'Avenir', system-ui, sans-serif;
+  --font-mono:    'JetBrains Mono', ui-monospace, monospace;
+
+  /* Weights */
+  --fw-regular: 400; /* @kind font */
+  --fw-medium:  500; /* @kind font */
+  --fw-semibold:600; /* @kind font */
+  --fw-bold:    700; /* @kind font */
+  --fw-black:   900; /* @kind font */
+
+  /* Type scale — 1.25 major-third, tuned */
+  --text-2xs: 11px;
+  --text-xs:  12px;
+  --text-sm:  14px;
+  --text-md:  16px;   /* body base */
+  --text-lg:  18px;
+  --text-xl:  22px;
+  --text-2xl: 28px;
+  --text-3xl: 36px;
+  --text-4xl: 48px;
+  --text-5xl: 64px;
+  --text-6xl: 84px;   /* hero */
+
+  /* Line heights */
+  --lh-tight:   1.04; /* @kind font */
+  --lh-snug:    1.2;  /* @kind font */
+  --lh-normal:  1.5;  /* @kind font */
+  --lh-relaxed: 1.65; /* @kind font */
+
+  /* Letter spacing — display runs tight & uppercase; eyebrows run wide */
+  --ls-display: -0.02em; /* @kind font */
+  --ls-tight:   -0.01em; /* @kind font */
+  --ls-normal:  0em;     /* @kind font */
+  --ls-eyebrow: 0.16em;  /* @kind font */
+  --ls-wide:    0.06em;  /* @kind font */
+
+  /* Semantic roles */
+  --role-hero-family:    var(--font-display);
+  --role-hero-weight:    var(--fw-black);
+  --role-display-family: var(--font-display);
+  --role-display-weight: var(--fw-bold);
+  --role-eyebrow-family: var(--font-display);
+  --role-eyebrow-weight: var(--fw-bold);
+  --role-body-family:    var(--font-body);
+  --role-body-weight:    var(--fw-regular);
+}
+/* ============================================================
+   SPACING & LAYOUT — EverydayDragon
+   4px base grid. Crisp, intentional, uniform.
+   ============================================================ */
+:root {
+  --space-0:  0;
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  20px;
+  --space-6:  24px;
+  --space-8:  32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;
+  --space-24: 96px;
+  --space-32: 128px;
+
+  /* Layout */
+  --container-max:  1200px;
+  --container-text: 68ch;
+  --gutter:         var(--space-6);
+
+  /* Radii — sharp & intentional. The brand is crisp, not pillowy. */
+  --radius-none: 0px;
+  --radius-xs:   2px;
+  --radius-sm:   4px;
+  --radius-md:   6px;
+  --radius-lg:   10px;
+  --radius-pill: 999px;
+
+  /* Border widths */
+  --border-hair: 1px;
+  --border-bold: 2px;
+}
+/* ============================================================
+   EFFECTS — EverydayDragon
+   Restrained shadows, crisp borders, deliberate motion.
+   ============================================================ */
+:root {
+  /* Elevation — low & tight. Nothing floaty. */
+  --shadow-none: none;
+  --shadow-xs:  0 1px 2px rgba(0,0,0,0.06);
+  --shadow-sm:  0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md:  0 4px 12px rgba(9,12,155,0.08), 0 1px 3px rgba(0,0,0,0.06);
+  --shadow-lg:  0 12px 32px rgba(9,12,155,0.12), 0 2px 8px rgba(0,0,0,0.06);
+  --shadow-ink: 0 8px 24px rgba(0,0,0,0.24);
+
+  /* Hard shadows — the bold signature device. Solid offset blocks, not blur.
+     Use on feature cards, primary/ink buttons, and callouts where the brand
+     wants graphic confidence over SaaS-soft elevation. Pair with a 2px+ border. */
+  --shadow-hard-xs:  2px 2px 0 0 var(--ed-midnight);
+  --shadow-hard-sm:  4px 4px 0 0 var(--ed-midnight);
+  --shadow-hard-md:  7px 7px 0 0 var(--ed-midnight);
+  --shadow-hard-lg:  11px 11px 0 0 var(--ed-midnight);
+  --shadow-hard-blurple: 6px 6px 0 0 var(--ed-blurple);
+  --shadow-hard-white:   4px 4px 0 0 #fff;
+
+  /* Focus */
+  --focus-ring: 0 0 0 3px var(--color-focus-ring);
+
+  /* Motion — quick, confident, minimal bounce */
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1); /* @kind other */
+  --ease-out:      cubic-bezier(0.16, 1, 0.3, 1); /* @kind other */
+  --ease-in-out:   cubic-bezier(0.65, 0, 0.35, 1); /* @kind other */
+  --dur-fast:   120ms; /* @kind other */
+  --dur-base:   200ms; /* @kind other */
+  --dur-slow:   360ms; /* @kind other */
+
+  /* Backdrop */
+  --blur-panel: saturate(140%) blur(14px); /* @kind other */
+}
+/* ============================================================
+   BASE — EverydayDragon
+   Light element defaults + a few utility classes used by cards.
+   Kept minimal so consuming apps stay in control.
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: var(--text-md);
+  line-height: var(--lh-normal);
+  color: var(--color-text-body);
+  background: var(--color-bg);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  color: var(--color-ink);
+  margin: 0;
+  line-height: var(--lh-tight);
+  letter-spacing: var(--ls-display);
+  font-weight: var(--fw-bold);
+}
+
+a { color: var(--color-primary); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* ---- Utility: brand eyebrow / kicker ---- */
+.ed-eyebrow {
+  font-family: var(--font-display);
+  font-weight: var(--fw-bold);
+  font-size: var(--text-xs);
+  letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase;
+  color: var(--color-primary);
+}
+
+/* ---- Utility: display headline ---- */
+.ed-display {
+  font-family: var(--font-display);
+  font-weight: var(--fw-black);
+  letter-spacing: var(--ls-display);
+  line-height: var(--lh-tight);
+  color: var(--color-ink);
+  text-transform: uppercase;
+}
+
+::selection { background: var(--ed-blurple); color: #fff; }
+
+html, body { margin: 0; background: #000; height: 100%; }
+    html { scroll-snap-type: y mandatory; }
+    a { color: var(--color-primary); }
+    a:hover { color: var(--color-primary-hover); }
+    ::selection { background: var(--ed-blurple); color: #fff; }
+    @keyframes ed-blink { 0%, 45% { opacity: 1; } 50%, 100% { opacity: 0; } }
+    @keyframes ed-glitch {
+      0% { text-shadow: 0 0 0 transparent; transform: translate(0,0); }
+      18% { text-shadow: -3px 0 var(--ed-crimson), 3px 0 var(--ed-blurple); transform: translate(-2px,1px); }
+      32% { text-shadow: 3px 0 var(--ed-crimson), -3px 0 var(--ed-blurple); transform: translate(2px,-1px); }
+      46% { text-shadow: -2px 1px var(--ed-crimson), 2px -1px var(--ed-blurple); transform: translate(-1px,0); }
+      60%, 100% { text-shadow: 0 0 0 transparent; transform: translate(0,0); }
+    }
+    @keyframes ed-wobble-in {
+      from { stroke-dashoffset: 340; opacity: 0; }
+      to { stroke-dashoffset: 0; opacity: 1; }
+    }
+    @keyframes ed-slam {
+      0% { transform: scale(3.2); opacity: 0; filter: blur(10px); }
+      50% { transform: scale(0.88); opacity: 1; filter: blur(0); }
+      68% { transform: scale(1.08); }
+      100% { transform: scale(1); }
+    }
+    @keyframes ed-crack {
+      0% { opacity: 0; transform: translate(-50%,-50%) scale(0.4); }
+      30% { opacity: 1; transform: translate(-50%,-50%) scale(1.2); }
+      100% { opacity: 0; transform: translate(-50%,-50%) scale(1.7); }
+    }
+    @keyframes ed-batter-shake {
+      0%, 100% { translate: 0 0; }
+      25% { translate: -3px 2px; }
+      50% { translate: 3px -2px; }
+      75% { translate: -2px -1px; }
+    }
