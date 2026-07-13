@@ -20,6 +20,7 @@ To ensure the site loads quickly and provides a smooth user experience, the foll
 This repository is configured to deploy directly to GitHub Pages.
 - **Bypassing Jekyll:** Because the code uses Liquid-like templates (`{{ }}`) that conflict with GitHub Pages' default Jekyll build system, a `.nojekyll` file is included at the root. This forces GitHub Pages to serve the raw HTML without attempting to process it.
 - **Assets:** The compiled design system assets (CSS/JS) are located in the `assets/` directory and referenced cleanly within `index.html`.
+- **Custom Domain & Caching:** `iamdragonc.com` is proxied through Cloudflare in front of GitHub Pages. Cloudflare caches `.js`/`.css`/image files at its edge, so after a deploy the live site can keep serving stale assets even though GitHub Pages already has the new files. The asset URLs in `index.html` carry a `?v=` version parameter — bump it whenever `support.js`, `assets/bundle.js`, or `assets/style.css` change. If the live site still looks stale, purge the cache in the Cloudflare dashboard (Caching → Purge Everything) and hard-refresh the browser.
 
 ## Local Development
 Since this is a static site without a complex build pipeline for the final output, you can view the site locally by simply serving the root directory:
