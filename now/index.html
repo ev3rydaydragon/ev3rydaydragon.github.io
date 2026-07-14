@@ -379,18 +379,11 @@
     filter: drop-shadow(0 0 5px rgba(48,102,190,0.65));
     transition: stroke-dashoffset 1.1s cubic-bezier(0.22, 1, 0.36, 1);
   }
-  .coaster-loop circle { fill: none; stroke: rgba(255,255,255,0.14); stroke-width: 4; }
   .coaster-cart {
     opacity: 0;
     transition: opacity 700ms ease 650ms, transform 1.1s cubic-bezier(0.22, 1, 0.36, 1);
   }
   .coaster-cart circle { fill: var(--crimson); filter: drop-shadow(0 0 6px rgba(215,38,61,0.75)); }
-  .coaster-caption {
-    font-family: var(--font-mono);
-    font-size: 12px;
-    color: rgba(255,255,255,0.34);
-    margin: 10px 0 0;
-  }
 
   /* ---- Footer / links ---- */
   .now-foot {
@@ -478,7 +471,7 @@
       <p class="now-updated">Last updated July 2026 &middot; Chicago, IL</p>
 
       <h1 class="now-h1">ZERO<br><span class="accent">IDLE CYCLES.</span></h1>
-      <p class="now-lede">I'm taking the theory from Kellogg and wiring it directly into Guthrie AI.<br>Building fast. Breaking faster.</p>
+      <p class="now-lede">I'm taking the theory from Kellogg and wiring it directly into Guthrie&nbsp;AI.<br>Building fast. Breaking faster.</p>
 
       <div class="now-threads">
 
@@ -492,7 +485,7 @@
         <!-- SCHOOL -->
         <div class="thread">
           <p class="thread-label">School</p>
-          <h2 class="thread-title">MBA candidate @ Kellogg, Northwestern</h2>
+          <h2 class="thread-title">MBA candidate @ Kellogg</h2>
           <p class="thread-body">Dissecting how incentives drive outcomes in Strategy &amp; Orgs. Testing pure execution in Entrepreneurial Selling. I prefer to build in the open. Right now, I'm holding one Kellogg pencil. What's your trade?</p>
 
           <div class="trade-box">
@@ -517,12 +510,10 @@
               <span class="coaster-count">333</span><span class="coaster-goal">/ 1,000 inversions</span>
             </div>
             <svg class="coaster-track" viewBox="0 0 600 110" preserveAspectRatio="none" aria-hidden="true">
-              <path class="coaster-track-base" d="M4,72 C44,22 84,22 124,57 S204,92 244,57 S324,22 364,57 S444,92 484,57 S564,22 596,42" />
-              <path class="coaster-track-fill" id="coasterFill" d="M4,72 C44,22 84,22 124,57 S204,92 244,57 S324,22 364,57 S444,92 484,57 S564,22 596,42" />
-              <g class="coaster-loop" transform="translate(566,40)"><circle r="15" /></g>
+              <path class="coaster-track-base" d="M4,83 C40,32 70,32 100,66 L130,83 A20,20 0 1,1 130,43 A20,20 0 1,1 130,83 C160,102 182,102 205,75 C228,50 252,50 275,75 L300,88 A18,18 0 1,1 300,52 A18,18 0 1,1 300,88 C330,96 352,96 375,70 C400,42 425,42 450,66 C478,92 505,92 530,63 L596,50" />
+              <path class="coaster-track-fill" id="coasterFill" d="M4,83 C40,32 70,32 100,66 L130,83 A20,20 0 1,1 130,43 A20,20 0 1,1 130,83 C160,102 182,102 205,75 C228,50 252,50 275,75 L300,88 A18,18 0 1,1 300,52 A18,18 0 1,1 300,88 C330,96 352,96 375,70 C400,42 425,42 450,66 C478,92 505,92 530,63 L596,50" />
               <g class="coaster-cart" id="coasterCart"><circle r="6" /></g>
             </svg>
-            <p class="coaster-caption" id="coasterCaption"></p>
           </div>
         </div>
 
@@ -748,7 +739,6 @@
   const fill = document.getElementById('coasterFill');
   const cart = document.getElementById('coasterCart');
   const count = tracker && tracker.querySelector('.coaster-count');
-  const caption = document.getElementById('coasterCaption');
   if (!tracker || !base || !fill || !cart) return;
 
   const done = Number(tracker.dataset.done);
@@ -756,9 +746,6 @@
   const progress = Math.min(1, done / goal);
 
   if (count) count.textContent = done.toLocaleString();
-  if (caption) {
-    caption.textContent = Math.round(progress * 100) + '% to the ' + goal.toLocaleString() + '-inversion threshold · ' + (goal - done).toLocaleString() + ' to go';
-  }
 
   const total = fill.getTotalLength();
   const point = base.getPointAtLength(total * progress);
