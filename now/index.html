@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dragon Chan — Now</title>
+<meta name="description" content="What Dragon Chan is focused on right now: an MBA at Kellogg and predictive intelligence at Guthrie AI.">
+
+<link rel="canonical" href="https://iamdragonc.com/now/">
+<meta property="og:title" content="Dragon Chan — Now">
+<meta property="og:description" content="What I'm focused on right now.">
+<meta property="og:url" content="https://iamdragonc.com/now/">
+<meta property="og:type" content="website">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Mulish:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --font-display: 'Montserrat', 'Gotham', system-ui, sans-serif;
+    --font-body:    'Mulish', 'Avenir', system-ui, sans-serif;
+    --font-mono:    'JetBrains Mono', ui-monospace, monospace;
+    --blurple:      #3066BE;
+    --blurple-700:  #22488a;
+    --crimson:      #D7263D;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: #000;
+    color: #fff;
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  .now-bg {
+    position: relative;
+    min-height: 100vh;
+    overflow: hidden;
+    background:
+      radial-gradient(50% 45% at 92% 4%, rgba(48,102,190,0.30), transparent 70%),
+      radial-gradient(140% 120% at 78% -6%, #0d1050 0%, #04051c 45%, #000 100%);
+  }
+
+  .now-wrap {
+    position: relative;
+    z-index: 1;
+    max-width: 860px;
+    margin: 0 auto;
+    padding: clamp(64px, 12vh, 150px) 24px clamp(72px, 10vh, 120px);
+  }
+
+  /* ---- Header ---- */
+  .now-eyebrow {
+    display: inline-block;
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(13px, 2.4vw, 16px);
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--blurple);
+    margin: 0;
+    transform: rotate(-2deg);
+  }
+  .now-updated {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    letter-spacing: 0.04em;
+    color: rgba(255,255,255,0.42);
+    margin: 10px 0 0;
+  }
+  .now-h1 {
+    font-family: var(--font-display);
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: -0.03em;
+    line-height: 0.98;
+    color: #fff;
+    font-size: clamp(34px, 8vw, 76px);
+    margin: 18px 0 0;
+    max-width: 15ch;
+  }
+  .now-h1 .accent { color: var(--blurple); }
+  .now-lede {
+    font-family: var(--font-body);
+    font-weight: 500;
+    font-size: clamp(17px, 2.4vw, 21px);
+    line-height: 1.6;
+    color: rgba(255,255,255,0.7);
+    max-width: 54ch;
+    margin: 26px 0 0;
+  }
+
+  /* ---- Threads ---- */
+  .now-threads {
+    margin: clamp(44px, 7vh, 72px) 0 0;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+  }
+  .thread {
+    position: relative;
+    padding: 4px 0 4px 22px;
+    border-left: 3px solid rgba(48,102,190,0.55);
+  }
+  .thread-label {
+    font-family: var(--font-mono);
+    font-weight: 600;
+    font-size: 12px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--blurple);
+    margin: 0;
+  }
+  .thread-title {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(20px, 3.6vw, 28px);
+    line-height: 1.15;
+    color: #fff;
+    margin: 8px 0 0;
+  }
+  .thread-body {
+    font-family: var(--font-body);
+    font-size: clamp(15px, 2.1vw, 17px);
+    line-height: 1.6;
+    color: rgba(255,255,255,0.64);
+    max-width: 56ch;
+    margin: 8px 0 0;
+  }
+  .thread a { color: #fff; text-decoration: none; border-bottom: 1px solid rgba(255,255,255,0.35); }
+  .thread a:hover { border-color: var(--blurple); color: var(--blurple); }
+
+  /* ---- Footer / links ---- */
+  .now-foot {
+    margin: clamp(52px, 8vh, 84px) 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px 28px;
+    align-items: center;
+  }
+  .now-link {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 15px;
+    letter-spacing: 0.01em;
+    color: rgba(255,255,255,0.72);
+    text-decoration: none;
+    border-bottom: 2px solid rgba(255,255,255,0.28);
+    padding-bottom: 2px;
+    transition: color 160ms ease, border-color 160ms ease;
+  }
+  .now-link:hover { color: var(--blurple); border-color: var(--blurple); }
+  .now-sign {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 14px;
+    color: rgba(255,255,255,0.4);
+    margin: 34px 0 0;
+    transform: rotate(-1deg);
+  }
+
+  /* what-is-a-now-page note */
+  .now-note {
+    font-family: var(--font-body);
+    font-size: 13px;
+    line-height: 1.6;
+    color: rgba(255,255,255,0.34);
+    margin: 26px 0 0;
+    max-width: 52ch;
+  }
+  .now-note a { color: rgba(255,255,255,0.5); }
+</style>
+</head>
+<body>
+  <main class="now-bg">
+    <div class="now-wrap">
+
+      <!-- EDIT ME: update the date whenever you refresh this page -->
+      <p class="now-eyebrow">Right now</p>
+      <p class="now-updated">Last updated July 2026 &middot; Chicago, IL</p>
+
+      <h1 class="now-h1">Two bets at once: an MBA and an <span class="accent">AI-native</span> career.</h1>
+      <p class="now-lede">I'm getting my MBA at Kellogg while leading predictive intelligence at Guthrie AI. Learning the playbook and rewriting it in the same breath, early, on purpose.</p>
+
+      <div class="now-threads">
+
+        <!-- WORK -->
+        <div class="thread">
+          <p class="thread-label">Work</p>
+          <h2 class="thread-title">Lead, Predictive Intelligence @ Guthrie AI</h2>
+          <p class="thread-body">Building pricing that actually knows the market so subcontractors win more bids. My first fully AI-native chapter, at an AI-native estimating platform.</p>
+        </div>
+
+        <!-- SCHOOL -->
+        <div class="thread">
+          <p class="thread-label">School</p>
+          <h2 class="thread-title">MBA candidate @ Kellogg, Northwestern</h2>
+          <p class="thread-body">Deep in the summer term. Sharpening the strategy, finance, and leadership muscle to match the technical bets I'm making at work.</p>
+        </div>
+
+        <!-- BUILDING -->
+        <div class="thread">
+          <p class="thread-label">Building</p>
+          <h2 class="thread-title">This corner of the internet</h2>
+          <p class="thread-body"><a href="/">iamdragonc.com</a> — a scroll-driven, deliberately over-engineered home page. Because a résumé shouldn't be the most interesting thing about you.</p>
+        </div>
+
+      </div>
+
+      <div class="now-foot">
+        <a class="now-link" href="/">&larr; Back home</a>
+        <a class="now-link" href="https://www.linkedin.com/in/dragonchan/" target="_blank" rel="noopener">LinkedIn</a>
+      </div>
+
+      <p class="now-sign">You were early. Don't forget it. 🐉</p>
+
+      <p class="now-note">This is a <a href="https://nownownow.com/about" target="_blank" rel="noopener">now page</a>, a snapshot of what I'm focused on at this point in my life. If we've met and it's been a while, this is the honest catch-up.</p>
+
+    </div>
+  </main>
+</body>
+</html>
