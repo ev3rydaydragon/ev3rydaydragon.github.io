@@ -240,7 +240,7 @@ a:hover { text-decoration: underline; }
 ::selection { background: var(--ed-blurple); color: #fff; }
 
 html, body { margin: 0; background: #000; height: 100%; }
-    html { scroll-snap-type: y mandatory; }
+    html { scroll-snap-type: y proximity; }
     a { color: var(--color-primary); }
     a:hover { color: var(--color-primary-hover); }
     ::selection { background: var(--ed-blurple); color: #fff; }
