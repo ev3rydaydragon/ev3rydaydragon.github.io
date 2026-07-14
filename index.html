@@ -49,9 +49,11 @@
   100% { color: transparent; text-shadow: 0 -50px 80px transparent; transform: scale(1.1) translateY(-15px); opacity: 0; filter: blur(8px); }
 }
 
-/* Allow the graffiti section to remain full height on mobile, but scale it down slightly so it has breathing room and doesn't clip */
+/* On portrait phones, the landscape graffiti ("I'M DRAGON") gets cropped to
+   "I'M DRAG" by background-size:cover. Match the section height to the image
+   aspect ratio (1376x768) so the whole word shows with no letterbox bars. */
 @media (max-width: 767px) {
-  .ed-graffiti { background-size: 90% auto !important; }
+  .ed-graffiti { height: 55.8vw !important; background-size: cover !important; }
 }
 
 /* Cement headline: 2 lines on desktop, 3 clean lines on phones so "IS" doesn't orphan. */
@@ -388,7 +390,7 @@
     </sc-for>
 
     <!-- GRAFFITI BLOCK -->
-    <section class="ed-graffiti" style="position:relative; width:100%; height:100vh; scroll-snap-align:start; background-color:#0a0b1a; background-image:url('assets/graffiti_gritty.jpg'); background-size:contain; background-repeat:no-repeat; background-position:center; display:flex; align-items:center; justify-content:center;">
+    <section class="ed-graffiti" style="position:relative; width:100%; height:100vh; scroll-snap-align:start; background-color:#0a0b1a; background-image:url('assets/graffiti_gritty.jpg'); background-size:cover; background-repeat:no-repeat; background-position:center; display:flex; align-items:center; justify-content:center;">
     </section>
 
     <!-- CTA BLOCK -->
