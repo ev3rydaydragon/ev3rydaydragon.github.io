@@ -312,6 +312,52 @@
   .thread a { color: #fff; text-decoration: none; border-bottom: 1px solid rgba(255,255,255,0.35); }
   .thread a:hover { border-color: var(--blurple); color: var(--blurple); }
 
+  /* ---- Pencil trade widget ---- */
+  .trade-box {
+    margin: 16px 0 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    max-width: 56ch;
+  }
+  .trade-input {
+    flex: 1 1 auto;
+    min-width: 0;
+    font-family: var(--font-body);
+    font-size: 15px;
+    color: rgba(255,255,255,0.92);
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.16);
+    border-radius: 999px;
+    padding: 10px 16px;
+    outline: none;
+    transition: border-color 160ms ease, background 160ms ease;
+  }
+  .trade-input::placeholder { color: rgba(255,255,255,0.32); }
+  .trade-input:focus { border-color: var(--blurple); background: rgba(255,255,255,0.08); }
+  .trade-send {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: none;
+    background: var(--blurple);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 140ms ease, box-shadow 140ms ease, background 180ms ease;
+    flex: 0 0 auto;
+  }
+  .trade-send:hover { box-shadow: 0 0 16px rgba(48,102,190,0.6); }
+  .trade-send.pressed { transform: scale(0.88); }
+  .trade-note {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: rgba(255,255,255,0.34);
+    margin: 8px 0 0;
+  }
+
   /* ---- Footer / links ---- */
   .now-foot {
     margin: clamp(52px, 8vh, 84px) 0 0;
@@ -397,22 +443,32 @@
       <p class="now-updated">Last updated July 2026 &middot; Chicago, IL</p>
 
       <h1 class="now-h1">ZERO<br><span class="accent">IDLE CYCLES.</span></h1>
-      <p class="now-lede">I'm scraping the theory from Kellogg and wiring it directly into Guthrie AI. Building fast. Breaking faster.</p>
+      <p class="now-lede">I'm taking the theory from Kellogg and wiring it directly into Guthrie AI.<br>Building fast. Breaking faster.</p>
 
       <div class="now-threads">
 
         <!-- WORK -->
         <div class="thread">
           <p class="thread-label">Work</p>
-          <h2 class="thread-title">Lead, Predictive Intelligence @ Guthrie AI</h2>
-          <p class="thread-body">We aren't just predicting the market. We're cementing the outcome. Leading intelligence at an AI-native platform with no safety nets and no legacy code. Just raw velocity.</p>
+          <h2 class="thread-title">Head of Predictive Intelligence @ Guthrie AI</h2>
+          <p class="thread-body">Empowering subcontractors to spend less time bidding and more time building. We're building an AI-native platform designed to strip out the administrative friction so the real builders can get to work.</p>
         </div>
 
         <!-- SCHOOL -->
         <div class="thread">
           <p class="thread-label">School</p>
           <h2 class="thread-title">MBA candidate @ Kellogg, Northwestern</h2>
-          <p class="thread-body">Deep in the trenches. Sharpening the strategy, finance, and leadership muscle so I can steer the boat when the water gets rough.</p>
+          <p class="thread-body">Dissecting how incentives drive outcomes in Strategy &amp; Orgs. Testing pure execution in Entrepreneurial Selling. I prefer to build in the open. Right now, I'm holding one Kellogg pencil. What's your trade?</p>
+
+          <div class="trade-box">
+            <input type="text" class="trade-input" id="tradeInput" aria-label="What will you trade for the pencil?" autocomplete="off">
+            <button class="trade-send" id="tradeSend" type="button" aria-label="Send trade offer">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M12 5v14M5 12l7 7 7-7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+          </div>
+          <p class="trade-note">Opens your email client with an offer for the pencil.</p>
         </div>
 
         <!-- BUILDING -->
@@ -564,6 +620,77 @@
   }
 
   play();
+})();
+
+// ---- Pencil trade widget ----
+(function () {
+  const input = document.getElementById('tradeInput');
+  const sendBtn = document.getElementById('tradeSend');
+  if (!input || !sendBtn) return;
+
+  const OFFERS = [
+    'my soul',
+    'a used 1990 kia soul',
+    "my ex's Spotify Wrapped",
+    'three months of my sleep schedule',
+    'an unopened bag of gas station sushi',
+    'my little brother (negotiable)',
+    'a slightly haunted stapler',
+    'the last slice of pizza (it\'s cold now)',
+    'one (1) emotional support hoodie',
+    'my LinkedIn endorsements for "synergy"'
+  ];
+
+  const reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+
+  async function cyclePlaceholders() {
+    if (reduced) {
+      input.placeholder = OFFERS[0];
+      return;
+    }
+    let i = 0;
+    // Native placeholder text is automatically hidden once the input has a
+    // real value, so this can just keep animating in the background.
+    while (true) {
+      const phrase = OFFERS[i % OFFERS.length];
+      for (let c = 1; c <= phrase.length; c++) {
+        input.placeholder = phrase.slice(0, c);
+        await wait(38 + Math.random() * 30);
+      }
+      await wait(1100);
+      for (let c = phrase.length; c >= 0; c--) {
+        input.placeholder = phrase.slice(0, c);
+        await wait(20 + Math.random() * 18);
+      }
+      await wait(250);
+      i++;
+    }
+  }
+  cyclePlaceholders();
+
+  // Built at runtime instead of sitting in the markup as plain text, so a
+  // basic scrape of the page source doesn't turn up the address directly.
+  const EMAIL = String.fromCharCode(
+    112, 101, 110, 99, 105, 108, 116, 114, 97, 100, 101, 64,
+    109, 46, 105, 97, 109, 100, 114, 97, 103, 111, 110, 99, 46, 99, 111, 109
+  );
+
+  function sendTrade() {
+    const trade = input.value.trim() || 'absolutely nothing, but incredible vibes';
+    const subject = 'THE PENCIL. NOW.';
+    const body = "I'm offering " + trade + " for your Kellogg pencil. This isn't a negotiation, it's a final offer. Take it before I come to my senses.";
+    window.location.href = 'mailto:' + EMAIL + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+  }
+
+  sendBtn.addEventListener('click', () => {
+    sendBtn.classList.add('pressed');
+    setTimeout(() => sendBtn.classList.remove('pressed'), 120);
+    sendTrade();
+  });
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') sendTrade();
+  });
 })();
 </script>
 </body>
