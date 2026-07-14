@@ -399,6 +399,9 @@
     return o;
   }
   function compileAttr(raw) {
+    // Cloudflare Rocket Loader prefixes inline event attributes with a guard,
+    // which breaks whole-value {{ … }} binding; strip it before compiling.
+    raw = raw.replace(/^\s*if\s*\(!window\.__cfRLUnblockHandlers\)\s*return\s*false;\s*/, "");
     const whole = raw.match(/^\s*\{\{([\s\S]+?)\}\}\s*$/);
     if (whole) {
       const path = whole[1];
