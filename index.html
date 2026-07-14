@@ -54,6 +54,13 @@
 @media (max-width: 767px) {
   .ed-graffiti { background-size: contain !important; }
 }
+
+/* Cement headline: 2 lines on desktop, 3 clean lines on phones so "IS" doesn't orphan. */
+.ed-cement-narrow { display: none; }
+@media (max-width: 767px) {
+  .ed-cement-wide { display: none; }
+  .ed-cement-narrow { display: inline; }
+}
 </style>
 <link rel="stylesheet" href="assets/style.css?v=20260713">
 <script defer data-cfasync="false" src="assets/bundle.js?v=20260714"></script>
@@ -233,7 +240,7 @@
     <!-- CEMENT TRUCK SCENE (Beat 11) -->
     <section style="{{ cementSectionStyle }}" ref="{{ cementSectionRef }}">
       <div style="{{ cementStickyStyle }}" ref="{{ cementStickyRef }}">
-        <p ref="{{ cementTopLeftRef }}" style="{{ cementTopLeftStyle }}">WHILE EVERYONE ELSE IS<br>DEBATING THE RISK</p>
+        <p ref="{{ cementTopLeftRef }}" style="{{ cementTopLeftStyle }}"><span class="ed-cement-wide">WHILE EVERYONE ELSE IS<br>DEBATING THE RISK</span><span class="ed-cement-narrow">WHILE EVERYONE ELSE<br>IS DEBATING<br>THE RISK</span></p>
         <p ref="{{ cementMidRightRef }}" style="{{ cementMidRightStyle }}">I AM CEMENTING<br>THE OUTCOME.</p>
         
         <div ref="{{ truckContainerRef }}" style="{{ truckContainerStyle }}">
