@@ -352,6 +352,46 @@
   .trade-send:hover { box-shadow: 0 0 16px rgba(48,102,190,0.6); }
   .trade-send.pressed { transform: scale(0.88); }
 
+  /* ---- Coaster progress tracker ---- */
+  .coaster-tracker { margin: 20px 0 0; max-width: 56ch; }
+  .coaster-stat { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  .coaster-count {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: clamp(28px, 5vw, 40px);
+    letter-spacing: -0.02em;
+    color: #fff;
+  }
+  .coaster-goal {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.5);
+  }
+  .coaster-track { width: 100%; height: auto; display: block; overflow: visible; margin: 10px 0 0; }
+  .coaster-track-base { fill: none; stroke: rgba(255,255,255,0.14); stroke-width: 4; stroke-linecap: round; }
+  .coaster-track-fill {
+    fill: none;
+    stroke: var(--blurple);
+    stroke-width: 4;
+    stroke-linecap: round;
+    filter: drop-shadow(0 0 5px rgba(48,102,190,0.65));
+    transition: stroke-dashoffset 1.1s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .coaster-loop circle { fill: none; stroke: rgba(255,255,255,0.14); stroke-width: 4; }
+  .coaster-cart {
+    opacity: 0;
+    transition: opacity 700ms ease 650ms, transform 1.1s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .coaster-cart circle { fill: var(--crimson); filter: drop-shadow(0 0 6px rgba(215,38,61,0.75)); }
+  .coaster-caption {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: rgba(255,255,255,0.34);
+    margin: 10px 0 0;
+  }
+
   /* ---- Footer / links ---- */
   .now-foot {
     margin: clamp(52px, 8vh, 84px) 0 0;
@@ -390,6 +430,7 @@
     .chat-swirl { animation: none; }
     .send-btn.armed { animation: none; }
     .chat-greeting, .chat-shell { opacity: 1; transform: none; transition: none; }
+    .coaster-track-fill, .coaster-cart { transition: none; }
   }
 </style>
 </head>
@@ -469,6 +510,20 @@
           <p class="thread-label">Throughput</p>
           <h2 class="thread-title">Chasing the Drop</h2>
           <p class="thread-body">I like things that move fast and operate at scale. The active pursuit right now: touch down at every single Six Flags in North America and cross the 1,000-inversion threshold before the year ends. Stripping away the friction. No drag, all Dragon.</p>
+
+          <!-- EDIT ME: bump these two numbers as the count moves -->
+          <div class="coaster-tracker" id="coasterTracker" data-done="333" data-goal="1000" role="img" aria-label="Coaster progress: 333 of 1000 inversions this year">
+            <div class="coaster-stat">
+              <span class="coaster-count">333</span><span class="coaster-goal">/ 1,000 inversions</span>
+            </div>
+            <svg class="coaster-track" viewBox="0 0 600 110" preserveAspectRatio="none" aria-hidden="true">
+              <path class="coaster-track-base" d="M4,72 C44,22 84,22 124,57 S204,92 244,57 S324,22 364,57 S444,92 484,57 S564,22 596,42" />
+              <path class="coaster-track-fill" id="coasterFill" d="M4,72 C44,22 84,22 124,57 S204,92 244,57 S324,22 364,57 S444,92 484,57 S564,22 596,42" />
+              <g class="coaster-loop" transform="translate(566,40)"><circle r="15" /></g>
+              <g class="coaster-cart" id="coasterCart"><circle r="6" /></g>
+            </svg>
+            <p class="coaster-caption" id="coasterCaption"></p>
+          </div>
         </div>
 
       </div>
@@ -684,6 +739,45 @@
   input.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') sendTrade();
   });
+})();
+
+// ---- Coaster progress tracker ----
+(function () {
+  const tracker = document.getElementById('coasterTracker');
+  const base = tracker && tracker.querySelector('.coaster-track-base');
+  const fill = document.getElementById('coasterFill');
+  const cart = document.getElementById('coasterCart');
+  const count = tracker && tracker.querySelector('.coaster-count');
+  const caption = document.getElementById('coasterCaption');
+  if (!tracker || !base || !fill || !cart) return;
+
+  const done = Number(tracker.dataset.done);
+  const goal = Number(tracker.dataset.goal);
+  const progress = Math.min(1, done / goal);
+
+  if (count) count.textContent = done.toLocaleString();
+  if (caption) {
+    caption.textContent = Math.round(progress * 100) + '% to the ' + goal.toLocaleString() + '-inversion threshold · ' + (goal - done).toLocaleString() + ' to go';
+  }
+
+  const total = fill.getTotalLength();
+  const point = base.getPointAtLength(total * progress);
+  cart.style.transform = 'translate(' + point.x + 'px, ' + point.y + 'px)';
+
+  const reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduced) {
+    fill.style.strokeDasharray = String(total);
+    fill.style.strokeDashoffset = String(total * (1 - progress));
+    cart.style.opacity = '1';
+    return;
+  }
+
+  fill.style.strokeDasharray = String(total);
+  fill.style.strokeDashoffset = String(total);
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    fill.style.strokeDashoffset = String(total * (1 - progress));
+    cart.style.opacity = '1';
+  }));
 })();
 </script>
 </body>
