@@ -520,6 +520,10 @@ class Component extends DCLogic {
     }, { threshold: [0.55] });
     this.beatEls.forEach((el) => el && this.io.observe(el));
 
+    // The hero beat is visible the instant the page loads, so its typing
+    // intro shouldn't wait for a scroll-triggered intersection.
+    this.onActivate(0);
+
     if (!this.reducedMotion) {
       this.onMove = (e) => {
         if (this.dotEl) {
