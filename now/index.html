@@ -71,25 +71,49 @@
   }
   .chat-greeting h1 {
     font-family: var(--font-display);
-    font-weight: 700;
-    font-size: clamp(20px, 4vw, 30px);
-    letter-spacing: -0.01em;
-    color: rgba(255,255,255,0.92);
+    font-weight: 900;
+    font-size: clamp(22px, 4.6vw, 36px);
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
+    color: #fff;
     margin: 0;
+    transform: rotate(-1.5deg);
   }
+  .chat-greeting h1 .accent { color: var(--blurple); }
 
-  .chat-box {
+  /* Swirling portal border, borrowed from the front-door portals */
+  .chat-shell {
+    position: relative;
     width: min(640px, 100%);
+    border-radius: 18px;
+    overflow: hidden;
+    padding: 2px;
+    transform: rotate(-0.8deg);
+    opacity: 0;
+    transition: opacity 600ms ease 150ms, transform 600ms ease 150ms;
+  }
+  .chat-shell.on { opacity: 1; }
+  .chat-swirl {
+    position: absolute;
+    left: 50%; top: 50%;
+    width: 1500px; height: 1500px;
+    margin: -750px 0 0 -750px;
+    background: conic-gradient(from 0deg, var(--blurple), var(--crimson), #000, #fff, var(--blurple));
+    animation: ed-swirl 5s linear infinite;
+    opacity: 0.7;
+  }
+  @keyframes ed-swirl {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  .chat-box {
+    position: relative;
+    z-index: 1;
     background: #0d0e14;
-    border: 1px solid rgba(255,255,255,0.14);
     border-radius: 16px;
     padding: 18px 18px 14px;
     box-shadow: 0 18px 60px rgba(0,0,0,0.7);
-    opacity: 0;
-    transform: translateY(12px);
-    transition: opacity 600ms ease 150ms, transform 600ms ease 150ms;
   }
-  .chat-box.on { opacity: 1; transform: translateY(0); }
 
   .chat-input {
     font-family: var(--font-body);
@@ -103,12 +127,21 @@
   .chat-caret {
     display: inline-block;
     width: 1px;
-    border-left: 2px solid var(--blurple);
+    border-left: 2px solid var(--crimson);
     height: 1.1em;
     vertical-align: text-bottom;
     animation: caret-blink 1s steps(1) infinite;
   }
   @keyframes caret-blink { 50% { opacity: 0; } }
+
+  /* Door-batter jitter on every mode kick */
+  @keyframes mode-kick {
+    0% { transform: rotate(0deg) scale(1); }
+    30% { transform: rotate(-3deg) scale(1.06); }
+    60% { transform: rotate(2.4deg) scale(0.97); }
+    100% { transform: rotate(0deg) scale(1); }
+  }
+  .mode-toggle.kick { animation: mode-kick 320ms ease; }
 
   .chat-controls {
     display: flex;
@@ -157,18 +190,26 @@
   }
   .send-btn:hover { box-shadow: 0 0 16px rgba(48,102,190,0.6); }
   .send-btn.pressed { transform: scale(0.88); }
-  .send-btn.armed { background: var(--crimson); box-shadow: 0 0 18px rgba(215,38,61,0.6); }
-
-  .chat-hint {
-    margin-top: 22px;
-    font-family: var(--font-mono);
-    font-size: 12px;
-    letter-spacing: 0.06em;
-    color: rgba(255,255,255,0.28);
-    opacity: 0;
-    transition: opacity 600ms ease 400ms;
+  .send-btn.armed {
+    background: var(--crimson);
+    box-shadow: 0 0 18px rgba(215,38,61,0.6);
+    animation: send-throb 900ms ease-in-out infinite;
   }
-  .chat-hint.on { opacity: 1; }
+  @keyframes send-throb {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.12); }
+  }
+
+  /* Full-send camera flash */
+  .send-flash {
+    position: fixed;
+    inset: 0;
+    z-index: 40;
+    pointer-events: none;
+    background: #fff;
+    opacity: 0;
+    transition: opacity 320ms ease-out;
+  }
 
   /* Ghost cursor */
   .ghost-cursor {
@@ -316,7 +357,9 @@
   @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
     .ghost-cursor { display: none; }
-    .chat-greeting, .chat-box, .chat-hint { opacity: 1; transform: none; transition: none; }
+    .chat-swirl { animation: none; }
+    .send-btn.armed { animation: none; }
+    .chat-greeting, .chat-shell { opacity: 1; transform: none; transition: none; }
   }
 </style>
 </head>
@@ -326,24 +369,27 @@
   <section class="chat-hero" id="chat-hero">
     <div class="chat-greeting" id="chatGreeting">
       <span class="chat-spark" aria-hidden="true">&#10035;</span>
-      <h1>Evening. What do you want to know?</h1>
+      <h1>The door's down. <span class="accent">Ask away.</span></h1>
     </div>
 
-    <div class="chat-box" id="chatBox">
-      <div class="chat-input" id="chatInput" aria-label="Message"><span class="placeholder" id="chatPlaceholder">Ask about Dragon&hellip;</span><span id="chatTyped"></span><span class="chat-caret" id="chatCaret" hidden></span></div>
-      <div class="chat-controls">
-        <button class="mode-toggle" id="modeToggle" type="button" aria-label="Permission mode">
-          <span class="mode-glyph">&#8679;&#8677;</span><span id="modeText">manual</span>
-        </button>
-        <button class="send-btn" id="sendBtn" type="button" aria-label="Send">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path d="M12 19V5M5 12l7-7 7 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </button>
+    <div class="chat-shell" id="chatBox">
+      <div class="chat-swirl" aria-hidden="true"></div>
+      <div class="chat-box">
+        <div class="chat-input" id="chatInput" aria-label="Message"><span class="placeholder" id="chatPlaceholder">Type something reckless&hellip;</span><span id="chatTyped"></span><span class="chat-caret" id="chatCaret" hidden></span></div>
+        <div class="chat-controls">
+          <button class="mode-toggle" id="modeToggle" type="button" aria-label="Permission mode">
+            <span class="mode-glyph">&#8679;&#8677;</span><span id="modeText">manual</span>
+          </button>
+          <button class="send-btn" id="sendBtn" type="button" aria-label="Send">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M12 19V5M5 12l7-7 7 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+        </div>
       </div>
     </div>
 
-    <p class="chat-hint" id="chatHint">or just scroll &darr;</p>
+    <div class="send-flash" id="sendFlash" aria-hidden="true"></div>
 
     <div class="ghost-cursor" id="ghostCursor" aria-hidden="true">
       <svg width="22" height="22" viewBox="0 0 24 24">
@@ -399,12 +445,12 @@
 
 <script>
 (function () {
-  const QUESTION = 'What is dragon up to now?';
+  const QUESTION = 'What is Dragon up to now?';
   const MODES = ['manual', 'accept edits', 'plan mode', 'full send'];
 
   const greeting = document.getElementById('chatGreeting');
   const box = document.getElementById('chatBox');
-  const hint = document.getElementById('chatHint');
+  const flash = document.getElementById('sendFlash');
   const placeholder = document.getElementById('chatPlaceholder');
   const typed = document.getElementById('chatTyped');
   const caret = document.getElementById('chatCaret');
@@ -424,11 +470,24 @@
     modeText.textContent = MODES[modeIdx];
     modeToggle.classList.toggle('full-send', MODES[modeIdx] === 'full send');
     sendBtn.classList.toggle('armed', MODES[modeIdx] === 'full send');
+    if (!reduced) {
+      modeToggle.classList.remove('kick');
+      void modeToggle.offsetWidth; // restart the jitter animation
+      modeToggle.classList.add('kick');
+    }
   }
 
   function goToContent() {
     if (sent) return;
     sent = true;
+    if (!reduced) {
+      flash.style.transition = 'none';
+      flash.style.opacity = '0.9';
+      requestAnimationFrame(() => {
+        flash.style.transition = 'opacity 320ms ease-out';
+        flash.style.opacity = '0';
+      });
+    }
     document.getElementById('now-content').scrollIntoView({ behavior: reduced ? 'auto' : 'smooth' });
   }
 
@@ -454,7 +513,6 @@
     await wait(300);
     greeting.classList.add('on');
     box.classList.add('on');
-    hint.classList.add('on');
 
     if (reduced) {
       placeholder.hidden = true;
