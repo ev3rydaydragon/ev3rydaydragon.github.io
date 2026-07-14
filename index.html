@@ -543,7 +543,7 @@ class Component extends DCLogic {
       };
       window.addEventListener('mousemove', this.onMove, { passive: true });
 
-      this.onScroll = () => {
+      this.updateScrollEffects = () => {
         if (this.circleGroupEl && this.circleSvgEl) {
           const rect = this.circleGroupEl.getBoundingClientRect();
           const startScroll = window.innerHeight; // Offset for sticky 100vh
@@ -558,6 +558,10 @@ class Component extends DCLogic {
           } else {
             angle = -221 + ((cProg - 0.5) * 2) * -95;
           }
+          // Read the rect before writing the new rotation — a pure rotation
+          // around the default center origin doesn't move the bounding-box
+          // center, so this stays accurate while avoiding a forced reflow.
+          const cRect = this.circleSvgEl.getBoundingClientRect();
           this.circleSvgEl.style.transform = `rotate(${angle}deg)`;
           
           let mProg = Math.min(1, Math.max(0, scrolledVh - 2));
@@ -592,7 +596,6 @@ class Component extends DCLogic {
           if (this.mapHereTextEl) this.mapHereTextEl.setAttribute('y', 25);
           
           if (this.mapThereGroupEl && this.circleSvgEl) {
-             const cRect = this.circleSvgEl.getBoundingClientRect();
              const startX = cRect.left + cRect.width / 2;
              const startY = cRect.top + cRect.height / 2;
              const currentX = startX + (endX - startX) * mProg;
@@ -822,8 +825,19 @@ class Component extends DCLogic {
           }
         }
       };
+      // Native scroll events can fire many times per frame; batching the
+      // (getBoundingClientRect-heavy) update into one rAF per frame keeps
+      // the cement/avalanche scenes from janking under fast scrolling.
+      this.scrollRaf = null;
+      this.onScroll = () => {
+        if (this.scrollRaf) return;
+        this.scrollRaf = requestAnimationFrame(() => {
+          this.scrollRaf = null;
+          this.updateScrollEffects();
+        });
+      };
       window.addEventListener('scroll', this.onScroll, { passive: true });
-      this.onScroll();
+      this.updateScrollEffects();
     }
   }
 
@@ -833,6 +847,7 @@ class Component extends DCLogic {
     if (this.typeTimer2) clearInterval(this.typeTimer2);
     if (this.onMove) window.removeEventListener('mousemove', this.onMove);
     if (this.onScroll) window.removeEventListener('scroll', this.onScroll);
+    if (this.scrollRaf) cancelAnimationFrame(this.scrollRaf);
     if (this.goatTimer) clearTimeout(this.goatTimer);
   }
 
