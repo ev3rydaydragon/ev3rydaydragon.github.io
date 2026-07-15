@@ -1,10 +1,11 @@
 const test = require('node:test');
 const assert = require('node:assert');
-const fs = require('fs');
-const vm = require('vm');
+const fs = require('node:fs');
+const path = require('node:path');
+const vm = require('node:vm');
 const { JSDOM } = require('jsdom');
 
-const code = fs.readFileSync('support.js', 'utf8');
+const code = fs.readFileSync(path.join(__dirname, 'support.js'), 'utf8');
 const dom = new JSDOM(`<!DOCTYPE html><p>Hello world</p>`);
 
 const moduleObj = { exports: {} };
@@ -18,20 +19,8 @@ const context = vm.createContext({
   module: moduleObj
 });
 
-// Since the file is an IIFE and does not natively export things, we modify the string slightly
-// to extract the functions without relying on fragile regex for the exact ending
-const scriptContent = `
-  let extracted = {};
-  ${code}
-
-  if (typeof parseDcDocument !== 'undefined') {
-    extracted.parseDcDocument = parseDcDocument;
-    extracted.parseDataProps = parseDataProps;
-  }
-
-  // Also try to grab them if they were declared inside the IIFE scope and we intercept them
-  // We'll replace the closing IIFE parenthesis to grab the functions
-`;
+// support.js is an IIFE, so we patch the source before evaluation to expose
+// parseDcDocument/parseDataProps via CommonJS exports.
 
 // A more robust way to extract the functions from the IIFE:
 // We replace the final IIFE closure to return the functions we want.

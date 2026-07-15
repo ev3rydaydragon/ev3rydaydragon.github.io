@@ -1768,8 +1768,4 @@
     console.error("[dc] failed to load React or boot:", err);
     throw err;
   });
-
-  if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { parseDcDocument, parseDataProps };
-  }
 })();
