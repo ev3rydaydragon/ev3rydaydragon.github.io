@@ -703,12 +703,37 @@
       return wrapper ? h("div", wrapper, h(C, props)) : h(C, props);
     };
   }
+  var VOID_ELEMENTS = new Set([
+    "area", "base", "br", "col", "embed", "hr", "img", "input",
+    "link", "meta", "source", "track", "wbr"
+  ]);
+
   function contentKey(el) {
-    const clone = el.cloneNode(true);
-    for (const d of clone.querySelectorAll("*")) {
-      while (d.attributes.length) d.removeAttribute(d.attributes[0].name);
+    let s = "";
+    function walk(node) {
+      for (let child = node.firstChild; child; child = child.nextSibling) {
+        if (child.nodeType === 1) {
+          s += "<" + child.localName + ">";
+          if (!VOID_ELEMENTS.has(child.localName)) {
+            walk(child);
+            s += "</" + child.localName + ">";
+          }
+        } else if (child.nodeType === 3) {
+          const val = child.nodeValue;
+          for (let i = 0; i < val.length; i++) {
+            const c = val[i];
+            if (c === '&') s += '&amp;';
+            else if (c === '<') s += '&lt;';
+            else if (c === '>') s += '&gt;';
+            else if (c === '\xA0') s += '&nbsp;';
+            else s += c;
+          }
+        } else if (child.nodeType === 8) {
+          s += "<!--" + child.nodeValue + "-->";
+        }
+      }
     }
-    const s = clone.innerHTML;
+    walk(el);
     let h2 = 5381;
     for (let i = 0; i < s.length; i++) h2 = (h2 << 5) + h2 + s.charCodeAt(i) | 0;
     return s.length + "." + (h2 >>> 0).toString(36);
