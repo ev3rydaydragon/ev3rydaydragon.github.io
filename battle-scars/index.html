@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Look closer</title>
+<meta name="description" content="Everywhere Dragon Chan has touched down, mapped out like a board game.">
+
+<link rel="canonical" href="https://iamdragonc.com/battle-scars/">
+<meta property="og:title" content="Dragon Chan — Battle Scars">
+<meta property="og:description" content="Everywhere I've been, mapped out like a board game.">
+<meta property="og:url" content="https://iamdragonc.com/battle-scars/">
+<meta property="og:type" content="website">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Mulish:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --font-display: 'Montserrat', 'Gotham', system-ui, sans-serif;
+    --font-body:    'Mulish', 'Avenir', system-ui, sans-serif;
+    --font-mono:    'JetBrains Mono', ui-monospace, monospace;
+    --blurple:      #3066BE;
+    --crimson:      #D7263D;
+    --moss:         #6E9075;
+    --wisteria:     #CCC9DC;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: #000;
+    color: #fff;
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  .scars-bg {
+    position: relative;
+    min-height: 100vh;
+    overflow: hidden;
+    background:
+      radial-gradient(50% 45% at 8% 4%, rgba(48,102,190,0.28), transparent 70%),
+      radial-gradient(140% 120% at 20% -6%, #0d1050 0%, #04051c 45%, #000 100%);
+  }
+  .scars-wrap {
+    position: relative;
+    z-index: 1;
+    max-width: 980px;
+    margin: 0 auto;
+    padding: clamp(64px, 12vh, 120px) 24px clamp(72px, 10vh, 120px);
+  }
+
+  .scars-eyebrow {
+    display: inline-block;
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(13px, 2.4vw, 16px);
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--blurple);
+    margin: 0;
+    transform: rotate(-2deg);
+  }
+  .scars-h1 {
+    font-family: var(--font-display);
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: -0.03em;
+    line-height: 0.98;
+    color: #fff;
+    font-size: clamp(32px, 7vw, 64px);
+    margin: 16px 0 0;
+  }
+  .scars-h1 .accent { color: var(--crimson); }
+  .scars-lede {
+    font-family: var(--font-body);
+    font-weight: 500;
+    font-size: clamp(16px, 2.2vw, 19px);
+    line-height: 1.6;
+    color: rgba(255,255,255,0.68);
+    max-width: 58ch;
+    margin: 22px 0 0;
+  }
+
+  /* ---- Board ---- */
+  .board-wrap {
+    margin: clamp(40px, 6vh, 64px) 0 0;
+    border: 2px dashed rgba(255,255,255,0.18);
+    border-radius: 24px;
+    padding: clamp(20px, 3vw, 36px);
+    background: rgba(255,255,255,0.02);
+    display: flex;
+    justify-content: center;
+  }
+  .board-svg { width: 100%; max-width: 480px; height: auto; display: block; overflow: visible; }
+  .board-path {
+    fill: none;
+    stroke: rgba(255,255,255,0.22);
+    stroke-width: 4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 1 14;
+  }
+  .tile-filler { stroke: rgba(0,0,0,0.45); stroke-width: 2; }
+  .tile-start-ring { fill: none; stroke: rgba(255,255,255,0.4); stroke-width: 2; stroke-dasharray: 3 4; }
+  .board-stop circle.tile-named {
+    stroke: rgba(0,0,0,0.5);
+    stroke-width: 3;
+    transition: transform 200ms ease;
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+  .board-stop:hover circle.tile-named { transform: scale(1.14); }
+  .board-stop .tile-label {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 13px;
+    fill: #fff;
+    text-anchor: middle;
+  }
+  .tile-label-small {
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    fill: rgba(255,255,255,0.45);
+    text-anchor: middle;
+  }
+  .board-stop .stop-num {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    text-anchor: middle;
+    dominant-baseline: middle;
+    font-weight: 700;
+  }
+  .board-token { filter: drop-shadow(0 2px 6px rgba(0,0,0,0.6)); }
+
+  .scars-note {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: rgba(255,255,255,0.34);
+    margin: 22px 0 0;
+    text-align: center;
+  }
+
+  .scars-foot {
+    margin: clamp(48px, 8vh, 80px) 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px 28px;
+    align-items: center;
+  }
+  .scars-link {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 15px;
+    color: rgba(255,255,255,0.72);
+    text-decoration: none;
+    border-bottom: 2px solid rgba(255,255,255,0.28);
+    padding-bottom: 2px;
+    transition: color 160ms ease, border-color 160ms ease;
+  }
+  .scars-link:hover { color: var(--blurple); border-color: var(--blurple); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .board-stop circle.tile { transition: none; }
+  }
+</style>
+</head>
+<body>
+
+<main class="scars-bg">
+  <div class="scars-wrap">
+    <p class="scars-eyebrow">Where I've Been</p>
+    <h1 class="scars-h1">BATTLE <span class="accent">SCARS.</span></h1>
+    <p class="scars-lede">Every stop leaves a mark. Here's the board so far &mdash; hover a space for the story. (Stories land soon; this run is placeholder data.)</p>
+
+    <div class="board-wrap">
+      <svg class="board-svg" viewBox="0 0 520 860" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Candyland-style game board mapping cities visited, in serpentine order: San Diego, Philadelphia, New York, Houston, Seattle, St. Louis, Chicago, and Philadelphia again.">
+        <path class="board-path" d="M60,80 L160,80 L260,80 L360,80 L460,80 L460,220 L360,220 L260,220 L160,220 L60,220 L60,360 L160,360 L260,360 L360,360 L460,360 L460,500 L360,500 L260,500 L160,500 L60,500 L60,640 L160,640 L260,640 L360,640 L460,640 L460,780 L360,780 L260,780 L160,780 L60,780" />
+
+        <g class="board-tile board-start">
+          <circle class="tile-start-ring" cx="60" cy="80" r="14" />
+          <text x="60" y="56" class="tile-label-small">START</text>
+        </g>
+        <g class="board-stop">
+          <circle class="tile tile-named" cx="160" cy="80" r="22" fill="#3066BE" />
+          <text class="stop-num" x="160" y="80" fill="#fff">1</text>
+          <text x="160" y="48" class="tile-label">San Diego</text>
+        </g>
+        <circle class="tile-filler" cx="260" cy="80" r="11" fill="#3066BE" />
+        <circle class="tile-filler" cx="360" cy="80" r="11" fill="#D7263D" />
+        <circle class="tile-filler" cx="460" cy="80" r="11" fill="#6E9075" />
+        <g class="board-stop">
+          <circle class="tile tile-named" cx="460" cy="220" r="22" fill="#D7263D" />
+          <text class="stop-num" x="460" y="220" fill="#fff">2</text>
+          <text x="460" y="260" class="tile-label">Philly</text>
+        </g>
+        <circle class="tile-filler" cx="360" cy="220" r="11" fill="#CCC9DC" />
+        <circle class="tile-filler" cx="260" cy="220" r="11" fill="#3066BE" />
+        <circle class="tile-filler" cx="160" cy="220" r="11" fill="#D7263D" />
+        <g class="board-stop">
+          <circle class="tile tile-named" cx="60" cy="220" r="22" fill="#6E9075" />
+          <text class="stop-num" x="60" y="220" fill="#fff">3</text>
+          <text x="60" y="260" class="tile-label">New York</text>
+        </g>
+        <circle class="tile-filler" cx="60" cy="360" r="11" fill="#6E9075" />
+        <circle class="tile-filler" cx="160" cy="360" r="11" fill="#CCC9DC" />
+        <circle class="tile-filler" cx="260" cy="360" r="11" fill="#3066BE" />
+        <g class="board-stop">
+          <circle class="tile tile-named" cx="360" cy="360" r="22" fill="#CCC9DC" />
+          <text class="stop-num" x="360" y="360" fill="#000">4</text>
+          <text x="360" y="328" class="tile-label">Houston</text>
+        </g>
+        <circle class="tile-filler" cx="460" cy="360" r="11" fill="#D7263D" />
+        <circle class="tile-filler" cx="460" cy="500" r="11" fill="#6E9075" />
+        <circle class="tile-filler" cx="360" cy="500" r="11" fill="#CCC9DC" />
+        <g class="board-stop">
+          <circle class="tile tile-named" cx="260" cy="500" r="22" fill="#3066BE" />
+          <text class="stop-num" x="260" y="500" fill="#fff">5</text>
+          <text x="260" y="540" class="tile-label">Seattle</text>
+        </g>
+        <circle class="tile-filler" cx="160" cy="500" r="11" fill="#3066BE" />
+        <circle class="tile-filler" cx="60" cy="500" r="11" fill="#D7263D" />
+        <circle class="tile-filler" cx="60" cy="640" r="11" fill="#6E9075" />
+        <g class="board-stop">
+          <circle class="tile tile-named" cx="160" cy="640" r="22" fill="#D7263D" />
+          <text class="stop-num" x="160" y="640" fill="#fff">6</text>
+          <text x="160" y="608" class="tile-label">St Louis</text>
+        </g>
+        <circle class="tile-filler" cx="260" cy="640" r="11" fill="#CCC9DC" />
+        <circle class="tile-filler" cx="360" cy="640" r="11" fill="#3066BE" />
+        <circle class="tile-filler" cx="460" cy="640" r="11" fill="#D7263D" />
+        <g class="board-stop">
+          <circle class="tile tile-named" cx="460" cy="780" r="22" fill="#6E9075" />
+          <text class="stop-num" x="460" y="780" fill="#fff">7</text>
+          <text x="460" y="820" class="tile-label">Chicago</text>
+        </g>
+        <circle class="tile-filler" cx="360" cy="780" r="11" fill="#6E9075" />
+        <circle class="tile-filler" cx="260" cy="780" r="11" fill="#CCC9DC" />
+        <circle class="tile-filler" cx="160" cy="780" r="11" fill="#3066BE" />
+        <g class="board-stop">
+          <circle class="tile tile-named" cx="60" cy="780" r="22" fill="#CCC9DC" />
+          <text class="stop-num" x="60" y="780" fill="#000">8</text>
+          <text x="60" y="820" class="tile-label">Philly (again)</text>
+        </g>
+
+        <g class="board-token" transform="translate(60,780)">
+          <text x="0" y="-34" font-size="24" text-anchor="middle">&#128009;</text>
+        </g>
+      </svg>
+    </div>
+    <p class="scars-note">8 stops down. More landing soon.</p>
+
+    <div class="scars-foot">
+      <a class="scars-link" href="/#doors">Pick another door</a>
+    </div>
+  </div>
+</main>
+
+</body>
+</html>
