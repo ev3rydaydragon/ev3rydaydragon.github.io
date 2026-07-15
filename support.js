@@ -784,13 +784,22 @@
   }
 
   // src/component.ts
+  const hasOwn = Object.prototype.hasOwnProperty;
+  // Optimized to avoid unnecessary array allocations in hot paths
   function shallowEqual(a, b) {
     if (!b) return false;
-    const ak = Object.keys(a).filter((k) => k !== "children");
-    const bk = Object.keys(b).filter((k) => k !== "children");
-    if (ak.length !== bk.length) return false;
-    for (const k of ak) if (a[k] !== b[k]) return false;
-    return true;
+    let ak = 0;
+    for (const k in a) {
+      if (hasOwn.call(a, k) && k !== "children") {
+        ak++;
+        if (a[k] !== b[k]) return false;
+      }
+    }
+    let bk = 0;
+    for (const k in b) {
+      if (hasOwn.call(b, k) && k !== "children") bk++;
+    }
+    return ak === bk;
   }
   function Placeholder({
     name,
