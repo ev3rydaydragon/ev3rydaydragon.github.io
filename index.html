@@ -526,21 +526,33 @@ class Component extends DCLogic {
     this.onActivate(0);
 
     if (!this.reducedMotion) {
+      // ⚡ Bolt Optimization: Throttle mousemove DOM updates using requestAnimationFrame
+      // This prevents layout thrashing by decoupling the high-frequency mouse event
+      // from the synchronous style recalculations and DOM writes, ensuring smooth 60fps.
+      this.moveRaf = null;
+      this.mouseX = 0;
+      this.mouseY = 0;
       this.onMove = (e) => {
-        if (this.dotEl) {
-          this.dotEl.style.left = e.clientX + 'px';
-          this.dotEl.style.top = e.clientY + 'px';
-        }
-        if (this.linkedinRectTarget && this.dotEl) {
-          const r = this.linkedinRectTarget.getBoundingClientRect();
-          const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
-          const dist = Math.hypot(e.clientX - cx, e.clientY - cy);
-          const near = Math.max(0, Math.min(1, 1 - dist / 420));
-          const scale = 1 + near * 2.2;
-          this.dotEl.style.transform = `translate(-50%,-50%) scale(${scale})`;
-          this.dotEl.style.opacity = String(0.5 + near * 0.5);
-          this.dotEl.style.background = near > 0.55 ? 'var(--ed-crimson)' : 'var(--color-primary)';
-        }
+        this.mouseX = e.clientX;
+        this.mouseY = e.clientY;
+        if (this.moveRaf) return;
+        this.moveRaf = requestAnimationFrame(() => {
+          this.moveRaf = null;
+          if (this.dotEl) {
+            this.dotEl.style.left = this.mouseX + 'px';
+            this.dotEl.style.top = this.mouseY + 'px';
+          }
+          if (this.linkedinRectTarget && this.dotEl) {
+            const r = this.linkedinRectTarget.getBoundingClientRect();
+            const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+            const dist = Math.hypot(this.mouseX - cx, this.mouseY - cy);
+            const near = Math.max(0, Math.min(1, 1 - dist / 420));
+            const scale = 1 + near * 2.2;
+            this.dotEl.style.transform = `translate(-50%,-50%) scale(${scale})`;
+            this.dotEl.style.opacity = String(0.5 + near * 0.5);
+            this.dotEl.style.background = near > 0.55 ? 'var(--ed-crimson)' : 'var(--color-primary)';
+          }
+        });
       };
       window.addEventListener('mousemove', this.onMove, { passive: true });
 
@@ -847,6 +859,7 @@ class Component extends DCLogic {
     if (this.typeTimer) clearInterval(this.typeTimer);
     if (this.typeTimer2) clearInterval(this.typeTimer2);
     if (this.onMove) window.removeEventListener('mousemove', this.onMove);
+    if (this.moveRaf) cancelAnimationFrame(this.moveRaf);
     if (this.onScroll) window.removeEventListener('scroll', this.onScroll);
     if (this.scrollRaf) cancelAnimationFrame(this.scrollRaf);
     if (this.goatTimer) clearTimeout(this.goatTimer);
