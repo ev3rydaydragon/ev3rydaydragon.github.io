@@ -488,7 +488,8 @@
   function walkChildren(node, host) {
     // Optimized: avoid allocating intermediate arrays from spreading childNodes
     const builders = [];
-    for (let i = 0; i < node.childNodes.length; i++) {
+    const len = node.childNodes.length;
+    for (let i = 0; i < len; i++) {
       const b = walk(node.childNodes[i], host);
       if (b != null) builders.push(b);
     }
