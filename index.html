@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Look down</title>
-<script defer data-cfasync="false" src="assets/vendor/react.production.min.js?v=20260714"></script>
-<script defer data-cfasync="false" src="assets/vendor/react-dom.production.min.js?v=20260714"></script>
-<script defer data-cfasync="false" src="./support.js?v=20260714"></script>
+<script defer data-cfasync="false" src="assets/vendor/react.production.min.js?v=20260715"></script>
+<script defer data-cfasync="false" src="assets/vendor/react-dom.production.min.js?v=20260715"></script>
+<script defer data-cfasync="false" src="./support.js?v=20260715"></script>
 
 
 
@@ -19,7 +19,7 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Mulish:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&family=Mulish:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 /* EverydayDragon webfonts
    Brand spec: Gotham (headers) + Avenir (body).
@@ -63,8 +63,8 @@
   .ed-cement-narrow { display: inline; }
 }
 </style>
-<link rel="stylesheet" href="assets/style.css?v=20260714">
-<script defer data-cfasync="false" src="assets/bundle.js?v=20260714"></script>
+<link rel="stylesheet" href="assets/style.css?v=20260715">
+<script defer data-cfasync="false" src="assets/bundle.js?v=20260715"></script>
 </head>
 <body>
 <!-- {% raw %} -->
@@ -563,6 +563,12 @@ class Component extends DCLogic {
       this.updateScrollEffects = () => {
         if (this.circleGroupEl && this.circleSvgEl) {
           const rect = this.circleGroupEl.getBoundingClientRect();
+          // Skip the per-frame reads/writes for this scene unless it's on
+          // screen. These sticky sections are many viewports tall, so without
+          // this every scroll frame anywhere on the page recomputes all three
+          // scenes; when a section is out of view its elements already sit at
+          // their clamped start/end state, so skipping is visually identical.
+          if (rect.bottom > 0 && rect.top < window.innerHeight) {
           const startScroll = window.innerHeight; // Offset for sticky 100vh
           let scrolledVh = (-rect.top - startScroll) / window.innerHeight;
           if (scrolledVh < 0) scrolledVh = 0;
@@ -664,12 +670,14 @@ class Component extends DCLogic {
             this.mapBeat10Title2El.style.opacity = title2Fade;
             this.mapBeat10Title2El.style.transform = `translateY(${(1 - title2Fade) * 20}px)`;
           }
+          }
         }
-        
+
         if (this.cementSectionEl) {
           const rect = this.cementSectionEl.getBoundingClientRect();
           const vh = window.innerHeight;
-          
+          if (rect.bottom > 0 && rect.top < vh) {
+
           let entryProgress = 1 - (rect.top / vh);
           if (entryProgress < 0) entryProgress = 0;
           if (entryProgress > 1) entryProgress = 1;
@@ -725,12 +733,14 @@ class Component extends DCLogic {
           if (this.groundConcreteEl) {
             this.groundConcreteEl.style.height = `${groundProg * 20}px`;
           }
+          }
         }
 
         if (this.avalancheSectionEl) {
           const rect = this.avalancheSectionEl.getBoundingClientRect();
           const vh = window.innerHeight;
-          const scrollRange = Math.max(1, rect.height - vh); 
+          if (rect.bottom > 0 && rect.top < vh) {
+          const scrollRange = Math.max(1, rect.height - vh);
           let pinnedProgress = -rect.top / scrollRange;
           if (pinnedProgress < 0) pinnedProgress = 0;
           if (pinnedProgress > 1) pinnedProgress = 1;
@@ -839,6 +849,7 @@ class Component extends DCLogic {
               flashOpacity = 1 - fProg; 
             }
             this.avalancheFlashEl.style.opacity = flashOpacity;
+          }
           }
         }
       };
