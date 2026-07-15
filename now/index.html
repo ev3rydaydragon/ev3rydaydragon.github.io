@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Dragon Chan — Now</title>
+<title>Checking up on me?</title>
 <meta name="description" content="What Dragon Chan is focused on right now: an MBA at Kellogg and predictive intelligence at Guthrie AI.">
 
 <link rel="canonical" href="https://iamdragonc.com/now/">
@@ -385,6 +385,33 @@
   }
   .coaster-cart circle { fill: var(--crimson); filter: drop-shadow(0 0 6px rgba(215,38,61,0.75)); }
 
+  /* ---- Miles / Earths stat ---- */
+  .miles-stat {
+    margin: 18px 0 0;
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .earth-icon { color: var(--blurple); align-self: center; flex: 0 0 auto; }
+  .miles-value {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: clamp(20px, 3.4vw, 26px);
+    color: #fff;
+  }
+  .miles-eq {
+    font-family: var(--font-display);
+    font-weight: 800;
+    color: rgba(255,255,255,0.4);
+  }
+  .miles-earths {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: clamp(20px, 3.4vw, 26px);
+    color: var(--blurple);
+  }
+
   /* ---- Footer / links ---- */
   .now-foot {
     margin: clamp(52px, 8vh, 84px) 0 0;
@@ -514,6 +541,24 @@
               <path class="coaster-track-fill" id="coasterFill" d="M4,83 C40,32 70,32 100,66 L130,83 A20,20 0 1,1 130,43 A20,20 0 1,1 130,83 C160,102 182,102 205,75 C228,50 252,50 275,75 L300,88 A18,18 0 1,1 300,52 A18,18 0 1,1 300,88 C330,96 352,96 375,70 C400,42 425,42 450,66 C478,92 505,92 530,63 L596,50" />
               <g class="coaster-cart" id="coasterCart"><circle r="6" /></g>
             </svg>
+          </div>
+        </div>
+
+        <!-- ROUTING -->
+        <div class="thread">
+          <p class="thread-label">Routing</p>
+          <h2 class="thread-title">The Infinite Flight Path</h2>
+          <p class="thread-body">The world is too massive to stay grounded. Armed with a GoWild pass, I'm trading predictability for pure adventure. Waking up in Chicago, booking a ticket hours before takeoff, and dropping into new cities on a whim. Chasing the sunrise, hunting down the unknown, and refusing to let the horizon stay static.</p>
+
+          <div class="miles-stat">
+            <svg class="earth-icon" width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/>
+              <ellipse cx="12" cy="12" rx="4" ry="9" stroke="currentColor" stroke-width="1.6"/>
+              <path d="M3 12h18M4.7 7.3h14.6M4.7 16.7h14.6" stroke="currentColor" stroke-width="1.6"/>
+            </svg>
+            <span class="miles-value">48,294 miles</span>
+            <span class="miles-eq">=</span>
+            <span class="miles-earths">1.9 Earths</span>
           </div>
         </div>
 
