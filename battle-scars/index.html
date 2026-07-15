@@ -90,29 +90,43 @@
     margin: clamp(40px, 6vh, 64px) 0 0;
     border: 2px dashed rgba(255,255,255,0.18);
     border-radius: 24px;
-    padding: clamp(16px, 3vw, 32px);
+    padding: clamp(20px, 3vw, 36px);
     background: rgba(255,255,255,0.02);
+    display: flex;
+    justify-content: center;
   }
-  .board-svg { width: 100%; height: auto; display: block; overflow: visible; }
+  .board-svg { width: 100%; max-width: 480px; height: auto; display: block; overflow: visible; }
   .board-path {
     fill: none;
-    stroke: rgba(255,255,255,0.24);
-    stroke-width: 6;
+    stroke: rgba(255,255,255,0.22);
+    stroke-width: 4;
     stroke-linecap: round;
-    stroke-dasharray: 2 16;
+    stroke-linejoin: round;
+    stroke-dasharray: 1 14;
   }
-  .board-stop circle.tile {
+  .tile-filler { stroke: rgba(0,0,0,0.45); stroke-width: 2; }
+  .tile-start-ring { fill: none; stroke: rgba(255,255,255,0.4); stroke-width: 2; stroke-dasharray: 3 4; }
+  .board-stop circle.tile-named {
     stroke: rgba(0,0,0,0.5);
     stroke-width: 3;
     transition: transform 200ms ease;
     transform-box: fill-box;
     transform-origin: center;
   }
-  .board-stop:hover circle.tile { transform: scale(1.14); }
-  .board-stop text {
+  .board-stop:hover circle.tile-named { transform: scale(1.14); }
+  .board-stop .tile-label {
     font-family: var(--font-display);
     font-weight: 800;
+    font-size: 13px;
     fill: #fff;
+    text-anchor: middle;
+  }
+  .tile-label-small {
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    fill: rgba(255,255,255,0.45);
     text-anchor: middle;
   }
   .board-stop .stop-num {
@@ -128,7 +142,8 @@
     font-family: var(--font-mono);
     font-size: 12px;
     color: rgba(255,255,255,0.34);
-    margin: 18px 0 0;
+    margin: 22px 0 0;
+    text-align: center;
   }
 
   .scars-foot {
@@ -164,60 +179,84 @@
     <p class="scars-lede">Every stop leaves a mark. Here's the board so far &mdash; hover a space for the story. (Stories land soon; this run is placeholder data.)</p>
 
     <div class="board-wrap">
-      <svg class="board-svg" viewBox="0 0 800 420" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Game-board style map of cities visited, in order: San Diego, Philadelphia, New York, Houston, Seattle, St. Louis, Chicago, and Philadelphia again.">
-        <path class="board-path" d="M90,100 Q195.0,127.2 290,75 Q395.2,62.9 490,110 Q599.7,137.2 700,85 Q640.0,207.5 700,330 Q599.7,277.8 490,305 Q394.5,349.7 290,335 Q195.0,282.8 90,310" />
+      <svg class="board-svg" viewBox="0 0 520 860" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Candyland-style game board mapping cities visited, in serpentine order: San Diego, Philadelphia, New York, Houston, Seattle, St. Louis, Chicago, and Philadelphia again.">
+        <path class="board-path" d="M60,80 L160,80 L260,80 L360,80 L460,80 L460,220 L360,220 L260,220 L160,220 L60,220 L60,360 L160,360 L260,360 L360,360 L460,360 L460,500 L360,500 L260,500 L160,500 L60,500 L60,640 L160,640 L260,640 L360,640 L460,640 L460,780 L360,780 L260,780 L160,780 L60,780" />
 
-        <g class="board-stop">
-          <circle class="tile" cx="90" cy="100" r="20" fill="#3066BE" />
-          <text class="stop-num" x="90" y="100" fill="#fff">1</text>
-          <text x="90" y="74" font-size="15">San Diego</text>
+        <g class="board-tile board-start">
+          <circle class="tile-start-ring" cx="60" cy="80" r="14" />
+          <text x="60" y="56" class="tile-label-small">START</text>
         </g>
         <g class="board-stop">
-          <circle class="tile" cx="290" cy="75" r="20" fill="#D7263D" />
-          <text class="stop-num" x="290" y="75" fill="#fff">2</text>
-          <text x="290" y="49" font-size="15">Philly</text>
+          <circle class="tile tile-named" cx="160" cy="80" r="22" fill="#3066BE" />
+          <text class="stop-num" x="160" y="80" fill="#fff">1</text>
+          <text x="160" y="48" class="tile-label">San Diego</text>
         </g>
+        <circle class="tile-filler" cx="260" cy="80" r="11" fill="#3066BE" />
+        <circle class="tile-filler" cx="360" cy="80" r="11" fill="#D7263D" />
+        <circle class="tile-filler" cx="460" cy="80" r="11" fill="#6E9075" />
         <g class="board-stop">
-          <circle class="tile" cx="490" cy="110" r="20" fill="#6E9075" />
-          <text class="stop-num" x="490" y="110" fill="#fff">3</text>
-          <text x="490" y="84" font-size="15">New York</text>
+          <circle class="tile tile-named" cx="460" cy="220" r="22" fill="#D7263D" />
+          <text class="stop-num" x="460" y="220" fill="#fff">2</text>
+          <text x="460" y="260" class="tile-label">Philly</text>
         </g>
+        <circle class="tile-filler" cx="360" cy="220" r="11" fill="#CCC9DC" />
+        <circle class="tile-filler" cx="260" cy="220" r="11" fill="#3066BE" />
+        <circle class="tile-filler" cx="160" cy="220" r="11" fill="#D7263D" />
         <g class="board-stop">
-          <circle class="tile" cx="700" cy="85" r="20" fill="#CCC9DC" />
-          <text class="stop-num" x="700" y="85" fill="#000">4</text>
-          <text x="700" y="59" font-size="15">Houston</text>
+          <circle class="tile tile-named" cx="60" cy="220" r="22" fill="#6E9075" />
+          <text class="stop-num" x="60" y="220" fill="#fff">3</text>
+          <text x="60" y="260" class="tile-label">New York</text>
         </g>
+        <circle class="tile-filler" cx="60" cy="360" r="11" fill="#6E9075" />
+        <circle class="tile-filler" cx="160" cy="360" r="11" fill="#CCC9DC" />
+        <circle class="tile-filler" cx="260" cy="360" r="11" fill="#3066BE" />
         <g class="board-stop">
-          <circle class="tile" cx="700" cy="330" r="20" fill="#3066BE" />
-          <text class="stop-num" x="700" y="330" fill="#fff">5</text>
-          <text x="700" y="364" font-size="15">Seattle</text>
+          <circle class="tile tile-named" cx="360" cy="360" r="22" fill="#CCC9DC" />
+          <text class="stop-num" x="360" y="360" fill="#000">4</text>
+          <text x="360" y="328" class="tile-label">Houston</text>
         </g>
+        <circle class="tile-filler" cx="460" cy="360" r="11" fill="#D7263D" />
+        <circle class="tile-filler" cx="460" cy="500" r="11" fill="#6E9075" />
+        <circle class="tile-filler" cx="360" cy="500" r="11" fill="#CCC9DC" />
         <g class="board-stop">
-          <circle class="tile" cx="490" cy="305" r="20" fill="#D7263D" />
-          <text class="stop-num" x="490" y="305" fill="#fff">6</text>
-          <text x="490" y="339" font-size="15">St Louis</text>
+          <circle class="tile tile-named" cx="260" cy="500" r="22" fill="#3066BE" />
+          <text class="stop-num" x="260" y="500" fill="#fff">5</text>
+          <text x="260" y="540" class="tile-label">Seattle</text>
         </g>
+        <circle class="tile-filler" cx="160" cy="500" r="11" fill="#3066BE" />
+        <circle class="tile-filler" cx="60" cy="500" r="11" fill="#D7263D" />
+        <circle class="tile-filler" cx="60" cy="640" r="11" fill="#6E9075" />
         <g class="board-stop">
-          <circle class="tile" cx="290" cy="335" r="20" fill="#6E9075" />
-          <text class="stop-num" x="290" y="335" fill="#fff">7</text>
-          <text x="290" y="369" font-size="15">Chicago</text>
+          <circle class="tile tile-named" cx="160" cy="640" r="22" fill="#D7263D" />
+          <text class="stop-num" x="160" y="640" fill="#fff">6</text>
+          <text x="160" y="608" class="tile-label">St Louis</text>
         </g>
+        <circle class="tile-filler" cx="260" cy="640" r="11" fill="#CCC9DC" />
+        <circle class="tile-filler" cx="360" cy="640" r="11" fill="#3066BE" />
+        <circle class="tile-filler" cx="460" cy="640" r="11" fill="#D7263D" />
         <g class="board-stop">
-          <circle class="tile" cx="90" cy="310" r="20" fill="#CCC9DC" />
-          <text class="stop-num" x="90" y="310" fill="#000">8</text>
-          <text x="90" y="344" font-size="15">Philly (again)</text>
+          <circle class="tile tile-named" cx="460" cy="780" r="22" fill="#6E9075" />
+          <text class="stop-num" x="460" y="780" fill="#fff">7</text>
+          <text x="460" y="820" class="tile-label">Chicago</text>
+        </g>
+        <circle class="tile-filler" cx="360" cy="780" r="11" fill="#6E9075" />
+        <circle class="tile-filler" cx="260" cy="780" r="11" fill="#CCC9DC" />
+        <circle class="tile-filler" cx="160" cy="780" r="11" fill="#3066BE" />
+        <g class="board-stop">
+          <circle class="tile tile-named" cx="60" cy="780" r="22" fill="#CCC9DC" />
+          <text class="stop-num" x="60" y="780" fill="#000">8</text>
+          <text x="60" y="820" class="tile-label">Philly (again)</text>
         </g>
 
-        <g class="board-token" transform="translate(90,310)">
-          <text x="0" y="-28" font-size="24" text-anchor="middle">&#128009;</text>
+        <g class="board-token" transform="translate(60,780)">
+          <text x="0" y="-34" font-size="24" text-anchor="middle">&#128009;</text>
         </g>
       </svg>
     </div>
-    <p class="scars-note">Current run: San Diego &rarr; Philly &rarr; New York &rarr; Houston &rarr; Seattle &rarr; St. Louis &rarr; Chicago &rarr; Philly (again).</p>
+    <p class="scars-note">8 stops down. More landing soon.</p>
 
     <div class="scars-foot">
-      <a class="scars-link" href="/">Back home</a>
-      <a class="scars-link" href="/now/">What I'm doing now</a>
+      <a class="scars-link" href="/#doors">Pick another door</a>
     </div>
   </div>
 </main>

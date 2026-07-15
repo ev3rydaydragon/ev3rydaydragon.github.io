@@ -417,10 +417,10 @@
             <span style="{{ doorLabelStyle }}">BATTLE SCARS</span>
             <div style="{{ doorWrapStyleB }}" onMouseEnter="{{ onEnterB }}" onMouseLeave="{{ onLeaveB }}" onTouchStart="{{ onTouchStartB }}" onTouchEnd="{{ onTouchEndB }}" onTouchCancel="{{ onTouchEndB }}">
               <div style="{{ doorFrameStyle }}">
-                <div class="ed-portal" style="{{ portalStyleB }}"></div>
+                <a href="/battle-scars/" class="ed-portal" style="{{ portalStyleB }}"></a>
                 <sc-if value="{{ showGoatB }}" hint-placeholder-val="{{ false }}"><span style="{{ goatStyle }}">🐐</span></sc-if>
               </div>
-              <a href="#" style="{{ doorPanelStyleB }}" onClick="{{ onClickB }}">
+              <a href="/battle-scars/" style="{{ doorPanelStyleB }}" onClick="{{ onClickB }}">
                 <svg viewBox="0 0 100 150" preserveAspectRatio="none" style="width:100%;height:100%;display:block;overflow:visible" aria-hidden="true">
                   <rect x="3" y="2" width="93" height="145" rx="6" fill="#12143a" stroke="#fff" stroke-width="3"></rect>
                   <rect x="12" y="13" width="75" height="53" rx="2" fill="rgba(0,0,0,0.3)"></rect>
@@ -1321,7 +1321,7 @@ class Component extends DCLogic {
       onLeaveB: () => this.onDoorHoverEnd('b'),
       onTouchStartB: () => this.onDoorHoverStart('b'),
       onTouchEndB: () => this.onDoorHoverEnd('b'),
-      onClickB: (e) => { e.preventDefault(); this.openDoor('b', null, false); },
+      onClickB: (e) => { e.preventDefault(); this.openDoor('b', '/battle-scars/', false); },
 
       doorWrapStyleC: { position: 'relative', width: 220, height: 280, perspective: '900px', transform: 'rotate(-1.5deg)', cursor: kickCursor(bat.c) },
       showGoatC: open.c && goat === 'c',
