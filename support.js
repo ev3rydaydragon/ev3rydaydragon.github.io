@@ -1360,8 +1360,9 @@
     });
     function compile(node) {
       // Optimized: avoid spreading node.children
-      const raw = new Array(node.children.length);
-      for (let i = 0; i < node.children.length; i++) {
+      const len = node.children.length;
+      const raw = new Array(len);
+      for (let i = 0; i < len; i++) {
         raw[i] = node.children[i];
       }
       const helmetClosed = node.nextSibling != null || node.parentNode?.nextSibling != null;
