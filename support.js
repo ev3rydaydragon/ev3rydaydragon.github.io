@@ -419,9 +419,7 @@
     const propGetters = [];
     const pseudoClasses = [];
     let hintSize = null;
-    // Optimized: avoid spreading node.attributes
-    for (let i = 0; i < node.attributes.length; i++) {
-      const { name, value } = node.attributes[i];
+    for (const { name, value } of [...node.attributes]) {
       if (name === "sc-name" || name === "data-dc-tpl") continue;
       let key = name;
       if (key.startsWith(CAMEL_ATTR))
@@ -486,14 +484,7 @@
     return render;
   }
   function walkChildren(node, host) {
-    // Optimized: avoid allocating intermediate arrays from spreading childNodes
-    const builders = [];
-    const len = node.childNodes.length;
-    for (let i = 0; i < len; i++) {
-      const b = walk(node.childNodes[i], host);
-      if (b != null) builders.push(b);
-    }
-    return builders;
+    return [...node.childNodes].map((c) => walk(c, host)).filter((b) => b != null);
   }
   function walk(node, host) {
     if (node.nodeType === Node.TEXT_NODE) return walkText(node);
@@ -712,37 +703,12 @@
       return wrapper ? h("div", wrapper, h(C, props)) : h(C, props);
     };
   }
-  var VOID_ELEMENTS = new Set([
-    "area", "base", "br", "col", "embed", "hr", "img", "input",
-    "link", "meta", "source", "track", "wbr"
-  ]);
-
   function contentKey(el) {
-    let s = "";
-    function walk(node) {
-      for (let child = node.firstChild; child; child = child.nextSibling) {
-        if (child.nodeType === 1) {
-          s += "<" + child.localName + ">";
-          if (!VOID_ELEMENTS.has(child.localName)) {
-            walk(child);
-            s += "</" + child.localName + ">";
-          }
-        } else if (child.nodeType === 3) {
-          const val = child.nodeValue;
-          for (let i = 0; i < val.length; i++) {
-            const c = val[i];
-            if (c === '&') s += '&amp;';
-            else if (c === '<') s += '&lt;';
-            else if (c === '>') s += '&gt;';
-            else if (c === '\xA0') s += '&nbsp;';
-            else s += c;
-          }
-        } else if (child.nodeType === 8) {
-          s += "<!--" + child.nodeValue + "-->";
-        }
-      }
+    const clone = el.cloneNode(true);
+    for (const d of clone.querySelectorAll("*")) {
+      while (d.attributes.length) d.removeAttribute(d.attributes[0].name);
     }
-    walk(el);
+    const s = clone.innerHTML;
     let h2 = 5381;
     for (let i = 0; i < s.length; i++) h2 = (h2 << 5) + h2 + s.charCodeAt(i) | 0;
     return s.length + "." + (h2 >>> 0).toString(36);
@@ -826,7 +792,7 @@
     for (const k in a) {
       if (hasOwn.call(a, k) && k !== "children") {
         ak++;
-        if (!hasOwn.call(b, k) || a[k] !== b[k]) return false;
+        if (a[k] !== b[k]) return false;
       }
     }
     let bk = 0;
@@ -1394,12 +1360,7 @@
       postDesignMode(designDocMode);
     });
     function compile(node) {
-      // Optimized: avoid spreading node.children
-      const len = node.children.length;
-      const raw = new Array(len);
-      for (let i = 0; i < len; i++) {
-        raw[i] = node.children[i];
-      }
+      const raw = [...node.children];
       const helmetClosed = node.nextSibling != null || node.parentNode?.nextSibling != null;
       if (node.hasAttribute("data-dc-atomics") && !mounted.has("__dc-atomics")) {
         mounted.add("__dc-atomics");
@@ -1421,11 +1382,8 @@
             if (mounted.has(key)) continue;
             mounted.add(key);
             const el = doc.createElement("script");
-            // Optimized: avoid spreading attributes
-            for (let j = 0; j < child.attributes.length; j++) {
-              const { name: an, value } = child.attributes[j];
+            for (const { name: an, value } of [...child.attributes])
               el.setAttribute(an, value);
-            }
             if (child.textContent) el.textContent = child.textContent;
             doc.head.appendChild(el);
           } else if (tag === "LINK" || tag === "META") {
@@ -1465,9 +1423,7 @@
               live.set(key, el);
               doc.head.appendChild(el);
             }
-            // Optimized: avoid spreading attributes
-            for (let j = 0; j < child.attributes.length; j++) {
-              const { name: an, value } = child.attributes[j];
+            for (const { name: an, value } of [...child.attributes]) {
               if (el.getAttribute(an) !== value) el.setAttribute(an, value);
             }
             if (el.textContent !== child.textContent)
@@ -1721,8 +1677,7 @@
       },
       live(name) {
         if (name !== void 0) return liveOne(name);
-        // Optimized: avoid spreading Map/Set keys iterator
-        for (const n of since.keys()) if (liveOne(n)) return true;
+        for (const n of [...since.keys()]) if (liveOne(n)) return true;
         return false;
       }
     };
@@ -1801,7 +1756,6 @@
       __dcAnnotatedTemplate: (name) => runtime.annotatedTemplate(name),
       /** Editor bridge — the *original* (decoded) template source. */
       __dcTemplateSource: (name) => runtime.templateSource(name),
-      __parseDcText: parseDcText,
       __dcBoot: () => {
         rootName = boot(runtime, document) ?? rootName;
         notifyHost();
