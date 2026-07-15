@@ -792,7 +792,7 @@
     for (const k in a) {
       if (hasOwn.call(a, k) && k !== "children") {
         ak++;
-        if (a[k] !== b[k]) return false;
+        if (!hasOwn.call(b, k) || a[k] !== b[k]) return false;
       }
     }
     let bk = 0;
