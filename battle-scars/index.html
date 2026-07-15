@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Look closer</title>
+<title>Dragon Chan — Battle Scars</title>
 <meta name="description" content="Everywhere Dragon Chan has touched down, mapped out like a board game.">
 
 <link rel="canonical" href="https://iamdragonc.com/battle-scars/">
@@ -14,252 +14,679 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Mulish:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800;900&display=swap" rel="stylesheet">
 
 <style>
-  :root {
-    --font-display: 'Montserrat', 'Gotham', system-ui, sans-serif;
-    --font-body:    'Mulish', 'Avenir', system-ui, sans-serif;
-    --font-mono:    'JetBrains Mono', ui-monospace, monospace;
-    --blurple:      #3066BE;
-    --crimson:      #D7263D;
-    --moss:         #6E9075;
-    --wisteria:     #CCC9DC;
-  }
-
   * { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; }
+  
+  /* Scroll height to drive the board pawn movement */
   body {
-    background: #000;
-    color: #fff;
-    font-family: var(--font-body);
-    -webkit-font-smoothing: antialiased;
-    text-rendering: optimizeLegibility;
+    background: #020306;
+    height: 500vh; /* Smooth scroll track depth */
+    overflow-x: hidden;
   }
 
-  .scars-bg {
-    position: relative;
-    min-height: 100vh;
-    overflow: hidden;
-    background:
-      radial-gradient(50% 45% at 8% 4%, rgba(48,102,190,0.28), transparent 70%),
-      radial-gradient(140% 120% at 20% -6%, #0d1050 0%, #04051c 45%, #000 100%);
-  }
-  .scars-wrap {
-    position: relative;
+  /* ---- Fullscreen Candy Land Board Viewport ---- */
+  .board-viewport {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
     z-index: 1;
-    max-width: 980px;
-    margin: 0 auto;
-    padding: clamp(64px, 12vh, 120px) 24px clamp(72px, 10vh, 120px);
-  }
-
-  .scars-eyebrow {
-    display: inline-block;
-    font-family: var(--font-display);
-    font-weight: 800;
-    font-size: clamp(13px, 2.4vw, 16px);
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    color: var(--blurple);
-    margin: 0;
-    transform: rotate(-2deg);
-  }
-  .scars-h1 {
-    font-family: var(--font-display);
-    font-weight: 900;
-    text-transform: uppercase;
-    letter-spacing: -0.03em;
-    line-height: 0.98;
-    color: #fff;
-    font-size: clamp(32px, 7vw, 64px);
-    margin: 16px 0 0;
-  }
-  .scars-h1 .accent { color: var(--crimson); }
-  .scars-lede {
-    font-family: var(--font-body);
-    font-weight: 500;
-    font-size: clamp(16px, 2.2vw, 19px);
-    line-height: 1.6;
-    color: rgba(255,255,255,0.68);
-    max-width: 58ch;
-    margin: 22px 0 0;
-  }
-
-  /* ---- Board ---- */
-  .board-wrap {
-    margin: clamp(40px, 6vh, 64px) 0 0;
-    border: 2px dashed rgba(255,255,255,0.18);
-    border-radius: 24px;
-    padding: clamp(20px, 3vw, 36px);
-    background: rgba(255,255,255,0.02);
     display: flex;
+    align-items: center;
     justify-content: center;
+    overflow: hidden;
+    background: 
+      radial-gradient(130% 110% at 50% 50%, #0c0e25 0%, #030409 65%, #000 100%);
   }
-  .board-svg { width: 100%; max-width: 480px; height: auto; display: block; overflow: visible; }
-  .board-path {
-    fill: none;
-    stroke: rgba(255,255,255,0.22);
-    stroke-width: 4;
+  .board-viewport svg {
+    width: 100%;
+    height: 100%;
+    max-width: 95vh;  /* Keep it square and fully visible vertically */
+    max-height: 95vw; /* Keep it square and fully visible horizontally */
+    object-fit: contain;
+    overflow: visible;
+  }
+
+  /* Winding Ribbon Path base */
+  .board-road {
+    stroke: rgba(255, 255, 255, 0.02);
+    stroke-width: 60;
     stroke-linecap: round;
     stroke-linejoin: round;
-    stroke-dasharray: 1 14;
+    fill: none;
   }
-  .tile-filler { stroke: rgba(0,0,0,0.45); stroke-width: 2; }
-  .tile-start-ring { fill: none; stroke: rgba(255,255,255,0.4); stroke-width: 2; stroke-dasharray: 3 4; }
-  .board-stop circle.tile-named {
-    stroke: rgba(0,0,0,0.5);
-    stroke-width: 3;
-    transition: transform 200ms ease;
+  .board-road-center {
+    stroke: rgba(255, 255, 255, 0.06);
+    stroke-width: 2;
+    stroke-dasharray: 6 8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    fill: none;
+  }
+
+  /* Candy Land Squares Styling */
+  .interactive-tile-group {
+    cursor: pointer;
+  }
+  .interactive-tile-group rect {
+    transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275), stroke-width 0.25s ease;
     transform-box: fill-box;
     transform-origin: center;
   }
-  .board-stop:hover circle.tile-named { transform: scale(1.14); }
-  .board-stop .tile-label {
-    font-family: var(--font-display);
-    font-weight: 800;
-    font-size: 13px;
-    fill: #fff;
-    text-anchor: middle;
+  .interactive-tile-group:hover rect, .interactive-tile-group.active rect {
+    transform: scale(1.15);
+    stroke: #fff;
+    stroke-width: 2.5px;
   }
-  .tile-label-small {
-    font-family: var(--font-mono);
-    font-weight: 700;
+
+  .stop-num {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 900;
+    font-size: 14px;
+    text-anchor: middle;
+    dominant-baseline: central;
+    pointer-events: none;
+  }
+
+  .tile-label-text {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 900;
     font-size: 10px;
+    fill: #fff;
     letter-spacing: 0.08em;
-    fill: rgba(255,255,255,0.45);
-    text-anchor: middle;
+    pointer-events: none;
   }
-  .board-stop .stop-num {
-    font-family: var(--font-mono);
-    font-size: 12px;
-    text-anchor: middle;
-    dominant-baseline: middle;
-    font-weight: 700;
-  }
-  .board-token { filter: drop-shadow(0 2px 6px rgba(0,0,0,0.6)); }
 
-  .scars-note {
-    font-family: var(--font-mono);
-    font-size: 12px;
-    color: rgba(255,255,255,0.34);
-    margin: 22px 0 0;
+  /* Spinner Styling */
+  .board-spinner {
+    pointer-events: auto;
+  }
+  #spinner-group {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: spinner-pulse 3s infinite ease-in-out;
+  }
+  #spinner-wheel {
+    transform-origin: center;
+    cursor: pointer;
+  }
+  @keyframes spinner-pulse {
+    0%, 100% { filter: drop-shadow(0 4px 15px rgba(255, 226, 89, 0.2)); }
+    50% { filter: drop-shadow(0 4px 25px rgba(255, 226, 89, 0.6)); }
+  }
+
+  /* Whimsical Decorative Elements */
+  .candy-forest-cane {
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  /* Spin Result Toast */
+  .spin-toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translate(-50%, 100px) scale(0.9);
+    background: rgba(9, 11, 23, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 16px;
+    padding: 12px 24px;
+    z-index: 10000;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.6), 0 0 20px rgba(255, 226, 89, 0.25);
+    opacity: 0;
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.4s ease;
     text-align: center;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    pointer-events: none;
   }
-
-  .scars-foot {
-    margin: clamp(48px, 8vh, 80px) 0 0;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 14px 28px;
-    align-items: center;
+  .spin-toast.visible {
+    transform: translate(-50%, 0) scale(1);
+    opacity: 1;
   }
-  .scars-link {
-    font-family: var(--font-display);
-    font-weight: 800;
-    font-size: 15px;
-    color: rgba(255,255,255,0.72);
-    text-decoration: none;
-    border-bottom: 2px solid rgba(255,255,255,0.28);
-    padding-bottom: 2px;
-    transition: color 160ms ease, border-color 160ms ease;
+  .toast-title {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 900;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #ffa751;
+    margin-bottom: 4px;
   }
-  .scars-link:hover { color: var(--blurple); border-color: var(--blurple); }
+  .toast-num {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 900;
+    font-size: 28px;
+    line-height: 1;
+    color: #fff;
+  }
 
   @media (prefers-reduced-motion: reduce) {
-    .board-stop circle.tile { transition: none; }
+    #spinner-wheel { transition: none !important; }
+    #spinner-group { animation: none !important; }
   }
 </style>
 </head>
 <body>
 
-<main class="scars-bg">
-  <div class="scars-wrap">
-    <p class="scars-eyebrow">Where I've Been</p>
-    <h1 class="scars-h1">BATTLE <span class="accent">SCARS.</span></h1>
-    <p class="scars-lede">Every stop leaves a mark. Here's the board so far &mdash; hover a space for the story. (Stories land soon; this run is placeholder data.)</p>
+<div class="board-viewport">
+  <svg class="board-svg" id="board-svg" viewBox="0 0 1000 1000">
+    <defs>
+      <!-- Candy Spot Gradients (Vibrant Candy Land Ribbon path) -->
+      <radialGradient id="candy-red" cx="35%" cy="35%" r="65%">
+        <stop offset="0%" stop-color="#ff758a" />
+        <stop offset="50%" stop-color="#D7263D" />
+        <stop offset="100%" stop-color="#730e1b" />
+      </radialGradient>
+      <radialGradient id="candy-orange" cx="35%" cy="35%" r="65%">
+        <stop offset="0%" stop-color="#ffb85c" />
+        <stop offset="50%" stop-color="#ff9500" />
+        <stop offset="100%" stop-color="#9e5600" />
+      </radialGradient>
+      <radialGradient id="candy-yellow" cx="35%" cy="35%" r="65%">
+        <stop offset="0%" stop-color="#fff099" />
+        <stop offset="50%" stop-color="#ffe259" />
+        <stop offset="100%" stop-color="#ad8d00" />
+      </radialGradient>
+      <radialGradient id="candy-green" cx="35%" cy="35%" r="65%">
+        <stop offset="0%" stop-color="#aee0ba" />
+        <stop offset="50%" stop-color="#6E9075" />
+        <stop offset="100%" stop-color="#324736" />
+      </radialGradient>
+      <radialGradient id="candy-blue" cx="35%" cy="35%" r="65%">
+        <stop offset="0%" stop-color="#90b8ff" />
+        <stop offset="50%" stop-color="#3066BE" />
+        <stop offset="100%" stop-color="#153670" />
+      </radialGradient>
+      <radialGradient id="candy-purple" cx="35%" cy="35%" r="65%">
+        <stop offset="0%" stop-color="#e29eff" />
+        <stop offset="50%" stop-color="#af52de" />
+        <stop offset="100%" stop-color="#651a91" />
+      </radialGradient>
+      <radialGradient id="candy-lavender" cx="35%" cy="35%" r="65%">
+        <stop offset="0%" stop-color="#ffffff" />
+        <stop offset="50%" stop-color="#CCC9DC" />
+        <stop offset="100%" stop-color="#777587" />
+      </radialGradient>
 
-    <div class="board-wrap">
-      <svg class="board-svg" viewBox="0 0 520 860" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Candyland-style game board mapping cities visited, in serpentine order: San Diego, Philadelphia, New York, Houston, Seattle, St. Louis, Chicago, and Philadelphia again.">
-        <path class="board-path" d="M60,80 L160,80 L260,80 L360,80 L460,80 L460,220 L360,220 L260,220 L160,220 L60,220 L60,360 L160,360 L260,360 L360,360 L460,360 L460,500 L360,500 L260,500 L160,500 L60,500 L60,640 L160,640 L260,640 L360,640 L460,640 L460,780 L360,780 L260,780 L160,780 L60,780" />
+      <!-- Gloss overlays -->
+      <linearGradient id="tile-gloss" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#fff" stop-opacity="0.4" />
+        <stop offset="40%" stop-color="#fff" stop-opacity="0.1" />
+        <stop offset="100%" stop-color="#fff" stop-opacity="0" />
+      </linearGradient>
 
-        <g class="board-tile board-start">
-          <circle class="tile-start-ring" cx="60" cy="80" r="14" />
-          <text x="60" y="56" class="tile-label-small">START</text>
-        </g>
-        <g class="board-stop">
-          <circle class="tile tile-named" cx="160" cy="80" r="22" fill="#3066BE" />
-          <text class="stop-num" x="160" y="80" fill="#fff">1</text>
-          <text x="160" y="48" class="tile-label">San Diego</text>
-        </g>
-        <circle class="tile-filler" cx="260" cy="80" r="11" fill="#3066BE" />
-        <circle class="tile-filler" cx="360" cy="80" r="11" fill="#D7263D" />
-        <circle class="tile-filler" cx="460" cy="80" r="11" fill="#6E9075" />
-        <g class="board-stop">
-          <circle class="tile tile-named" cx="460" cy="220" r="22" fill="#D7263D" />
-          <text class="stop-num" x="460" y="220" fill="#fff">2</text>
-          <text x="460" y="260" class="tile-label">Philly</text>
-        </g>
-        <circle class="tile-filler" cx="360" cy="220" r="11" fill="#CCC9DC" />
-        <circle class="tile-filler" cx="260" cy="220" r="11" fill="#3066BE" />
-        <circle class="tile-filler" cx="160" cy="220" r="11" fill="#D7263D" />
-        <g class="board-stop">
-          <circle class="tile tile-named" cx="60" cy="220" r="22" fill="#6E9075" />
-          <text class="stop-num" x="60" y="220" fill="#fff">3</text>
-          <text x="60" y="260" class="tile-label">New York</text>
-        </g>
-        <circle class="tile-filler" cx="60" cy="360" r="11" fill="#6E9075" />
-        <circle class="tile-filler" cx="160" cy="360" r="11" fill="#CCC9DC" />
-        <circle class="tile-filler" cx="260" cy="360" r="11" fill="#3066BE" />
-        <g class="board-stop">
-          <circle class="tile tile-named" cx="360" cy="360" r="22" fill="#CCC9DC" />
-          <text class="stop-num" x="360" y="360" fill="#000">4</text>
-          <text x="360" y="328" class="tile-label">Houston</text>
-        </g>
-        <circle class="tile-filler" cx="460" cy="360" r="11" fill="#D7263D" />
-        <circle class="tile-filler" cx="460" cy="500" r="11" fill="#6E9075" />
-        <circle class="tile-filler" cx="360" cy="500" r="11" fill="#CCC9DC" />
-        <g class="board-stop">
-          <circle class="tile tile-named" cx="260" cy="500" r="22" fill="#3066BE" />
-          <text class="stop-num" x="260" y="500" fill="#fff">5</text>
-          <text x="260" y="540" class="tile-label">Seattle</text>
-        </g>
-        <circle class="tile-filler" cx="160" cy="500" r="11" fill="#3066BE" />
-        <circle class="tile-filler" cx="60" cy="500" r="11" fill="#D7263D" />
-        <circle class="tile-filler" cx="60" cy="640" r="11" fill="#6E9075" />
-        <g class="board-stop">
-          <circle class="tile tile-named" cx="160" cy="640" r="22" fill="#D7263D" />
-          <text class="stop-num" x="160" y="640" fill="#fff">6</text>
-          <text x="160" y="608" class="tile-label">St Louis</text>
-        </g>
-        <circle class="tile-filler" cx="260" cy="640" r="11" fill="#CCC9DC" />
-        <circle class="tile-filler" cx="360" cy="640" r="11" fill="#3066BE" />
-        <circle class="tile-filler" cx="460" cy="640" r="11" fill="#D7263D" />
-        <g class="board-stop">
-          <circle class="tile tile-named" cx="460" cy="780" r="22" fill="#6E9075" />
-          <text class="stop-num" x="460" y="780" fill="#fff">7</text>
-          <text x="460" y="820" class="tile-label">Chicago</text>
-        </g>
-        <circle class="tile-filler" cx="360" cy="780" r="11" fill="#6E9075" />
-        <circle class="tile-filler" cx="260" cy="780" r="11" fill="#CCC9DC" />
-        <circle class="tile-filler" cx="160" cy="780" r="11" fill="#3066BE" />
-        <g class="board-stop">
-          <circle class="tile tile-named" cx="60" cy="780" r="22" fill="#CCC9DC" />
-          <text class="stop-num" x="60" y="780" fill="#000">8</text>
-          <text x="60" y="820" class="tile-label">Philly (again)</text>
-        </g>
+      <filter id="tile-shadow" x="-30%" y="-30%" width="160%" height="160%">
+        <feDropShadow dx="0" dy="5" stdDeviation="4" flood-color="#000" flood-opacity="0.5" />
+      </filter>
 
-        <g class="board-token" transform="translate(60,780)">
-          <text x="0" y="-34" font-size="24" text-anchor="middle">&#128009;</text>
+      <filter id="eye-glow" x="-50%" y="-50%" width="200%" height="200%">
+        <feGaussianBlur stdDeviation="1.5" result="blur" />
+        <feMerge>
+          <feMergeNode in="blur" />
+          <feMergeNode in="SourceGraphic" />
+        </feMerge>
+      </filter>
+
+      <!-- Dragon Pawn Gradients -->
+      <linearGradient id="base-dark" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#2a0c4f" />
+        <stop offset="100%" stop-color="#090114" />
+      </linearGradient>
+
+      <linearGradient id="base-light" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#9d50f5" />
+        <stop offset="50%" stop-color="#5a189a" />
+        <stop offset="100%" stop-color="#3c096c" />
+      </linearGradient>
+
+      <linearGradient id="body-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#f72585" />
+        <stop offset="50%" stop-color="#7209b7" />
+        <stop offset="100%" stop-color="#3f0713" />
+      </linearGradient>
+      
+      <linearGradient id="gold-trim" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#ffe259" />
+        <stop offset="100%" stop-color="#ffa751" />
+      </linearGradient>
+
+      <!-- Premium SVG Dragon Chess Piece -->
+      <g id="dragon-pawn">
+        <!-- Pawn Base Rim -->
+        <path d="M-18,10 C-18,16 18,16 18,10 L16,14 C16,18 -16,18 -16,14 Z" fill="url(#base-dark)" />
+        <!-- Base Top Ring -->
+        <ellipse cx="0" cy="10" rx="18" ry="6" fill="url(#base-light)" stroke="url(#gold-trim)" stroke-width="1.5" />
+        <!-- Pedestal Stem -->
+        <path d="M-14,10 C-12,0 -8,-5 0,-5 C8,-5 12,0 14,10 Z" fill="url(#body-grad)" />
+        <ellipse cx="0" cy="-5" rx="8" ry="3" fill="url(#gold-trim)" />
+        <!-- Wing Backplate -->
+        <path d="M-6,-12 C-20,-16 -24,-28 -26,-36 C-22,-32 -16,-30 -12,-30 C-15,-24 -15,-18 -8,-12 Z" fill="url(#body-grad)" opacity="0.85" />
+        <!-- Neck & Mane -->
+        <path d="M-6,-5 C-6,-18 -10,-25 -10,-32 C-5,-28 2,-20 5,-5 Z" fill="url(#body-grad)" />
+        <!-- Head & Snout -->
+        <path d="M-10,-30 C-12,-35 -8,-45 0,-45 C5,-45 9,-41 12,-36 C14,-37 18,-36 20,-33 C21,-31 18,-30 16,-30 C13,-30 11,-33 9,-34 C8,-28 4,-26 -5,-26 Z" fill="url(#body-grad)" stroke="url(#gold-trim)" stroke-width="0.75" />
+        <!-- Sleek Horns -->
+        <path d="M-4,-43 C-8,-48 -14,-52 -20,-54 C-16,-49 -10,-46 -5,-43 Z" fill="url(#gold-trim)" />
+        <!-- Glowing Teal Eye -->
+        <circle cx="4" cy="-35" r="2.2" fill="#00ffcc" filter="url(#eye-glow)" />
+        <circle cx="4" cy="-35" r="0.7" fill="#fff" />
+      </g>
+    </defs>
+
+    <!-- ==== DECORATIVE CANDY LAND LANDSCAPES ==== -->
+    <g id="decorations" opacity="0.85">
+      <!-- 1. Peppermint Forest (Bottom-Left) -->
+      <g id="peppermint-forest">
+        <!-- Candy Canes -->
+        <path class="candy-forest-cane" d="M220,800 L220,740 A20,20 0 0,1 260,740" stroke="#ff758a" stroke-width="12" />
+        <path class="candy-forest-cane" d="M220,800 L220,740 A20,20 0 0,1 260,740" stroke="#fff" stroke-dasharray="10 10" stroke-width="12" />
+        
+        <path class="candy-forest-cane" d="M340,810 L340,760 A16,16 0 0,1 372,760" stroke="#D7263D" stroke-width="10" />
+        <path class="candy-forest-cane" d="M340,810 L340,760 A16,16 0 0,1 372,760" stroke="#fff" stroke-dasharray="8 8" stroke-width="10" />
+        
+        <!-- Swirl Candies -->
+        <g transform="translate(300, 770)">
+          <circle r="16" fill="#fff" stroke="#D7263D" stroke-width="2.5" />
+          <path d="M0,0 L0,-16 A16,16 0 0,1 11.3,-11.3 Z" fill="#D7263D" />
+          <path d="M0,0 L0,16 A16,16 0 0,1 -11.3,11.3 Z" fill="#D7263D" />
+          <path d="M0,0 L-16,0 A16,16 0 0,1 -11.3,-11.3 Z" fill="#D7263D" />
+          <path d="M0,0 L16,0 A16,16 0 0,1 11.3,11.3 Z" fill="#D7263D" />
         </g>
-      </svg>
-    </div>
-    <p class="scars-note">8 stops down. More landing soon.</p>
+      </g>
 
-    <div class="scars-foot">
-      <a class="scars-link" href="/#doors">Pick another door</a>
-    </div>
-  </div>
-</main>
+      <!-- 2. Gumdrop Mountains (Middle-Center) -->
+      <g id="gumdrop-mountains">
+        <path d="M420,640 C420,590 465,590 465,640 Z" fill="#ff758a" />
+        <path d="M535,640 C535,595 575,595 575,640 Z" fill="#af52de" />
+        <path d="M455,640 C455,570 545,570 545,640 Z" fill="#6E9075" stroke="#fff" stroke-width="1" />
+        <!-- Glaze / Snow top -->
+        <path d="M485,582 C495,576 505,576 515,582 C508,588 492,588 485,582 Z" fill="#fff" opacity="0.6" />
+      </g>
 
+      <!-- 3. Lollipop Woods (Middle-Right) -->
+      <g id="lollipop-woods">
+        <!-- Sticks -->
+        <line x1="680" y1="460" x2="680" y2="400" stroke="#656875" stroke-width="3" />
+        <line x1="750" y1="460" x2="750" y2="390" stroke="#656875" stroke-width="3.5" />
+        <line x1="800" y1="460" x2="800" y2="415" stroke="#656875" stroke-width="2.5" />
+        
+        <!-- Swirl Tops -->
+        <circle cx="680" cy="400" r="18" fill="url(#candy-red)" />
+        <path d="M680,400 A9,9 0 0,1 680,391 A6,6 0 0,0 680,397" fill="none" stroke="#fff" stroke-width="1.5" />
+        
+        <circle cx="750" cy="390" r="22" fill="url(#candy-orange)" stroke="#fff" stroke-width="1.5" />
+        <path d="M750,390 A11,11 0 0,1 750,379 A8,8 0 0,0 750,386 A5,5 0 0,1 750,391" fill="none" stroke="#fff" stroke-width="1.8" />
+        
+        <circle cx="800" cy="415" r="14" fill="url(#candy-purple)" />
+        <path d="M800,415 A7,7 0 0,1 800,408" fill="none" stroke="#fff" stroke-width="1" />
+      </g>
+
+      <!-- 4. Ice Cream Lagoon (Upper-Left) -->
+      <g id="ice-cream-lagoon">
+        <ellipse cx="250" cy="270" rx="75" ry="30" fill="#151b3d" stroke="#00ffcc" stroke-width="1.5" opacity="0.6" />
+        <!-- Floating Ice Cream scoop island -->
+        <polygon points="238,268 262,268 250,290" fill="#d2a679" />
+        <circle cx="250" cy="258" r="15" fill="#ffb85c" />
+        <circle cx="250" cy="242" r="4.5" fill="#D7263D" /> <!-- Cherry -->
+      </g>
+
+      <!-- 5. Whimsical Candy Castle (Top-Right Finish) -->
+      <g id="candy-castle" transform="translate(800, 60)">
+        <!-- Gingerbread walls -->
+        <rect x="-35" y="-10" width="70" height="65" rx="5" fill="#8b5a2b" stroke="url(#gold-trim)" stroke-width="2.5" />
+        <!-- Left Turret -->
+        <rect x="-55" y="-30" width="20" height="85" rx="3" fill="#6e4720" />
+        <polygon points="-60,-30 -30,-30 -45,-55" fill="#D7263D" stroke="#fff" stroke-width="1" />
+        <!-- Right Turret -->
+        <rect x="35" y="-30" width="20" height="85" rx="3" fill="#6e4720" />
+        <polygon points="30,-30 60,-30 45,-55" fill="#D7263D" stroke="#fff" stroke-width="1" />
+        <!-- Arched golden door -->
+        <path d="M-12,55 A12,12 0 0,1 12,55 Z" fill="#ffe259" />
+        <!-- Peppermint Turret domes -->
+        <circle cx="-45" cy="-30" r="6" fill="#fff" stroke="#D7263D" stroke-width="1.5" />
+        <circle cx="45" cy="-30" r="6" fill="#fff" stroke="#D7263D" stroke-width="1.5" />
+      </g>
+    </g>
+
+    <!-- ==== SERPENTINE BOARD TRACK LAYOUT ==== -->
+    <path class="board-road" d="M 150,850 C 400,850 600,850 850,850 C 950,850 950,680 850,680 C 600,680 400,680 150,680 C 50,680 50,500 150,500 C 400,500 600,500 850,500 C 950,500 950,320 850,320 C 600,320 400,320 150,320 C 50,320 50,140 150,140 C 400,140 600,140 850,140" />
+    <path class="board-road-center" d="M 150,850 C 400,850 600,850 850,850 C 950,850 950,680 850,680 C 600,680 400,680 150,680 C 50,680 50,500 150,500 C 400,500 600,500 850,500 C 950,500 950,320 850,320 C 600,320 400,320 150,320 C 50,320 50,140 150,140 C 400,140 600,140 850,140" id="board-path" />
+
+    <!-- Dynamic squares (populated by JS) -->
+    <g id="tiles-group"></g>
+
+    <!-- Interactive Central Spinner (Positioned perfectly at center) -->
+    <g class="board-spinner" transform="translate(500, 410)" id="spinner-group">
+      <!-- Shadow -->
+      <circle cx="0" cy="0" r="110" fill="rgba(0,0,0,0.6)" filter="url(#tile-shadow)" />
+      <!-- Outer Ring -->
+      <circle cx="0" cy="0" r="102" fill="#181a20" stroke="url(#gold-trim)" stroke-width="4.5" />
+      
+      <!-- Rotating wheel -->
+      <g id="spinner-wheel">
+        <!-- 10 segments of 36 deg -->
+        <path d="M0,0 L0,-96 A96,96 0 0,1 56.4,-77.7 Z" fill="#D7263D" />
+        <path d="M0,0 L56.4,-77.7 A96,96 0 0,1 91.3,-29.7 Z" fill="#ffa751" />
+        <path d="M0,0 L91.3,-29.7 A96,96 0 0,1 91.3,29.7 Z" fill="#ffe259" />
+        <path d="M0,0 L91.3,29.7 A96,96 0 0,1 56.4,77.7 Z" fill="#6E9075" />
+        <path d="M0,0 L56.4,77.7 A96,96 0 0,1 0,96 Z" fill="#3066BE" />
+        <path d="M0,0 L0,96 A96,96 0 0,1 -56.4,77.7 Z" fill="#7209b7" />
+        <path d="M0,0 L-56.4,77.7 A96,96 0 0,1 -91.3,29.7 Z" fill="#D7263D" />
+        <path d="M0,0 L-91.3,29.7 A96,96 0 0,1 -91.3,-29.7 Z" fill="#ffa751" />
+        <path d="M0,0 L-91.3,-29.7 A96,96 0 0,1 -56.4,-77.7 Z" fill="#ffe259" />
+        <path d="M0,0 L-56.4,-77.7 A96,96 0 0,1 0,-96 Z" fill="#6E9075" />
+        
+        <line x1="0" y1="0" x2="0" y2="-96" stroke="#fff" stroke-width="1.5" opacity="0.3" />
+        <line x1="0" y1="0" x2="56.4" y2="-77.7" stroke="#fff" stroke-width="1.5" opacity="0.3" />
+        <line x1="0" y1="0" x2="91.3" y2="-29.7" stroke="#fff" stroke-width="1.5" opacity="0.3" />
+        <line x1="0" y1="0" x2="91.3" y2="29.7" stroke="#fff" stroke-width="1.5" opacity="0.3" />
+        <line x1="0" y1="0" x2="56.4" y2="77.7" stroke="#fff" stroke-width="1.5" opacity="0.3" />
+        <line x1="0" y1="0" x2="0" y2="96" stroke="#fff" stroke-width="1.5" opacity="0.3" />
+        <line x1="0" y1="0" x2="-56.4" y2="77.7" stroke="#fff" stroke-width="1.5" opacity="0.3" />
+        <line x1="0" y1="0" x2="-91.3" y2="29.7" stroke="#fff" stroke-width="1.5" opacity="0.3" />
+        <line x1="0" y1="0" x2="-91.3" y2="-29.7" stroke="#fff" stroke-width="1.5" opacity="0.3" />
+        <line x1="0" y1="0" x2="-56.4" y2="-77.7" stroke="#fff" stroke-width="1.5" opacity="0.3" />
+
+        <text class="spin-num" transform="rotate(18) translate(0, -68) rotate(-18)" font-family="sans-serif" font-size="14" font-weight="900" fill="#fff" text-anchor="middle" dominant-baseline="central">1</text>
+        <text class="spin-num" transform="rotate(54) translate(0, -68) rotate(-54)" font-family="sans-serif" font-size="14" font-weight="900" fill="#fff" text-anchor="middle" dominant-baseline="central">2</text>
+        <text class="spin-num" transform="rotate(90) translate(0, -68) rotate(-90)" font-family="sans-serif" font-size="14" font-weight="900" fill="#000" text-anchor="middle" dominant-baseline="central">3</text>
+        <text class="spin-num" transform="rotate(126) translate(0, -68) rotate(-126)" font-family="sans-serif" font-size="14" font-weight="900" fill="#fff" text-anchor="middle" dominant-baseline="central">4</text>
+        <text class="spin-num" transform="rotate(162) translate(0, -68) rotate(-162)" font-family="sans-serif" font-size="14" font-weight="900" fill="#fff" text-anchor="middle" dominant-baseline="central">5</text>
+        <text class="spin-num" transform="rotate(198) translate(0, -68) rotate(-198)" font-family="sans-serif" font-size="14" font-weight="900" fill="#fff" text-anchor="middle" dominant-baseline="central">6</text>
+        <text class="spin-num" transform="rotate(234) translate(0, -68) rotate(-234)" font-family="sans-serif" font-size="14" font-weight="900" fill="#fff" text-anchor="middle" dominant-baseline="central">7</text>
+        <text class="spin-num" transform="rotate(270) translate(0, -68) rotate(-270)" font-family="sans-serif" font-size="14" font-weight="900" fill="#fff" text-anchor="middle" dominant-baseline="central">8</text>
+        <text class="spin-num" transform="rotate(306) translate(0, -68) rotate(-306)" font-family="sans-serif" font-size="14" font-weight="900" fill="#000" text-anchor="middle" dominant-baseline="central">9</text>
+        <text class="spin-num" transform="rotate(342) translate(0, -68) rotate(-342)" font-family="sans-serif" font-size="14" font-weight="900" fill="#fff" text-anchor="middle" dominant-baseline="central">10</text>
+      </g>
+      
+      <circle cx="0" cy="0" r="24" fill="#0b0c10" stroke="url(#gold-trim)" stroke-width="2.5" />
+      <circle cx="0" cy="0" r="8" fill="#ffe259" />
+      <polygon points="0,-120 -8,-100 8,-100" fill="#fff" filter="url(#tile-shadow)" />
+    </g>
+
+    <!-- Dynamic Pawn Instance -->
+    <g id="token-instance" transform="translate(150,850)" filter="url(#tile-shadow)">
+      <use href="#dragon-pawn" />
+    </g>
+  </svg>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const boardPath = document.getElementById('board-path');
+    const tokenInstance = document.getElementById('token-instance');
+    const boardSvg = document.getElementById('board-svg');
+    const tilesGroup = document.getElementById('tiles-group');
+
+    // Total Candy Land bricks (continuous adjacent squares)
+    const totalTiles = 60;
+    const stopIndices = [0, 7, 14, 21, 28, 35, 42, 49, 59];
+    const stopLabelsText = [
+      "START", "SAN DIEGO", "PHILLY", "NEW YORK", "HOUSTON", 
+      "SEATTLE", "ST LOUIS", "CHICAGO", "PHILLY AGAIN"
+    ];
+
+    const tilePositions = [];
+    const pathLength = boardPath.getTotalLength();
+
+    // 1. DYNAMICALLY GENERATE CONNECTED CHAIN OF SQUARES (CANDY LAND PALETTE)
+    const colors = [
+      'url(#candy-red)', 
+      'url(#candy-orange)', 
+      'url(#candy-yellow)', 
+      'url(#candy-green)', 
+      'url(#candy-blue)', 
+      'url(#candy-purple)'
+    ];
+    
+    for (let i = 0; i < totalTiles; i++) {
+      const distance = (i / (totalTiles - 1)) * pathLength;
+      const point = boardPath.getPointAtLength(distance);
+      
+      // Calculate tangent angle to align squares along winding curves
+      const point2 = boardPath.getPointAtLength(Math.min(pathLength, distance + 2.0));
+      const angle = Math.atan2(point2.y - point.y, point2.x - point.x) * 180 / Math.PI;
+
+      tilePositions.push({ x: point.x, y: point.y, angle: angle });
+
+      // Create group container for the square tile
+      const group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+      group.setAttribute('transform', `translate(${point.x}, ${point.y}) rotate(${angle})`);
+
+      let isStop = stopIndices.includes(i);
+      // Large stops, medium bricks
+      let side = isStop ? 60 : 54;
+      let half = side / 2;
+
+      if (isStop) {
+        group.setAttribute('class', 'interactive-tile-group');
+        const stopIndex = stopIndices.indexOf(i);
+        // Direct click scrolls to corresponding depth
+        group.addEventListener('click', () => {
+          const targetScrollY = (stopIndex / (stopIndices.length - 1)) * (document.documentElement.scrollHeight - window.innerHeight);
+          window.scrollTo({
+            top: targetScrollY,
+            behavior: 'smooth'
+          });
+        });
+      }
+
+      // Tile Shadow Rect
+      const shadow = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      shadow.setAttribute('x', -half);
+      shadow.setAttribute('y', -half);
+      shadow.setAttribute('width', side);
+      shadow.setAttribute('height', side);
+      shadow.setAttribute('rx', 6);
+      shadow.setAttribute('fill', 'none');
+      shadow.setAttribute('filter', 'url(#tile-shadow)');
+      group.appendChild(shadow);
+
+      // Tile Main Rect
+      const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      rect.setAttribute('x', -half);
+      rect.setAttribute('y', -half);
+      rect.setAttribute('width', side);
+      rect.setAttribute('height', side);
+      rect.setAttribute('rx', 6);
+      
+      let fillVal = colors[i % colors.length];
+      if (i === 0) fillVal = 'url(#candy-lavender)'; // Start tile
+      rect.setAttribute('fill', fillVal);
+      if (isStop) {
+        rect.setAttribute('stroke', '#fff');
+        rect.setAttribute('stroke-width', '3');
+      }
+      group.appendChild(rect);
+
+      // Gloss Overlay
+      const gloss = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      gloss.setAttribute('x', -half);
+      gloss.setAttribute('y', -half);
+      gloss.setAttribute('width', side);
+      gloss.setAttribute('height', side);
+      gloss.setAttribute('rx', 6);
+      gloss.setAttribute('fill', 'url(#tile-gloss)');
+      group.appendChild(gloss);
+
+      // Label details inside stop tiles
+      if (isStop) {
+        const stopIndex = stopIndices.indexOf(i);
+        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        text.setAttribute('x', 0);
+        text.setAttribute('y', 0);
+        text.setAttribute('transform', `rotate(${-angle})`); // Keep numbers upright
+        text.setAttribute('class', 'stop-num');
+        text.setAttribute('fill', (i === 0 || stopIndex === 8) ? '#000' : '#fff');
+        text.textContent = stopIndex === 0 ? "S" : stopIndex;
+        group.appendChild(text);
+
+        // Counter-rotated text label for city names
+        const labelWidth = stopLabelsText[stopIndex].length * 7 + 16;
+        
+        const labelGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        labelGroup.setAttribute('transform', `rotate(${-angle}) translate(0, -56)`);
+
+        const labelRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        labelRect.setAttribute('x', -labelWidth / 2);
+        labelRect.setAttribute('y', -9);
+        labelRect.setAttribute('width', labelWidth);
+        labelRect.setAttribute('height', 18);
+        labelRect.setAttribute('rx', 9);
+        labelRect.setAttribute('fill', 'rgba(6, 8, 20, 0.88)');
+        labelRect.setAttribute('stroke', 'rgba(255, 255, 255, 0.16)');
+        labelRect.setAttribute('stroke-width', '1');
+        labelGroup.appendChild(labelRect);
+
+        const labelText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        labelText.setAttribute('x', 0);
+        labelText.setAttribute('y', 0);
+        labelText.setAttribute('class', 'tile-label-text');
+        labelText.setAttribute('text-anchor', 'middle');
+        labelText.textContent = stopLabelsText[stopIndex];
+        labelGroup.appendChild(labelText);
+
+        group.appendChild(labelGroup);
+      }
+
+      tilesGroup.appendChild(group);
+    }
+
+    // 2. SCROLL ANIMATION SYSTEM
+    let targetScrollIndex = 0;
+    let currentScrollIndex = 0;
+
+    let lastX = 150;
+    let lastFlipX = 1;
+
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const lerpFactor = prefersReducedMotion ? 1.0 : 0.08;
+
+    window.addEventListener('scroll', () => {
+      const scrollY = window.scrollY;
+      const scrollMax = document.documentElement.scrollHeight - window.innerHeight;
+      const pct = scrollMax > 0 ? scrollY / scrollMax : 0;
+      targetScrollIndex = pct * (totalTiles - 1);
+    });
+
+    // Main animation ticking
+    function tick() {
+      currentScrollIndex += (targetScrollIndex - currentScrollIndex) * lerpFactor;
+
+      if (Math.abs(targetScrollIndex - currentScrollIndex) < 0.0005) {
+        currentScrollIndex = targetScrollIndex;
+      }
+
+      const indexFloor = Math.floor(currentScrollIndex);
+      const indexCeil = Math.min(totalTiles - 1, indexFloor + 1);
+      const f = currentScrollIndex - indexFloor;
+
+      // Monopoly style hop transition curves
+      let t_eased = 0;
+      if (f > 0.15 && f < 0.85) {
+        let t = (f - 0.15) / 0.7;
+        t_eased = t * t * (3 - 2 * t);
+      } else if (f >= 0.85) {
+        t_eased = 1.0;
+      }
+
+      const distFloor = (indexFloor / (totalTiles - 1)) * pathLength;
+      const distCeil = (indexCeil / (totalTiles - 1)) * pathLength;
+      const targetDistance = distFloor + (distCeil - distFloor) * t_eased;
+
+      const point = boardPath.getPointAtLength(targetDistance);
+
+      // Parabolic Hop height & squash stretch scaling
+      const maxJumpHeight = 60;
+      const jumpY = -maxJumpHeight * 4 * t_eased * (1 - t_eased);
+
+      const midAirFactor = Math.sin(t_eased * Math.PI);
+      const stretchY = 1.0 + 0.20 * midAirFactor;
+      const squashX = 1.0 - 0.08 * midAirFactor;
+
+      // Token facing flip
+      let flipX = lastFlipX;
+      const deltaX = point.x - lastX;
+      if (Math.abs(deltaX) > 0.3) {
+        flipX = deltaX > 0 ? 1 : -1;
+      }
+      lastX = point.x;
+      lastFlipX = flipX;
+
+      // Transform Pawn (Translate, scale jump squashes)
+      tokenInstance.setAttribute('transform', `translate(${point.x}, ${point.y + jumpY}) scale(${flipX * squashX}, ${stretchY})`);
+
+      // 3. STATIC FULL-MAP SCALING
+      // The board viewport CSS handles responsive aspect-ratio containment statically.
+      // We set a fixed viewBox="0 0 1000 1000" to keep the entire map visible.
+      boardSvg.setAttribute('viewBox', '0 0 1000 1000');
+
+      // Sync active state in tile classes
+      const roundedIndex = Math.round(currentScrollIndex);
+      const allTileGroups = tilesGroup.querySelectorAll('.interactive-tile-group');
+      allTileGroups.forEach((tg, idx) => {
+        const stopTile = stopIndices[idx];
+        if (stopTile === roundedIndex) {
+          tg.classList.add('active');
+        } else {
+          tg.classList.remove('active');
+        }
+      });
+
+      requestAnimationFrame(tick);
+    }
+
+    requestAnimationFrame(tick);
+
+    // ---- Game of Life Spinner Click Action ----
+    const spinnerWheel = document.getElementById('spinner-wheel');
+    let spinnerRotation = 0;
+    let isSpinning = false;
+
+    spinnerWheel.addEventListener('click', () => {
+      if (isSpinning) return;
+      isSpinning = true;
+
+      const spinAngle = 1080 + Math.random() * 720;
+      spinnerRotation += spinAngle;
+      spinnerWheel.style.transform = `rotate(${spinnerRotation}deg)`;
+
+      // Spin end triggers alert
+      setTimeout(() => {
+        isSpinning = false;
+        const landingDegrees = (360 - (spinnerRotation % 360)) % 360;
+        const segmentIndex = Math.floor(landingDegrees / 36);
+        const rolledNumber = (segmentIndex % 10) + 1;
+        showToastAlert(rolledNumber);
+      }, 3500);
+    });
+
+    function showToastAlert(num) {
+      const existing = document.querySelector('.spin-toast');
+      if (existing) existing.remove();
+
+      const toast = document.createElement('div');
+      toast.className = 'spin-toast';
+      toast.innerHTML = `
+        <div class="toast-title">🎡 Spinner Result</div>
+        <div class="toast-num">${num}</div>
+      `;
+      document.body.appendChild(toast);
+      
+      setTimeout(() => toast.classList.add('visible'), 50);
+
+      setTimeout(() => {
+        toast.classList.remove('visible');
+        setTimeout(() => toast.remove(), 400);
+      }, 3000);
+    }
+  });
+</script>
 </body>
 </html>
