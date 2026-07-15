@@ -10,4 +10,3 @@ _ds/
 archive/
 test_*.html
 node_modules/
-package-lock.json
