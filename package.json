@@ -1,0 +1,27 @@
+{
+  "name": "app",
+  "version": "1.0.0",
+  "description": "Welcome to the repository for my personal website portfolio!",
+  "main": "support.js",
+  "directories": {
+    "test": "tests"
+  },
+  "devDependencies": {
+    "jsdom": "^29.1.1"
+  },
+  "scripts": {
+    "test": "node tests/test_parseDcText.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ev3rydaydragon/ev3rydaydragon.github.io.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/ev3rydaydragon/ev3rydaydragon.github.io/issues"
+  },
+  "homepage": "https://github.com/ev3rydaydragon/ev3rydaydragon.github.io#readme"
+}
