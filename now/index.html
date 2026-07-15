@@ -393,7 +393,6 @@
     flex-wrap: wrap;
     gap: 10px;
   }
-  .earth-icon { color: var(--blurple); align-self: center; flex: 0 0 auto; }
   .miles-value {
     font-family: var(--font-display);
     font-weight: 900;
@@ -405,12 +404,12 @@
     font-weight: 800;
     color: rgba(255,255,255,0.4);
   }
-  .miles-earths {
-    font-family: var(--font-display);
-    font-weight: 900;
-    font-size: clamp(20px, 3.4vw, 26px);
-    color: var(--blurple);
-  }
+  .earths-visual { display: inline-flex; align-items: center; gap: 4px; align-self: center; }
+  .earth-icon { color: var(--blurple); flex: 0 0 auto; }
+  /* The globe circle only spans the middle 18 of the icon's 24-unit viewBox
+     (3 to 21), so hiding 10% of the *earth itself* means clipping 20% of
+     the icon's own box, not 10%. */
+  .earth-icon--partial { clip-path: inset(0 20% 0 0); }
 
   /* ---- Footer / links ---- */
   .now-foot {
@@ -551,14 +550,20 @@
           <p class="thread-body">The world is too massive to stay grounded. Armed with a GoWild pass, I'm trading predictability for pure adventure. Waking up in Chicago, booking a ticket hours before takeoff, and dropping into new cities on a whim. Chasing the sunrise, hunting down the unknown, and refusing to let the horizon stay static.</p>
 
           <div class="miles-stat">
-            <svg class="earth-icon" width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/>
-              <ellipse cx="12" cy="12" rx="4" ry="9" stroke="currentColor" stroke-width="1.6"/>
-              <path d="M3 12h18M4.7 7.3h14.6M4.7 16.7h14.6" stroke="currentColor" stroke-width="1.6"/>
-            </svg>
             <span class="miles-value">48,294 miles</span>
             <span class="miles-eq">=</span>
-            <span class="miles-earths">1.9 Earths</span>
+            <span class="earths-visual" role="img" aria-label="1.9 Earths">
+              <svg class="earth-icon" width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/>
+                <ellipse cx="12" cy="12" rx="4" ry="9" stroke="currentColor" stroke-width="1.6"/>
+                <path d="M3 12h18M4.7 7.3h14.6M4.7 16.7h14.6" stroke="currentColor" stroke-width="1.6"/>
+              </svg>
+              <svg class="earth-icon earth-icon--partial" width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/>
+                <ellipse cx="12" cy="12" rx="4" ry="9" stroke="currentColor" stroke-width="1.6"/>
+                <path d="M3 12h18M4.7 7.3h14.6M4.7 16.7h14.6" stroke="currentColor" stroke-width="1.6"/>
+              </svg>
+            </span>
           </div>
         </div>
 
