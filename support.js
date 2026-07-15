@@ -1668,7 +1668,8 @@
       },
       live(name) {
         if (name !== void 0) return liveOne(name);
-        for (const n of [...since.keys()]) if (liveOne(n)) return true;
+        // PERFORMANCE: iterating over since.keys() directly instead of spreading into an array avoids allocation overhead.
+        for (const n of since.keys()) if (liveOne(n)) return true;
         return false;
       }
     };
