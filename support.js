@@ -1747,6 +1747,7 @@
       __dcAnnotatedTemplate: (name) => runtime.annotatedTemplate(name),
       /** Editor bridge — the *original* (decoded) template source. */
       __dcTemplateSource: (name) => runtime.templateSource(name),
+      __parseDcText: parseDcText,
       __dcBoot: () => {
         rootName = boot(runtime, document) ?? rootName;
         notifyHost();

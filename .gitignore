@@ -9,3 +9,5 @@ _ds/*/readme.md
 _ds/
 archive/
 test_*.html
+node_modules/
+package-lock.json
