@@ -419,7 +419,9 @@
     const propGetters = [];
     const pseudoClasses = [];
     let hintSize = null;
-    for (const { name, value } of [...node.attributes]) {
+    // Optimized: avoid spreading node.attributes
+    for (let i = 0; i < node.attributes.length; i++) {
+      const { name, value } = node.attributes[i];
       if (name === "sc-name" || name === "data-dc-tpl") continue;
       let key = name;
       if (key.startsWith(CAMEL_ATTR))
@@ -484,7 +486,13 @@
     return render;
   }
   function walkChildren(node, host) {
-    return [...node.childNodes].map((c) => walk(c, host)).filter((b) => b != null);
+    // Optimized: avoid allocating intermediate arrays from spreading childNodes
+    const builders = [];
+    for (let i = 0; i < node.childNodes.length; i++) {
+      const b = walk(node.childNodes[i], host);
+      if (b != null) builders.push(b);
+    }
+    return builders;
   }
   function walk(node, host) {
     if (node.nodeType === Node.TEXT_NODE) return walkText(node);
@@ -1351,7 +1359,11 @@
       postDesignMode(designDocMode);
     });
     function compile(node) {
-      const raw = [...node.children];
+      // Optimized: avoid spreading node.children
+      const raw = new Array(node.children.length);
+      for (let i = 0; i < node.children.length; i++) {
+        raw[i] = node.children[i];
+      }
       const helmetClosed = node.nextSibling != null || node.parentNode?.nextSibling != null;
       if (node.hasAttribute("data-dc-atomics") && !mounted.has("__dc-atomics")) {
         mounted.add("__dc-atomics");
@@ -1373,8 +1385,11 @@
             if (mounted.has(key)) continue;
             mounted.add(key);
             const el = doc.createElement("script");
-            for (const { name: an, value } of [...child.attributes])
+            // Optimized: avoid spreading attributes
+            for (let j = 0; j < child.attributes.length; j++) {
+              const { name: an, value } = child.attributes[j];
               el.setAttribute(an, value);
+            }
             if (child.textContent) el.textContent = child.textContent;
             doc.head.appendChild(el);
           } else if (tag === "LINK" || tag === "META") {
@@ -1414,7 +1429,9 @@
               live.set(key, el);
               doc.head.appendChild(el);
             }
-            for (const { name: an, value } of [...child.attributes]) {
+            // Optimized: avoid spreading attributes
+            for (let j = 0; j < child.attributes.length; j++) {
+              const { name: an, value } = child.attributes[j];
               if (el.getAttribute(an) !== value) el.setAttribute(an, value);
             }
             if (el.textContent !== child.textContent)
@@ -1668,7 +1685,8 @@
       },
       live(name) {
         if (name !== void 0) return liveOne(name);
-        for (const n of [...since.keys()]) if (liveOne(n)) return true;
+        // Optimized: avoid spreading Map/Set keys iterator
+        for (const n of since.keys()) if (liveOne(n)) return true;
         return false;
       }
     };
