@@ -48,6 +48,13 @@
   z-index: 0;
 }
 
+/* Idle-animation gating: these loops run infinitely from page load even while
+   their elements are invisible or several viewports away. The DC script toggles
+   the body classes (hero beat passed / doors section near) so they only animate
+   when they can actually be seen. */
+body.ed-hero-done .ed-bounce-arrow { animation-play-state: paused; }
+body:not(.ed-doors-near) .ed-portal { animation-play-state: paused; }
+
 @keyframes ed-burst-flame {
   0% { color: inherit; text-shadow: none; transform: scale(1) translateY(0); opacity: 1; filter: blur(0px); }
   20% { color: #ffeb3b; text-shadow: 0 -10px 20px #ff9800, 0 -20px 40px #ff5722; transform: scale(1.02) translateY(-2px); opacity: 1; filter: blur(1px); }
@@ -226,9 +233,11 @@
           </div>
         </div>
       </div>
-      <div ref="{{ beats[5].setRef }}" style="height: 100vh; scroll-snap-align: start;"></div>
-      <div ref="{{ beats[6].setRef }}" style="height: 100vh; scroll-snap-align: start;"></div>
-      <div ref="{{ beats[7].setRef }}" style="height: 100vh; scroll-snap-align: start;"></div>
+      <!-- Pre-map runway: beat 5 carries the "waiting for permission" line; 6 and 7
+           are empty pacing beats for the rotating circle, so they get the deepest trim. -->
+      <div ref="{{ beats[5].setRef }}" style="height: 75vh; scroll-snap-align: start;"></div>
+      <div ref="{{ beats[6].setRef }}" style="height: 50vh; scroll-snap-align: start;"></div>
+      <div ref="{{ beats[7].setRef }}" style="height: 50vh; scroll-snap-align: start;"></div>
       <div ref="{{ beats[8].setRef }}" style="height: 100vh; scroll-snap-align: start;"></div>
       <div ref="{{ beats[9].setRef }}" style="height: 100vh; scroll-snap-align: start;"></div>
       <div ref="{{ mapLineSpacerRef }}" style="height: 100vh; scroll-snap-align: start;"></div>
@@ -526,6 +535,16 @@ class Component extends DCLogic {
     // intro shouldn't wait for a scroll-triggered intersection.
     this.onActivate(0);
 
+    // Un-pause the door-portal swirls only while the doors section is near
+    // the viewport (see the body:not(.ed-doors-near) rule).
+    const doorsEl = document.getElementById('doors');
+    if (doorsEl) {
+      this.doorsIo = new IntersectionObserver((entries) => {
+        document.body.classList.toggle('ed-doors-near', entries[0].isIntersecting);
+      }, { rootMargin: '200px' });
+      this.doorsIo.observe(doorsEl);
+    }
+
     if (!this.reducedMotion) {
       // ⚡ Bolt Optimization: Throttle mousemove DOM updates using requestAnimationFrame
       // This prevents layout thrashing by decoupling the high-frequency mouse event
@@ -569,6 +588,13 @@ class Component extends DCLogic {
           const startScroll = window.innerHeight; // Offset for sticky 100vh
           let scrolledVh = (-rect.top - startScroll) / window.innerHeight;
           if (scrolledVh < 0) scrolledVh = 0;
+          // The pre-map runway (beats 5-7) was trimmed from 3 viewports to 1.75
+          // (75vh + 50vh + 50vh), so "I don't need a map" arrives sooner. The
+          // thresholds below still assume the original geometry, where that
+          // runway ended at scrolledVh = 2; it now ends at 0.75. Stretch the
+          // pre-map segment back onto 0..2 and shift the rest by a constant, so
+          // every beat from the map title onward keeps its original pacing.
+          scrolledVh = scrolledVh <= 0.75 ? scrolledVh * (2 / 0.75) : 2 + (scrolledVh - 0.75);
 
           let cProg = Math.min(1, Math.max(0, scrolledVh / 2));
           
@@ -868,6 +894,7 @@ class Component extends DCLogic {
 
   componentWillUnmount() {
     if (this.io) this.io.disconnect();
+    if (this.doorsIo) this.doorsIo.disconnect();
     if (this.typeTimer) clearInterval(this.typeTimer);
     if (this.typeTimer2) clearInterval(this.typeTimer2);
     if (this.onMove) window.removeEventListener('mousemove', this.onMove);
@@ -879,6 +906,9 @@ class Component extends DCLogic {
 
   onActivate(idx) {
     this.setState({ activeIdx: idx });
+    // Pause the hint arrow's bounce loop once the visitor moves past the hero
+    // (its wrapper is already at opacity 0 by then, but the animation kept ticking).
+    document.body.classList.toggle('ed-hero-done', idx > 0);
     const beat = BEATS[idx];
     if (!beat) return;
     if (beat.typing && !this.playedTyping) {
