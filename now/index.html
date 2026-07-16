@@ -106,8 +106,12 @@
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
   }
-  /* Stop repainting the 1500px conic-gradient once the hero is scrolled away. */
-  .chat-hero.swirl-idle .chat-swirl { animation-play-state: paused; }
+  /* Once the hero is scrolled away, pause every looping animation it owns —
+     the 1500px conic swirl, the greeting spark, and the armed send button
+     throb — so nothing repaints for a hero nobody is looking at. */
+  .chat-hero.swirl-idle .chat-swirl,
+  .chat-hero.swirl-idle .chat-spark,
+  .chat-hero.swirl-idle .send-btn.armed { animation-play-state: paused; }
   .chat-box {
     position: relative;
     z-index: 1;
