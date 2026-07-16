@@ -226,14 +226,14 @@
           </div>
         </div>
       </div>
-      <div ref="{{ beats[5].setRef }}" style="height: 75vh; scroll-snap-align: start;"></div>
-      <div ref="{{ beats[6].setRef }}" style="height: 75vh; scroll-snap-align: start;"></div>
-      <div ref="{{ beats[7].setRef }}" style="height: 75vh; scroll-snap-align: start;"></div>
-      <div ref="{{ beats[8].setRef }}" style="height: 75vh; scroll-snap-align: start;"></div>
-      <div ref="{{ beats[9].setRef }}" style="height: 75vh; scroll-snap-align: start;"></div>
-      <div ref="{{ mapLineSpacerRef }}" style="height: 75vh; scroll-snap-align: start;"></div>
-      <div ref="{{ beats[10].setRef }}" style="height: 75vh; scroll-snap-align: start;"></div>
-      <div style="height: 75vh; scroll-snap-align: start;"></div>
+      <div ref="{{ beats[5].setRef }}" style="height: 100vh; scroll-snap-align: start;"></div>
+      <div ref="{{ beats[6].setRef }}" style="height: 100vh; scroll-snap-align: start;"></div>
+      <div ref="{{ beats[7].setRef }}" style="height: 100vh; scroll-snap-align: start;"></div>
+      <div ref="{{ beats[8].setRef }}" style="height: 100vh; scroll-snap-align: start;"></div>
+      <div ref="{{ beats[9].setRef }}" style="height: 100vh; scroll-snap-align: start;"></div>
+      <div ref="{{ mapLineSpacerRef }}" style="height: 100vh; scroll-snap-align: start;"></div>
+      <div ref="{{ beats[10].setRef }}" style="height: 100vh; scroll-snap-align: start;"></div>
+      <div style="height: 100vh; scroll-snap-align: start;"></div>
     </section>
 
     <!-- CEMENT TRUCK SCENE (Beat 11) -->
@@ -570,11 +570,6 @@ class Component extends DCLogic {
           const startScroll = window.innerHeight; // Offset for sticky 100vh
           let scrolledVh = (-rect.top - startScroll) / window.innerHeight;
           if (scrolledVh < 0) scrolledVh = 0;
-          // The map sequence's spacers were shortened (100vh -> 75vh) to cut the
-          // scrolling needed to move through it. Scale the progress back up so the
-          // full circle -> map -> forge -> signal animation still completes over
-          // that shorter runway instead of being cut off before the last beats.
-          scrolledVh *= 1.45;
 
           let cProg = Math.min(1, Math.max(0, scrolledVh / 2));
           
