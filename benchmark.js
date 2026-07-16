@@ -6,7 +6,7 @@ for (let i = 0; i < 10000; i++) {
 }
 
 function liveOne(n) {
-    return n === 'key0';
+    return n === 'key9999';
 }
 
 function liveWithSpread() {
