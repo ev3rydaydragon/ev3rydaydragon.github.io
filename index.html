@@ -113,9 +113,9 @@
         </div>
       </div>
       <!-- Spacers to trigger IntersectionObserver as you scroll down -->
-      <div ref="{{ beats[0].setRef }}" style="height: 100vh; scroll-snap-align: start;"></div>
-      <div ref="{{ beats[1].setRef }}" style="height: 100vh; scroll-snap-align: start;"></div>
-      <div ref="{{ beats[2].setRef }}" style="height: 100vh; scroll-snap-align: start;"></div>
+      <div ref="{{ beats[0].setRef }}" style="height: 75vh; scroll-snap-align: start;"></div>
+      <div ref="{{ beats[1].setRef }}" style="height: 75vh; scroll-snap-align: start;"></div>
+      <div ref="{{ beats[2].setRef }}" style="height: 75vh; scroll-snap-align: start;"></div>
     </section>
 
     <!-- BURN GROUP -->
@@ -131,8 +131,8 @@
         </div>
       </div>
       <!-- Spacers for Burn Group -->
-      <div ref="{{ beats[3].setRef }}" style="height: 100vh; scroll-snap-align: start;"></div>
-      <div ref="{{ beats[4].setRef }}" style="height: 100vh; scroll-snap-align: start;"></div>
+      <div ref="{{ beats[3].setRef }}" style="height: 75vh; scroll-snap-align: start;"></div>
+      <div ref="{{ beats[4].setRef }}" style="height: 75vh; scroll-snap-align: start;"></div>
     </section>
 
     <!-- CIRCLE GROUP -->
@@ -569,7 +569,7 @@ class Component extends DCLogic {
           const startScroll = window.innerHeight; // Offset for sticky 100vh
           let scrolledVh = (-rect.top - startScroll) / window.innerHeight;
           if (scrolledVh < 0) scrolledVh = 0;
-          
+
           let cProg = Math.min(1, Math.max(0, scrolledVh / 2));
           
           let angle = 0;
