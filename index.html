@@ -493,7 +493,6 @@ function hash(n) {
   const x = Math.sin(n * 12.9898) * 43758.5453;
   return x - Math.floor(x);
 }
-const JUSTIFY = ['center', 'flex-start', 'center', 'flex-end', 'center'];
 
 class Component extends DCLogic {
   state = {
@@ -980,6 +979,8 @@ class Component extends DCLogic {
     const active = this.state.activeIdx;
     const reduced = this.reducedMotion;
     const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+
+    const JUSTIFY = ['center', 'flex-start', 'center', 'flex-end', 'center'];
 
     const beats = BEATS.map((beat, i) => {
       let isActive = reduced ? true : i === active;
