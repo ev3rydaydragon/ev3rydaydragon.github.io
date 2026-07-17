@@ -68,6 +68,15 @@ body:not(.ed-doors-near) .ed-portal { animation-play-state: paused; }
   .ed-cement-wide { display: none; }
   .ed-cement-narrow { display: inline; }
 }
+
+/* Avalanche runway: 800vh of mouse-wheel scroll is fine on desktop, but on a
+   phone that's ~8-10 flicks for one scene. Thumb-flicks cover more ground per
+   gesture, so the runway shrinks on phones; the scene plays the same beats,
+   just over fewer swipes. */
+.ed-avalanche-spacer { height: 800vh; }
+@media (max-width: 767px) {
+  .ed-avalanche-spacer { height: 450vh; }
+}
 </style>
 <link rel="stylesheet" href="assets/style.css?v=20260715">
 </head>
@@ -353,8 +362,10 @@ body:not(.ed-doors-near) .ed-portal { animation-play-state: paused; }
         <p ref="{{ avalancheShotTextRef }}" style="{{ avalancheShotTextStyle }}">SO <span style="{{ avalancheShutterStyle }}">SCREENSHOT</span> IT.</p>
 
       </div>
-      <!-- Scroll Spacer -->
-      <div style="height: 800vh; width: 100%;"></div>
+      <!-- Scroll Spacer — the scene's animation is driven by fractional progress
+           through this runway, so the phone height below compresses the whole
+           sequence proportionally with no timing remap. -->
+      <div class="ed-avalanche-spacer" style="width: 100%;"></div>
     </section>
 
     <!-- REST OF BEATS -->
