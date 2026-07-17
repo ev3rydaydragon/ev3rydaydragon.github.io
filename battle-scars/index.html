@@ -3,172 +3,303 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Dragon Chan — Battle Scars</title>
-<meta name="description" content="Everywhere Dragon Chan has touched down, mapped out like a board game.">
+<title>Dragon Chan — Ready to Fly?</title>
+<meta name="description" content="Every city Dragon Chan has lived in, laid out as a board game. Scroll to hop the dragon pawn through the journey.">
 
 <link rel="canonical" href="https://iamdragonc.com/battle-scars/">
-<meta property="og:title" content="Dragon Chan — Battle Scars">
-<meta property="og:description" content="Everywhere I've been, mapped out like a board game.">
+<meta property="og:title" content="Dragon Chan — Ready to Fly?">
+<meta property="og:description" content="Eight cities, one dragon pawn, board not finished. Scroll to play.">
 <meta property="og:url" content="https://iamdragonc.com/battle-scars/">
 <meta property="og:type" content="website">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;800;900&family=Mulish:wght@400;600;700&display=swap" rel="stylesheet">
 
 <style>
-  * { box-sizing: border-box; }
-  html, body { margin: 0; padding: 0; }
-  
-  /* Scroll height to drive the board pawn movement */
-  body {
-    background: #020306;
-    height: 500vh; /* Smooth scroll track depth */
-    overflow-x: hidden;
+  /* EverydayDragon brand: Mythical Midnight, Bodacious Blurple, Poised
+     Periwinkle, Witty Wisteria, Meaningful Moss, Brave Battleship,
+     Crafty Crimson, Stoic Snow. Hard offset shadows, crisp radii. */
+  :root {
+    --ed-midnight: #000000;
+    --ed-snow: #FFFFFF;
+    --ed-blurple: #3066BE;
+    --ed-periwinkle: #090C9B;
+    --ed-wisteria: #CCC9DC;
+    --ed-moss: #6E9075;
+    --ed-battleship: #7C7C7C;
+    --ed-crimson: #D7263D;
+    --font-display: 'Montserrat', 'Gotham', system-ui, sans-serif;
+    --font-body: 'Mulish', 'Avenir', system-ui, sans-serif;
   }
 
-  /* ---- Fullscreen Candy Land Board Viewport ---- */
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  html { scroll-snap-type: y proximity; }
+
+  body { background: var(--ed-midnight); overflow-x: hidden; }
+
+  /* ---- Fixed board layer ---- */
   .board-viewport {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
+    inset: 0;
     z-index: 1;
     display: flex;
     align-items: center;
     justify-content: center;
     overflow: hidden;
-    background: 
-      radial-gradient(130% 110% at 50% 50%, #0c0e25 0%, #030409 65%, #000 100%);
+    background: radial-gradient(120% 100% at 50% 40%, #0a0f2e 0%, #04050f 55%, #000 100%);
   }
-  .board-viewport svg {
-    width: 100%;
-    height: 100%;
-    max-width: 95vh;  /* Keep it square and fully visible vertically */
-    max-height: 95vw; /* Keep it square and fully visible horizontally */
-    object-fit: contain;
-    overflow: visible;
-  }
+  .board-viewport svg { width: 100%; height: 100%; overflow: visible; }
 
-  /* Winding Ribbon Path base */
+  /* Road ribbon */
+  .road-under {
+    stroke: rgba(204, 201, 220, 0.07);
+    stroke-width: 76;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    fill: none;
+  }
   .board-road {
-    stroke: rgba(255, 255, 255, 0.02);
-    stroke-width: 60;
+    stroke: rgba(204, 201, 220, 0.05);
+    stroke-width: 62;
     stroke-linecap: round;
     stroke-linejoin: round;
     fill: none;
   }
   .board-road-center {
-    stroke: rgba(255, 255, 255, 0.06);
+    stroke: rgba(204, 201, 220, 0.28);
     stroke-width: 2;
-    stroke-dasharray: 6 8;
+    stroke-dasharray: 6 9;
     stroke-linecap: round;
-    stroke-linejoin: round;
+    fill: none;
+  }
+  /* Traveled track: crimson-on-snow ribbon the pawn re-crosses at Philly */
+  .trail-casing {
+    stroke: var(--ed-snow);
+    stroke-width: 11;
+    stroke-linecap: round;
+    fill: none;
+    opacity: 0.9;
+  }
+  .trail-core {
+    stroke: var(--ed-crimson);
+    stroke-width: 5;
+    stroke-linecap: round;
     fill: none;
   }
 
-  /* Candy Land Squares Styling */
-  .interactive-tile-group {
-    cursor: pointer;
-  }
-  .interactive-tile-group rect {
-    transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275), stroke-width 0.25s ease;
+  .interactive-tile-group { cursor: pointer; }
+  .interactive-tile-group .tile-face {
+    transition: transform 0.2s cubic-bezier(0.2, 0, 0, 1), stroke 0.2s ease;
     transform-box: fill-box;
     transform-origin: center;
   }
-  .interactive-tile-group:hover rect, .interactive-tile-group.active rect {
-    transform: scale(1.15);
-    stroke: #fff;
-    stroke-width: 2.5px;
+  .interactive-tile-group:hover .tile-face, .interactive-tile-group.active .tile-face {
+    transform: scale(1.12);
+    stroke: var(--ed-crimson);
   }
 
-  .stop-num {
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 900;
-    font-size: 14px;
+  .tile-icon {
+    font-size: 22px;
     text-anchor: middle;
     dominant-baseline: central;
     pointer-events: none;
   }
-
   .tile-label-text {
-    font-family: 'Montserrat', sans-serif;
+    font-family: var(--font-display);
     font-weight: 900;
-    font-size: 10px;
-    fill: #fff;
+    font-size: 11px;
+    fill: var(--ed-midnight);
     letter-spacing: 0.08em;
     pointer-events: none;
   }
+  /* Hide the label while the pawn is parked on the stop — the card names
+     the city, and the pill would collide with the pawn */
+  .tile-label { transition: opacity 0.3s ease; }
+  .interactive-tile-group.active .tile-label { opacity: 0; }
 
-  /* Spinner Styling */
-  .board-spinner {
-    pointer-events: auto;
-  }
-  #spinner-group {
-    transform-box: fill-box;
-    transform-origin: center;
-    animation: spinner-pulse 3s infinite ease-in-out;
-  }
-  #spinner-wheel {
-    transform-origin: center;
-    cursor: pointer;
-  }
-  @keyframes spinner-pulse {
-    0%, 100% { filter: drop-shadow(0 4px 15px rgba(255, 226, 89, 0.2)); }
-    50% { filter: drop-shadow(0 4px 25px rgba(255, 226, 89, 0.6)); }
+  .candy-cane { fill: none; stroke-linecap: round; stroke-linejoin: round; }
+
+  .mist-cloud { animation: cloud-drift 11s ease-in-out infinite alternate; transform-box: fill-box; }
+  @keyframes cloud-drift {
+    from { transform: translateX(-10px); }
+    to { transform: translateX(10px); }
   }
 
-  /* Whimsical Decorative Elements */
-  .candy-forest-cane {
-    fill: none;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-  }
+  /* ---- Scroll track ---- */
+  .scroll-track { position: relative; z-index: 2; pointer-events: none; }
+  .beat { height: 100vh; scroll-snap-align: start; }
 
-  /* Spin Result Toast */
-  .spin-toast {
+  /* ---- Title overlay ---- */
+  .title-overlay {
     position: fixed;
-    bottom: 30px;
-    left: 50%;
-    transform: translate(-50%, 100px) scale(0.9);
-    background: rgba(9, 11, 23, 0.95);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 16px;
-    padding: 12px 24px;
-    z-index: 10000;
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.6), 0 0 20px rgba(255, 226, 89, 0.25);
-    opacity: 0;
-    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.4s ease;
-    text-align: center;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    inset: 0;
+    z-index: 5;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    padding-bottom: 7vh;
     pointer-events: none;
+    transition: opacity 0.5s ease;
   }
-  .spin-toast.visible {
-    transform: translate(-50%, 0) scale(1);
+  .title-overlay.hidden { opacity: 0; }
+  .title-overlay h1 {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: clamp(36px, 7vw, 74px);
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
+    color: var(--ed-snow);
+    margin: 0;
+    text-shadow: 5px 5px 0 var(--ed-blurple);
+  }
+  .title-overlay p {
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: clamp(14px, 2.1vw, 18px);
+    color: var(--ed-wisteria);
+    margin: 12px 0 26px;
+  }
+  .scroll-hint {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 12px;
+    letter-spacing: 0.16em;
+    color: var(--ed-crimson);
+    animation: hint-bob 1.6s infinite ease-in-out;
+  }
+  @keyframes hint-bob {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(8px); }
+  }
+
+  /* ---- Scar Card ---- */
+  .card-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    perspective: 900px;
+  }
+  .scar-card {
+    width: min(88vw, 400px);
+    background: var(--ed-snow);
+    border: 2px solid var(--ed-midnight);
+    border-radius: 10px;
+    box-shadow: 8px 8px 0 0 var(--ed-blurple);
+    overflow: hidden;
+    transform: rotateX(70deg) translateY(50px) rotate(-1.5deg);
+    opacity: 0;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+  }
+  .card-overlay.visible .scar-card {
+    transform: rotateX(0deg) translateY(0) rotate(-1.5deg);
     opacity: 1;
   }
-  .toast-title {
-    font-family: 'Montserrat', sans-serif;
+  .scar-card .card-band {
+    font-family: var(--font-display);
     font-weight: 900;
-    font-size: 10px;
-    letter-spacing: 0.1em;
+    font-size: 11px;
+    letter-spacing: 0.28em;
     text-transform: uppercase;
-    color: #ffa751;
-    margin-bottom: 4px;
+    text-align: center;
+    padding: 12px;
+    border-bottom: 2px solid var(--ed-midnight);
   }
-  .toast-num {
-    font-family: 'Montserrat', sans-serif;
+  .scar-card .card-body { padding: 26px 28px 24px; text-align: center; }
+  .scar-card .card-icon { font-size: 44px; line-height: 1; }
+  .scar-card .card-city {
+    font-family: var(--font-display);
     font-weight: 900;
-    font-size: 28px;
-    line-height: 1;
-    color: #fff;
+    font-size: 24px;
+    letter-spacing: -0.01em;
+    text-transform: uppercase;
+    color: var(--ed-midnight);
+    margin: 12px 0 10px;
+  }
+  .scar-card .card-line {
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 15px;
+    line-height: 1.5;
+    color: #3d3d3d;
+    margin: 0;
+  }
+  .scar-card .card-foot {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    color: var(--ed-battleship);
+    text-align: center;
+    padding: 0 0 18px;
+  }
+
+  /* ---- Outro overlay ---- */
+  .outro-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 6;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 0 24px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.7s ease;
+  }
+  .outro-overlay.visible { opacity: 1; }
+  .outro-overlay h2 {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: clamp(30px, 6vw, 60px);
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
+    color: var(--ed-snow);
+    margin: 0 0 14px;
+    text-shadow: 5px 5px 0 var(--ed-crimson);
+  }
+  .outro-overlay p {
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: clamp(14px, 2.2vw, 18px);
+    color: var(--ed-wisteria);
+    max-width: 460px;
+    margin: 0 0 30px;
+  }
+  .outro-overlay a {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 13px;
+    letter-spacing: 0.14em;
+    color: var(--ed-midnight);
+    text-decoration: none;
+    background: var(--ed-snow);
+    border: 2px solid var(--ed-midnight);
+    border-radius: 6px;
+    padding: 13px 28px;
+    box-shadow: 5px 5px 0 0 var(--ed-crimson);
+    pointer-events: auto;
+    transition: transform 0.12s ease, box-shadow 0.12s ease;
+  }
+  .outro-overlay a:hover {
+    transform: translate(2px, 2px);
+    box-shadow: 3px 3px 0 0 var(--ed-crimson);
   }
 
   @media (prefers-reduced-motion: reduce) {
-    #spinner-wheel { transition: none !important; }
-    #spinner-group { animation: none !important; }
+    .scar-card { transition: opacity 0.2s ease; transform: rotate(-1.5deg); }
+    .card-overlay.visible .scar-card { transform: rotate(-1.5deg); }
+    .scroll-hint { animation: none; }
+    .mist-cloud { animation: none; }
   }
 </style>
 </head>
@@ -177,121 +308,135 @@
 <div class="board-viewport">
   <svg class="board-svg" id="board-svg" viewBox="0 0 1000 1000">
     <defs>
-      <!-- Candy Spot Gradients (Vibrant Candy Land Ribbon path) -->
-      <radialGradient id="candy-red" cx="35%" cy="35%" r="65%">
-        <stop offset="0%" stop-color="#ff758a" />
-        <stop offset="50%" stop-color="#D7263D" />
-        <stop offset="100%" stop-color="#730e1b" />
-      </radialGradient>
-      <radialGradient id="candy-orange" cx="35%" cy="35%" r="65%">
-        <stop offset="0%" stop-color="#ffb85c" />
-        <stop offset="50%" stop-color="#ff9500" />
-        <stop offset="100%" stop-color="#9e5600" />
-      </radialGradient>
-      <radialGradient id="candy-yellow" cx="35%" cy="35%" r="65%">
-        <stop offset="0%" stop-color="#fff099" />
-        <stop offset="50%" stop-color="#ffe259" />
-        <stop offset="100%" stop-color="#ad8d00" />
-      </radialGradient>
-      <radialGradient id="candy-green" cx="35%" cy="35%" r="65%">
-        <stop offset="0%" stop-color="#aee0ba" />
-        <stop offset="50%" stop-color="#6E9075" />
-        <stop offset="100%" stop-color="#324736" />
-      </radialGradient>
-      <radialGradient id="candy-blue" cx="35%" cy="35%" r="65%">
-        <stop offset="0%" stop-color="#90b8ff" />
-        <stop offset="50%" stop-color="#3066BE" />
-        <stop offset="100%" stop-color="#153670" />
-      </radialGradient>
-      <radialGradient id="candy-purple" cx="35%" cy="35%" r="65%">
-        <stop offset="0%" stop-color="#e29eff" />
-        <stop offset="50%" stop-color="#af52de" />
-        <stop offset="100%" stop-color="#651a91" />
-      </radialGradient>
-      <radialGradient id="candy-lavender" cx="35%" cy="35%" r="65%">
+      <!-- Pawn shading: brand colors, dimensional gradients -->
+      <linearGradient id="base-side" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#63607a" />
+        <stop offset="35%" stop-color="#e8e6f1" />
+        <stop offset="70%" stop-color="#b5b1c9" />
+        <stop offset="100%" stop-color="#4e4b63" />
+      </linearGradient>
+      <radialGradient id="base-top" cx="38%" cy="30%" r="75%">
         <stop offset="0%" stop-color="#ffffff" />
-        <stop offset="50%" stop-color="#CCC9DC" />
+        <stop offset="60%" stop-color="#CCC9DC" />
         <stop offset="100%" stop-color="#777587" />
       </radialGradient>
-
-      <!-- Gloss overlays -->
-      <linearGradient id="tile-gloss" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stop-color="#fff" stop-opacity="0.4" />
-        <stop offset="40%" stop-color="#fff" stop-opacity="0.1" />
-        <stop offset="100%" stop-color="#fff" stop-opacity="0" />
+      <radialGradient id="drg-body" cx="35%" cy="28%" r="80%">
+        <stop offset="0%" stop-color="#90b8ff" />
+        <stop offset="55%" stop-color="#3066BE" />
+        <stop offset="100%" stop-color="#0a1e56" />
+      </radialGradient>
+      <radialGradient id="drg-head" cx="38%" cy="30%" r="78%">
+        <stop offset="0%" stop-color="#a5c4ff" />
+        <stop offset="55%" stop-color="#3a6fc4" />
+        <stop offset="100%" stop-color="#122a68" />
+      </radialGradient>
+      <radialGradient id="drg-belly" cx="45%" cy="30%" r="80%">
+        <stop offset="0%" stop-color="#ffffff" />
+        <stop offset="70%" stop-color="#CCC9DC" />
+        <stop offset="100%" stop-color="#a29fba" />
+      </radialGradient>
+      <linearGradient id="drg-wing" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#ff6b7f" />
+        <stop offset="100%" stop-color="#9e1225" />
       </linearGradient>
 
-      <filter id="tile-shadow" x="-30%" y="-30%" width="160%" height="160%">
-        <feDropShadow dx="0" dy="5" stdDeviation="4" flood-color="#000" flood-opacity="0.5" />
-      </filter>
+      <!-- Dragon game piece: gold low-poly faceted statuette on a silver
+           disc, per the reference art. Seated 3/4 pose, faces right. All
+           facets are flat fills with warm brown outlines. -->
+      <g id="dragon-pawn" stroke="#6b4512" stroke-width="1.5" stroke-linejoin="round">
+        <!-- silver disc base -->
+        <g stroke="none">
+          <ellipse cx="0" cy="8" rx="30" ry="10" fill="#3f3c52" />
+          <rect x="-30" y="-2" width="60" height="10" fill="url(#base-side)" />
+          <ellipse cx="0" cy="-2" rx="30" ry="10" fill="url(#base-top)" />
+          <ellipse cx="-8" cy="-4" rx="13" ry="3.5" fill="#fff" opacity="0.5" />
+        </g>
 
-      <filter id="eye-glow" x="-50%" y="-50%" width="200%" height="200%">
-        <feGaussianBlur stdDeviation="1.5" result="blur" />
-        <feMerge>
-          <feMergeNode in="blur" />
-          <feMergeNode in="SourceGraphic" />
-        </feMerge>
-      </filter>
+        <!-- far wing: broad faceted sail, up-left -->
+        <path d="M-6,-42 L-52,-88 L-44,-66 L-30,-56 L-16,-46 Z" fill="#ddab3f" />
+        <path d="M-6,-42 L-52,-88 L-44,-66 Z" fill="#c9992f" />
+        <path d="M-6,-42 L-44,-66 L-30,-56 Z" fill="#f2cd72" />
+        <path d="M-6,-42 L-16,-46 L-20,-50 Z" fill="#c98a4b" />
+        <path d="M-6,-42 L-52,-88" stroke-width="2.5" fill="none" />
 
-      <!-- Dragon Pawn Gradients -->
-      <linearGradient id="base-dark" x1="0%" y1="0%" x2="0%" y2="100%">
-        <stop offset="0%" stop-color="#2a0c4f" />
-        <stop offset="100%" stop-color="#090114" />
-      </linearGradient>
+        <!-- near wing: staggered in front, tip more vertical -->
+        <path d="M2,-46 L-20,-100 L-14,-74 L-4,-56 Z" fill="#e3b854" />
+        <path d="M2,-46 L-20,-100 L-14,-74 Z" fill="#caa23c" />
+        <path d="M2,-46 L-20,-100" stroke-width="2" fill="none" />
 
-      <linearGradient id="base-light" x1="0%" y1="0%" x2="0%" y2="100%">
-        <stop offset="0%" stop-color="#9d50f5" />
-        <stop offset="50%" stop-color="#5a189a" />
-        <stop offset="100%" stop-color="#3c096c" />
-      </linearGradient>
+        <!-- tail: chunky, curling around the base front -->
+        <path d="M28,-12 C40,-8 46,0 40,7 C35,12 24,12 16,10 L18,4 C26,6 33,4 34,-1 C35,-5 30,-9 24,-10 Z" fill="#ddab3f" />
+        <path d="M40,7 L50,10 L44,-1 Z" fill="#ddab3f" />
+        <path d="M34,-4 L39,0 M29,-8 L33,-4" stroke-width="1.2" fill="none" />
 
-      <linearGradient id="body-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stop-color="#f72585" />
-        <stop offset="50%" stop-color="#7209b7" />
-        <stop offset="100%" stop-color="#3f0713" />
-      </linearGradient>
-      
-      <linearGradient id="gold-trim" x1="0%" y1="0%" x2="100%" y2="0%">
-        <stop offset="0%" stop-color="#ffe259" />
-        <stop offset="100%" stop-color="#ffa751" />
-      </linearGradient>
+        <!-- haunch + hind foot -->
+        <path d="M12,-6 C10,-24 16,-38 26,-40 C34,-41 38,-32 36,-22 C34,-12 30,-6 27,-4 Z" fill="#ddab3f" />
+        <path d="M26,-40 C30,-32 30,-22 27,-12" stroke-width="1.2" fill="none" />
+        <path d="M26,-4 L36,-4 L37,2 L25,2 Z" fill="#ddab3f" />
+        <path d="M34,2 L37,2 L35.5,6 Z" fill="#f2cd72" />
+        <path d="M29,2 L32,2 L30.5,6 Z" fill="#f2cd72" />
 
-      <!-- Premium SVG Dragon Chess Piece -->
-      <g id="dragon-pawn">
-        <!-- Pawn Base Rim -->
-        <path d="M-18,10 C-18,16 18,16 18,10 L16,14 C16,18 -16,18 -16,14 Z" fill="url(#base-dark)" />
-        <!-- Base Top Ring -->
-        <ellipse cx="0" cy="10" rx="18" ry="6" fill="url(#base-light)" stroke="url(#gold-trim)" stroke-width="1.5" />
-        <!-- Pedestal Stem -->
-        <path d="M-14,10 C-12,0 -8,-5 0,-5 C8,-5 12,0 14,10 Z" fill="url(#body-grad)" />
-        <ellipse cx="0" cy="-5" rx="8" ry="3" fill="url(#gold-trim)" />
-        <!-- Wing Backplate -->
-        <path d="M-6,-12 C-20,-16 -24,-28 -26,-36 C-22,-32 -16,-30 -12,-30 C-15,-24 -15,-18 -8,-12 Z" fill="url(#body-grad)" opacity="0.85" />
-        <!-- Neck & Mane -->
-        <path d="M-6,-5 C-6,-18 -10,-25 -10,-32 C-5,-28 2,-20 5,-5 Z" fill="url(#body-grad)" />
-        <!-- Head & Snout -->
-        <path d="M-10,-30 C-12,-35 -8,-45 0,-45 C5,-45 9,-41 12,-36 C14,-37 18,-36 20,-33 C21,-31 18,-30 16,-30 C13,-30 11,-33 9,-34 C8,-28 4,-26 -5,-26 Z" fill="url(#body-grad)" stroke="url(#gold-trim)" stroke-width="0.75" />
-        <!-- Sleek Horns -->
-        <path d="M-4,-43 C-8,-48 -14,-52 -20,-54 C-16,-49 -10,-46 -5,-43 Z" fill="url(#gold-trim)" />
-        <!-- Glowing Teal Eye -->
-        <circle cx="4" cy="-35" r="2.2" fill="#00ffcc" filter="url(#eye-glow)" />
-        <circle cx="4" cy="-35" r="0.7" fill="#fff" />
+        <!-- torso: broad chest -->
+        <path d="M-14,-8 C-18,-26 -13,-44 -2,-52 C8,-58 18,-50 18,-38 C18,-26 15,-14 12,-6 Z" fill="#ddab3f" />
+        <!-- stacked copper chest plates -->
+        <path d="M-8,-46 L10,-48 L11,-40 L-9,-38 Z" fill="#cf9a4e" />
+        <path d="M-9,-38 L11,-40 L12,-32 L-10,-30 Z" fill="#b8813a" />
+        <path d="M-10,-30 L12,-32 L12,-24 L-11,-22 Z" fill="#cf9a4e" />
+        <path d="M-11,-22 L12,-24 L12,-16 L-12,-14 Z" fill="#b8813a" />
+        <path d="M-12,-14 L12,-16 L11,-8 L-13,-7 Z" fill="#cf9a4e" />
+
+        <!-- front legs + claws -->
+        <path d="M-12,-16 L-5,-16 L-4,0 L-13,0 Z" fill="#ddab3f" />
+        <path d="M-1,-16 L6,-16 L7,0 L-2,0 Z" fill="#ddab3f" />
+        <path d="M-13,0 L-10,0 L-11.5,5 Z" fill="#f2cd72" />
+        <path d="M-8,0 L-5,0 L-6.5,5 Z" fill="#f2cd72" />
+        <path d="M-2,0 L1,0 L-0.5,5 Z" fill="#f2cd72" />
+        <path d="M4,0 L7,0 L5.5,5 Z" fill="#f2cd72" />
+
+        <!-- neck: thick, near-vertical -->
+        <path d="M-4,-50 C-3,-60 -1,-70 2,-78 L14,-76 C12,-68 12,-58 12,-50 C7,-45 0,-45 -4,-50 Z" fill="#f2cd72" />
+        <path d="M4,-74 C7,-66 8,-58 8,-50" stroke-width="1.2" fill="none" />
+        <path d="M-2,-64 L-8,-68 L-3,-58 Z" fill="#f2cd72" />
+        <path d="M-3,-54 L-9,-57 L-4,-48 Z" fill="#f2cd72" />
+
+        <!-- compact faceted head -->
+        <path d="M-2,-96 L10,-99 L20,-94 L26,-86 L20,-79 L8,-77 L-2,-84 Z" fill="#f2cd72" />
+        <path d="M-2,-96 L10,-99 L20,-94 L8,-92 Z" fill="#f7dc9b" stroke="none" />
+        <path d="M8,-77 L20,-79 L26,-86 L14,-84 Z" fill="#b07d22" stroke="none" />
+        <path d="M26,-86 L18,-82" stroke-width="1.2" fill="none" />
+        <!-- swept-back horn cluster + ear -->
+        <path d="M-2,-96 L-16,-108 L-4,-92 Z" fill="#ddab3f" />
+        <path d="M-4,-91 L-16,-99 L-5,-86 Z" fill="#b07d22" />
+        <path d="M-2,-84 L-10,-88 L-3,-79 Z" fill="#ddab3f" />
+        <!-- blurple eye under the brow -->
+        <path d="M8,-90 L16,-92 L13,-86 Z" fill="#3066BE" stroke="none" />
+        <circle cx="10.5" cy="-89.5" r="0.9" fill="#fff" stroke="none" />
+        <path d="M6,-92 L17,-94" stroke-width="2" fill="none" stroke-linecap="round" />
+        <circle cx="23" cy="-86" r="1" fill="#6b4512" stroke="none" />
       </g>
     </defs>
 
-    <!-- ==== DECORATIVE CANDY LAND LANDSCAPES ==== -->
-    <g id="decorations" opacity="0.85">
-      <!-- 1. Peppermint Forest (Bottom-Left) -->
-      <g id="peppermint-forest">
-        <!-- Candy Canes -->
-        <path class="candy-forest-cane" d="M220,800 L220,740 A20,20 0 0,1 260,740" stroke="#ff758a" stroke-width="12" />
-        <path class="candy-forest-cane" d="M220,800 L220,740 A20,20 0 0,1 260,740" stroke="#fff" stroke-dasharray="10 10" stroke-width="12" />
-        
-        <path class="candy-forest-cane" d="M340,810 L340,760 A16,16 0 0,1 372,760" stroke="#D7263D" stroke-width="10" />
-        <path class="candy-forest-cane" d="M340,810 L340,760 A16,16 0 0,1 372,760" stroke="#fff" stroke-dasharray="8 8" stroke-width="10" />
-        
-        <!-- Swirl Candies -->
-        <g transform="translate(300, 770)">
+    <g id="camera">
+
+    <!-- Night-sky dust + faint brand terrain -->
+    <g id="stars"></g>
+    <g id="terrain" opacity="0.1">
+      <ellipse cx="180" cy="880" rx="260" ry="120" fill="#6E9075" />
+      <ellipse cx="720" cy="860" rx="300" ry="130" fill="#3066BE" />
+      <ellipse cx="140" cy="300" rx="200" ry="180" fill="#D7263D" />
+      <ellipse cx="520" cy="140" rx="320" ry="120" fill="#3066BE" />
+      <ellipse cx="860" cy="420" rx="200" ry="170" fill="#CCC9DC" />
+      <ellipse cx="470" cy="480" rx="190" ry="130" fill="#090C9B" />
+    </g>
+
+    <g id="decorations">
+      <!-- Candy cane forest by the START: crimson + snow are brand colors -->
+      <g id="cane-forest">
+        <path class="candy-cane" d="M195,985 L195,925 A20,20 0 0,1 235,925" stroke="#D7263D" stroke-width="13" />
+        <path class="candy-cane" d="M195,985 L195,925 A20,20 0 0,1 235,925" stroke="#fff" stroke-dasharray="11 11" stroke-width="13" />
+        <path class="candy-cane" d="M300,990 L300,945 A15,15 0 0,1 330,945" stroke="#3066BE" stroke-width="10" />
+        <path class="candy-cane" d="M300,990 L300,945 A15,15 0 0,1 330,945" stroke="#fff" stroke-dasharray="8 8" stroke-width="10" />
+        <g transform="translate(262, 958)">
           <circle r="16" fill="#fff" stroke="#D7263D" stroke-width="2.5" />
           <path d="M0,0 L0,-16 A16,16 0 0,1 11.3,-11.3 Z" fill="#D7263D" />
           <path d="M0,0 L0,16 A16,16 0 0,1 -11.3,11.3 Z" fill="#D7263D" />
@@ -300,393 +445,563 @@
         </g>
       </g>
 
-      <!-- 2. Gumdrop Mountains (Middle-Center) -->
-      <g id="gumdrop-mountains">
-        <path d="M420,640 C420,590 465,590 465,640 Z" fill="#ff758a" />
-        <path d="M535,640 C535,595 575,595 575,640 Z" fill="#af52de" />
-        <path d="M455,640 C455,570 545,570 545,640 Z" fill="#6E9075" stroke="#fff" stroke-width="1" />
-        <!-- Glaze / Snow top -->
-        <path d="M485,582 C495,576 505,576 515,582 C508,588 492,588 485,582 Z" fill="#fff" opacity="0.6" />
+      <!-- Gumdrop hills inside the loop -->
+      <g id="gumdrops" transform="translate(430, 415)">
+        <path d="M-80,0 C-80,-52 -35,-52 -35,0 Z" fill="#D7263D" stroke="#fff" stroke-width="2" />
+        <path d="M35,0 C35,-46 78,-46 78,0 Z" fill="#3066BE" stroke="#fff" stroke-width="2" />
+        <path d="M-45,0 C-45,-72 48,-72 48,0 Z" fill="#6E9075" stroke="#fff" stroke-width="2.5" />
+        <path d="M-14,-60 C-4,-66 8,-66 18,-60 C10,-53 -6,-53 -14,-60 Z" fill="#fff" opacity="0.7" />
       </g>
 
-      <!-- 3. Lollipop Woods (Middle-Right) -->
-      <g id="lollipop-woods">
-        <!-- Sticks -->
-        <line x1="680" y1="460" x2="680" y2="400" stroke="#656875" stroke-width="3" />
-        <line x1="750" y1="460" x2="750" y2="390" stroke="#656875" stroke-width="3.5" />
-        <line x1="800" y1="460" x2="800" y2="415" stroke="#656875" stroke-width="2.5" />
-        
-        <!-- Swirl Tops -->
-        <circle cx="680" cy="400" r="18" fill="url(#candy-red)" />
-        <path d="M680,400 A9,9 0 0,1 680,391 A6,6 0 0,0 680,397" fill="none" stroke="#fff" stroke-width="1.5" />
-        
-        <circle cx="750" cy="390" r="22" fill="url(#candy-orange)" stroke="#fff" stroke-width="1.5" />
-        <path d="M750,390 A11,11 0 0,1 750,379 A8,8 0 0,0 750,386 A5,5 0 0,1 750,391" fill="none" stroke="#fff" stroke-width="1.8" />
-        
-        <circle cx="800" cy="415" r="14" fill="url(#candy-purple)" />
-        <path d="M800,415 A7,7 0 0,1 800,408" fill="none" stroke="#fff" stroke-width="1" />
+      <!-- Lollipop grove inside the loop -->
+      <g id="lollipops" transform="translate(215, 545)">
+        <line x1="0" y1="60" x2="0" y2="0" stroke="#7C7C7C" stroke-width="4" />
+        <line x1="70" y1="66" x2="70" y2="-8" stroke="#7C7C7C" stroke-width="4.5" />
+        <line x1="126" y1="58" x2="126" y2="14" stroke="#7C7C7C" stroke-width="3.5" />
+        <circle cx="0" cy="-2" r="20" fill="#D7263D" stroke="#fff" stroke-width="2" />
+        <path d="M0,-2 A10,10 0 0,1 0,-12 A7,7 0 0,0 0,-5" fill="none" stroke="#fff" stroke-width="1.8" />
+        <circle cx="70" cy="-11" r="25" fill="#3066BE" stroke="#fff" stroke-width="2" />
+        <path d="M70,-11 A12,12 0 0,1 70,-23 A9,9 0 0,0 70,-15 A5,5 0 0,1 70,-10" fill="none" stroke="#fff" stroke-width="2" />
+        <circle cx="126" cy="12" r="15" fill="#6E9075" stroke="#fff" stroke-width="2" />
+        <path d="M126,12 A7,7 0 0,1 126,5" fill="none" stroke="#fff" stroke-width="1.2" />
       </g>
 
-      <!-- 4. Ice Cream Lagoon (Upper-Left) -->
-      <g id="ice-cream-lagoon">
-        <ellipse cx="250" cy="270" rx="75" ry="30" fill="#151b3d" stroke="#00ffcc" stroke-width="1.5" opacity="0.6" />
-        <!-- Floating Ice Cream scoop island -->
-        <polygon points="238,268 262,268 250,290" fill="#d2a679" />
-        <circle cx="250" cy="258" r="15" fill="#ffb85c" />
-        <circle cx="250" cy="242" r="4.5" fill="#D7263D" /> <!-- Cherry -->
+      <!-- Ice cream mountain -->
+      <g id="ice-cream" transform="translate(520, 900)">
+        <polygon points="-24,-4 24,-4 0,44" fill="#8a6a4e" />
+        <path d="M-20,8 L20,8 M-14,22 L14,22" stroke="#6b5138" stroke-width="2.5" />
+        <circle cx="-11" cy="-14" r="17" fill="#CCC9DC" />
+        <circle cx="12" cy="-12" r="15" fill="#3066BE" />
+        <circle cx="1" cy="-26" r="15" fill="#fff" />
+        <circle cx="1" cy="-44" r="6" fill="#D7263D" />
       </g>
 
-      <!-- 5. Whimsical Candy Castle (Top-Right Finish) -->
-      <g id="candy-castle" transform="translate(800, 60)">
-        <!-- Gingerbread walls -->
-        <rect x="-35" y="-10" width="70" height="65" rx="5" fill="#8b5a2b" stroke="url(#gold-trim)" stroke-width="2.5" />
-        <!-- Left Turret -->
-        <rect x="-55" y="-30" width="20" height="85" rx="3" fill="#6e4720" />
-        <polygon points="-60,-30 -30,-30 -45,-55" fill="#D7263D" stroke="#fff" stroke-width="1" />
-        <!-- Right Turret -->
-        <rect x="35" y="-30" width="20" height="85" rx="3" fill="#6e4720" />
-        <polygon points="30,-30 60,-30 45,-55" fill="#D7263D" stroke="#fff" stroke-width="1" />
-        <!-- Arched golden door -->
-        <path d="M-12,55 A12,12 0 0,1 12,55 Z" fill="#ffe259" />
-        <!-- Peppermint Turret domes -->
-        <circle cx="-45" cy="-30" r="6" fill="#fff" stroke="#D7263D" stroke-width="1.5" />
-        <circle cx="45" cy="-30" r="6" fill="#fff" stroke="#D7263D" stroke-width="1.5" />
+      <!-- Castle at the top -->
+      <g id="candy-castle" transform="translate(645, 52)">
+        <rect x="-35" y="-10" width="70" height="62" rx="5" fill="#0a1e56" stroke="#fff" stroke-width="2.5" />
+        <rect x="-55" y="-30" width="20" height="82" rx="3" fill="#090C9B" stroke="#fff" stroke-width="2" />
+        <polygon points="-61,-30 -29,-30 -45,-58" fill="#D7263D" stroke="#fff" stroke-width="1.5" />
+        <rect x="35" y="-30" width="20" height="82" rx="3" fill="#090C9B" stroke="#fff" stroke-width="2" />
+        <polygon points="29,-30 61,-30 45,-58" fill="#D7263D" stroke="#fff" stroke-width="1.5" />
+        <path d="M-12,52 A12,14 0 0,1 12,52 Z" fill="#fff" stroke="#fff" stroke-width="1.5" />
+        <circle cx="-45" cy="-30" r="6.5" fill="#fff" stroke="#D7263D" stroke-width="2" />
+        <circle cx="45" cy="-30" r="6.5" fill="#fff" stroke="#D7263D" stroke-width="2" />
+        <rect x="-10" y="4" width="20" height="14" rx="7" fill="#ffd873" />
       </g>
+
+      <!-- TO BE CONTINUED sign in the fog -->
+      <g id="fog-sign" transform="translate(720, 850) rotate(7)" opacity="0.8">
+        <line x1="0" y1="0" x2="0" y2="42" stroke="#7C7C7C" stroke-width="4" />
+        <rect x="-82" y="-27" width="164" height="32" rx="6" fill="rgba(255,255,255,0.95)" stroke="#7C7C7C" stroke-width="2" stroke-dasharray="6 4" />
+        <text x="0" y="-11" font-family="Montserrat, sans-serif" font-weight="900" font-size="12" letter-spacing="0.1em" fill="#3d3d3d" text-anchor="middle" dominant-baseline="central">TO BE CONTINUED…</text>
+      </g>
+
+      <g id="sprinkles"></g>
     </g>
 
-    <!-- ==== SERPENTINE BOARD TRACK LAYOUT ==== -->
-    <path class="board-road" d="M 150,850 C 400,850 600,850 850,850 C 950,850 950,680 850,680 C 600,680 400,680 150,680 C 50,680 50,500 150,500 C 400,500 600,500 850,500 C 950,500 950,320 850,320 C 600,320 400,320 150,320 C 50,320 50,140 150,140 C 400,140 600,140 850,140" />
-    <path class="board-road-center" d="M 150,850 C 400,850 600,850 850,850 C 950,850 950,680 850,680 C 600,680 400,680 150,680 C 50,680 50,500 150,500 C 400,500 600,500 850,500 C 950,500 950,320 850,320 C 600,320 400,320 150,320 C 50,320 50,140 150,140 C 400,140 600,140 850,140" id="board-path" />
+    <!-- Track: crosses itself at Philly (first pass arrives at 45° up-right,
+         return arrives flat east and exits down-right into the fog), with a
+         full loop-de-loop on the Houston→Seattle stretch, three hairpins
+         down the left side, S-bends and hooks throughout. The fog trail
+         wanders off down the right and dies in an open curl — it does NOT
+         loop back to START (the journey has no fixed ending). -->
+    <path class="road-under" id="road-under" d="" />
+    <path class="board-road" id="board-road" d="" />
+    <path class="trail-casing" id="trail-casing" d="" />
+    <path class="trail-core" id="trail-core" d="" />
+    <path class="board-road-center" id="board-path" d="M 110,915
+      C 150,955 205,935 240,900
+      C 275,865 240,835 270,805
+      C 295,782 330,820 330,860
+      C 430,830 540,790 560,720
+      C 575,655 505,625 520,565
+      C 528,528 540,505 560,480
+      C 620,420 640,390 690,395
+      C 740,400 750,350 800,355
+      C 850,360 850,325 860,300
+      C 905,255 895,205 845,185
+      C 805,170 802,208 762,202
+      C 722,196 730,168 695,163
+      C 660,158 620,150 590,140
+      C 550,150 520,170 480,180
+      C 420,192 345,185 340,120
+      C 336,50 445,45 462,115
+      C 470,155 430,175 385,165
+      C 330,152 268,105 230,120
+      C 160,140 110,170 130,220
+      C 150,265 215,255 235,295
+      C 252,328 195,345 158,352
+      C 118,360 140,395 122,415
+      C 108,432 100,440 100,450
+      C 112,500 80,545 125,585
+      C 165,620 105,640 145,665
+      C 185,690 260,655 310,690
+      C 360,720 420,700 440,640
+      C 455,595 400,520 435,495
+      C 465,473 520,480 560,480
+      C 620,480 610,540 660,555
+      C 710,570 700,600 745,610
+      C 770,615 780,615 790,620
+      C 835,655 875,700 872,755
+      C 869,815 795,835 755,795
+      C 723,763 748,713 795,720" />
 
-    <!-- Dynamic squares (populated by JS) -->
     <g id="tiles-group"></g>
 
-    <!-- Interactive Central Spinner (Positioned perfectly at center) -->
-    <g class="board-spinner" transform="translate(500, 410)" id="spinner-group">
-      <!-- Shadow -->
-      <circle cx="0" cy="0" r="110" fill="rgba(0,0,0,0.6)" filter="url(#tile-shadow)" />
-      <!-- Outer Ring -->
-      <circle cx="0" cy="0" r="102" fill="#181a20" stroke="url(#gold-trim)" stroke-width="4.5" />
-      
-      <!-- Rotating wheel -->
-      <g id="spinner-wheel">
-        <!-- 10 segments of 36 deg -->
-        <path d="M0,0 L0,-96 A96,96 0 0,1 56.4,-77.7 Z" fill="#D7263D" />
-        <path d="M0,0 L56.4,-77.7 A96,96 0 0,1 91.3,-29.7 Z" fill="#ffa751" />
-        <path d="M0,0 L91.3,-29.7 A96,96 0 0,1 91.3,29.7 Z" fill="#ffe259" />
-        <path d="M0,0 L91.3,29.7 A96,96 0 0,1 56.4,77.7 Z" fill="#6E9075" />
-        <path d="M0,0 L56.4,77.7 A96,96 0 0,1 0,96 Z" fill="#3066BE" />
-        <path d="M0,0 L0,96 A96,96 0 0,1 -56.4,77.7 Z" fill="#7209b7" />
-        <path d="M0,0 L-56.4,77.7 A96,96 0 0,1 -91.3,29.7 Z" fill="#D7263D" />
-        <path d="M0,0 L-91.3,29.7 A96,96 0 0,1 -91.3,-29.7 Z" fill="#ffa751" />
-        <path d="M0,0 L-91.3,-29.7 A96,96 0 0,1 -56.4,-77.7 Z" fill="#ffe259" />
-        <path d="M0,0 L-56.4,-77.7 A96,96 0 0,1 0,-96 Z" fill="#6E9075" />
-        
-        <line x1="0" y1="0" x2="0" y2="-96" stroke="#fff" stroke-width="1.5" opacity="0.3" />
-        <line x1="0" y1="0" x2="56.4" y2="-77.7" stroke="#fff" stroke-width="1.5" opacity="0.3" />
-        <line x1="0" y1="0" x2="91.3" y2="-29.7" stroke="#fff" stroke-width="1.5" opacity="0.3" />
-        <line x1="0" y1="0" x2="91.3" y2="29.7" stroke="#fff" stroke-width="1.5" opacity="0.3" />
-        <line x1="0" y1="0" x2="56.4" y2="77.7" stroke="#fff" stroke-width="1.5" opacity="0.3" />
-        <line x1="0" y1="0" x2="0" y2="96" stroke="#fff" stroke-width="1.5" opacity="0.3" />
-        <line x1="0" y1="0" x2="-56.4" y2="77.7" stroke="#fff" stroke-width="1.5" opacity="0.3" />
-        <line x1="0" y1="0" x2="-91.3" y2="29.7" stroke="#fff" stroke-width="1.5" opacity="0.3" />
-        <line x1="0" y1="0" x2="-91.3" y2="-29.7" stroke="#fff" stroke-width="1.5" opacity="0.3" />
-        <line x1="0" y1="0" x2="-56.4" y2="-77.7" stroke="#fff" stroke-width="1.5" opacity="0.3" />
+    <g id="mist"></g>
 
-        <text class="spin-num" transform="rotate(18) translate(0, -68) rotate(-18)" font-family="sans-serif" font-size="14" font-weight="900" fill="#fff" text-anchor="middle" dominant-baseline="central">1</text>
-        <text class="spin-num" transform="rotate(54) translate(0, -68) rotate(-54)" font-family="sans-serif" font-size="14" font-weight="900" fill="#fff" text-anchor="middle" dominant-baseline="central">2</text>
-        <text class="spin-num" transform="rotate(90) translate(0, -68) rotate(-90)" font-family="sans-serif" font-size="14" font-weight="900" fill="#000" text-anchor="middle" dominant-baseline="central">3</text>
-        <text class="spin-num" transform="rotate(126) translate(0, -68) rotate(-126)" font-family="sans-serif" font-size="14" font-weight="900" fill="#fff" text-anchor="middle" dominant-baseline="central">4</text>
-        <text class="spin-num" transform="rotate(162) translate(0, -68) rotate(-162)" font-family="sans-serif" font-size="14" font-weight="900" fill="#fff" text-anchor="middle" dominant-baseline="central">5</text>
-        <text class="spin-num" transform="rotate(198) translate(0, -68) rotate(-198)" font-family="sans-serif" font-size="14" font-weight="900" fill="#fff" text-anchor="middle" dominant-baseline="central">6</text>
-        <text class="spin-num" transform="rotate(234) translate(0, -68) rotate(-234)" font-family="sans-serif" font-size="14" font-weight="900" fill="#fff" text-anchor="middle" dominant-baseline="central">7</text>
-        <text class="spin-num" transform="rotate(270) translate(0, -68) rotate(-270)" font-family="sans-serif" font-size="14" font-weight="900" fill="#fff" text-anchor="middle" dominant-baseline="central">8</text>
-        <text class="spin-num" transform="rotate(306) translate(0, -68) rotate(-306)" font-family="sans-serif" font-size="14" font-weight="900" fill="#000" text-anchor="middle" dominant-baseline="central">9</text>
-        <text class="spin-num" transform="rotate(342) translate(0, -68) rotate(-342)" font-family="sans-serif" font-size="14" font-weight="900" fill="#fff" text-anchor="middle" dominant-baseline="central">10</text>
-      </g>
-      
-      <circle cx="0" cy="0" r="24" fill="#0b0c10" stroke="url(#gold-trim)" stroke-width="2.5" />
-      <circle cx="0" cy="0" r="8" fill="#ffe259" />
-      <polygon points="0,-120 -8,-100 8,-100" fill="#fff" filter="url(#tile-shadow)" />
-    </g>
-
-    <!-- Dynamic Pawn Instance -->
-    <g id="token-instance" transform="translate(150,850)" filter="url(#tile-shadow)">
+    <ellipse id="pawn-shadow" cx="110" cy="921" rx="20" ry="7" fill="rgba(0,0,0,0.5)" />
+    <g id="token-instance" transform="translate(110,915)">
       <use href="#dragon-pawn" />
     </g>
+
+    </g><!-- /camera -->
   </svg>
+</div>
+
+<main class="scroll-track" id="scroll-track"></main>
+
+<div class="title-overlay" id="title-overlay">
+  <h1>Ready to Fly?</h1>
+  <div class="scroll-hint">SCROLL TO ROLL ▼</div>
+</div>
+
+<div class="card-overlay" id="card-overlay">
+  <div class="scar-card" id="scar-card">
+    <div class="card-band" id="card-band">★ SCAR CARD ★</div>
+    <div class="card-body">
+      <div class="card-icon" id="card-icon"></div>
+      <div class="card-city" id="card-city"></div>
+      <p class="card-line" id="card-line"></p>
+    </div>
+    <div class="card-foot">SCROLL TO KEEP ROLLING ▼</div>
+  </div>
+</div>
+
+<div class="outro-overlay" id="outro-overlay">
+  <h2>That's It For Now.</h2>
+  <p>The dragon is still mid-game. New tiles get built as life happens. Check back to see where it lands next.</p>
+  <a href="/">← BACK TO HOME BASE</a>
 </div>
 
 <script>
   document.addEventListener('DOMContentLoaded', () => {
+    if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+    window.scrollTo(0, 0);
+
     const boardPath = document.getElementById('board-path');
     const tokenInstance = document.getElementById('token-instance');
-    const boardSvg = document.getElementById('board-svg');
+    const pawnShadow = document.getElementById('pawn-shadow');
     const tilesGroup = document.getElementById('tiles-group');
+    const camera = document.getElementById('camera');
+    const scrollTrack = document.getElementById('scroll-track');
+    const titleOverlay = document.getElementById('title-overlay');
+    const cardOverlay = document.getElementById('card-overlay');
+    const outroOverlay = document.getElementById('outro-overlay');
+    const trailCasing = document.getElementById('trail-casing');
+    const trailCore = document.getElementById('trail-core');
 
-    // Total Candy Land bricks (continuous adjacent squares)
-    const totalTiles = 60;
-    const stopIndices = [0, 7, 14, 21, 28, 35, 42, 49, 59];
-    const stopLabelsText = [
-      "START", "SAN DIEGO", "PHILLY", "NEW YORK", "HOUSTON", 
-      "SEATTLE", "ST LOUIS", "CHICAGO", "PHILLY AGAIN"
-    ];
-
-    const tilePositions = [];
+    const pathD = boardPath.getAttribute('d');
+    for (const id of ['road-under', 'board-road', 'trail-casing', 'trail-core']) {
+      document.getElementById(id).setAttribute('d', pathD);
+    }
     const pathLength = boardPath.getTotalLength();
+    for (const el of [trailCasing, trailCore]) {
+      el.setAttribute('stroke-dasharray', String(pathLength));
+      el.setAttribute('stroke-dashoffset', String(pathLength));
+    }
 
-    // 1. DYNAMICALLY GENERATE CONNECTED CHAIN OF SQUARES (CANDY LAND PALETTE)
-    const colors = [
-      'url(#candy-red)', 
-      'url(#candy-orange)', 
-      'url(#candy-yellow)', 
-      'url(#candy-green)', 
-      'url(#candy-blue)', 
-      'url(#candy-purple)'
+    // ---- Stops. Anchors sit on path segment endpoints; the path crosses
+    // itself at Philly (560,480). ----
+    const STOPS = [
+      { label: 'START',        anchor: [110, 915], icon: '🐉', labelBelow: true },
+      { label: 'SAN DIEGO',    anchor: [330, 860], icon: '🌊', accent: '#3066BE', accentText: '#fff',
+        line: 'Perfect weather again. Nobody trusts it. Take a beach day, no argument.' },
+      { label: 'PHILLY',       anchor: [560, 480], icon: '🍺', accent: '#D7263D', accentText: '#fff',
+        line: 'The brewery made too much beer. Throw a partaaayyy.' },
+      { label: 'NEW YORK',     anchor: [860, 300], icon: '🚕', accent: '#090C9B', accentText: '#fff',
+        line: 'Rent went up $400 overnight for no reason anyone can explain. Pay the toll, keep moving.' },
+      { label: 'HOUSTON',      anchor: [590, 140], icon: '🌮', accent: '#6E9075', accentText: '#fff',
+        line: 'Queso emergency declared citywide. Advance to the nearest taco truck.' },
+      { label: 'SEATTLE',      anchor: [230, 120], icon: '☕', accent: '#7C7C7C', accentText: '#fff',
+        line: "It's been raining for 97 days. Nobody has mentioned it once. Collect a free coffee, no small talk required." },
+      { label: 'ST LOUIS',     anchor: [100, 450], icon: '🥟', accent: '#CCC9DC', accentText: '#000',
+        line: "Toasted ravioli night. Everyone's invited, nobody agrees it's actually a ravioli." },
+      { label: 'CHICAGO',      anchor: [310, 690], icon: '🌬️', accent: '#FFFFFF', accentText: '#000',
+        line: 'Wind advisory in effect. Hold onto your hat and your deep-dish opinions.' },
+      { label: 'PHILLY, AGAIN', anchor: [560, 480], icon: '🔁', accent: '#D7263D', accentText: '#fff', labelBelow: true,
+        line: "Back where you started, except the brewery's still going. Pull up a chair, you know this bar by now." },
+      { label: 'NEXT?', anchor: [790, 620], icon: '❓', outro: true },
     ];
-    
-    for (let i = 0; i < totalTiles; i++) {
-      const distance = (i / (totalTiles - 1)) * pathLength;
+
+    // Walk forward per stop so the two Philly anchors resolve to their own
+    // passes through the crossing.
+    const stopDistances = [];
+    let searchFrom = 0;
+    const SAMPLE = 2;
+    for (const stop of STOPS) {
+      let minD = Infinity, minAt = searchFrom;
+      for (let d = searchFrom; d <= pathLength; d += SAMPLE) {
+        const p = boardPath.getPointAtLength(d);
+        const dist = Math.hypot(p.x - stop.anchor[0], p.y - stop.anchor[1]);
+        if (dist < minD) { minD = dist; minAt = d; }
+        if (minD < 40 && dist > minD + 120) break;
+      }
+      stopDistances.push(minAt);
+      searchFrom = minAt + 60;
+    }
+
+    const TILE_SPACING = 54;
+    const tileDistances = [stopDistances[0]];
+    const stopTileIndex = [0];
+    for (let k = 1; k < stopDistances.length; k++) {
+      const a = stopDistances[k - 1], b = stopDistances[k];
+      const n = Math.max(2, Math.round((b - a) / TILE_SPACING));
+      for (let j = 1; j <= n; j++) tileDistances.push(a + ((b - a) * j) / n);
+      stopTileIndex.push(tileDistances.length - 1);
+    }
+    const lastStopD = stopDistances[stopDistances.length - 1];
+    const fogSpan = pathLength - lastStopD - 20;
+    const fogN = Math.max(2, Math.round(fogSpan / TILE_SPACING));
+    for (let j = 1; j <= fogN; j++) tileDistances.push(lastStopD + (fogSpan * j) / fogN);
+
+    const totalTiles = tileDistances.length;
+    const lastStopTile = stopTileIndex[stopTileIndex.length - 1];
+    const fogStartTile = stopTileIndex[stopTileIndex.length - 2];
+
+    // ---- Render tiles: flat brand fills, hard offset shadows (no blur
+    // filters anywhere — this is both the brand's signature device and what
+    // keeps the page fast) ----
+    const TILE_COLORS = [
+      { fill: '#D7263D', shadow: '#5a0f1a' },
+      { fill: '#3066BE', shadow: '#122a52' },
+      { fill: '#6E9075', shadow: '#2c3a2f' },
+      { fill: '#CCC9DC', shadow: '#55536b' },
+      { fill: '#FFFFFF', shadow: '#5c5c66' },
+      { fill: '#090C9B', shadow: '#04053d' },
+    ];
+    const LAVENDER = { fill: '#CCC9DC', shadow: '#55536b' };
+    const svgNS = 'http://www.w3.org/2000/svg';
+
+    tileDistances.forEach((distance, i) => {
       const point = boardPath.getPointAtLength(distance);
-      
-      // Calculate tangent angle to align squares along winding curves
-      const point2 = boardPath.getPointAtLength(Math.min(pathLength, distance + 2.0));
-      const angle = Math.atan2(point2.y - point.y, point2.x - point.x) * 180 / Math.PI;
+      const point2 = boardPath.getPointAtLength(Math.min(pathLength, distance + 2));
+      let angle = Math.atan2(point2.y - point.y, point2.x - point.x) * 180 / Math.PI;
 
-      tilePositions.push({ x: point.x, y: point.y, angle: angle });
+      const stopIdx = stopTileIndex.indexOf(i);
+      const isStop = stopIdx !== -1;
+      const stop = isStop ? STOPS[stopIdx] : null;
+      if (!isStop) angle += ((i * 2654435761) % 9) - 4;
+      const side = isStop ? 62 : 54;
+      const half = side / 2;
+      const isFog = (i > fogStartTile && !isStop) || i > lastStopTile;
 
-      // Create group container for the square tile
-      const group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+      const group = document.createElementNS(svgNS, 'g');
       group.setAttribute('transform', `translate(${point.x}, ${point.y}) rotate(${angle})`);
 
-      let isStop = stopIndices.includes(i);
-      // Large stops, medium bricks
-      let side = isStop ? 60 : 54;
-      let half = side / 2;
+      const color = (i === 0 || (stop && stop.outro)) ? LAVENDER : TILE_COLORS[i % TILE_COLORS.length];
 
-      if (isStop) {
-        group.setAttribute('class', 'interactive-tile-group');
-        const stopIndex = stopIndices.indexOf(i);
-        // Direct click scrolls to corresponding depth
-        group.addEventListener('click', () => {
-          const targetScrollY = (stopIndex / (stopIndices.length - 1)) * (document.documentElement.scrollHeight - window.innerHeight);
-          window.scrollTo({
-            top: targetScrollY,
-            behavior: 'smooth'
-          });
-        });
+      if (!isFog) {
+        // Hard offset shadow block — the brand's signature device
+        const shadowRect = document.createElementNS(svgNS, 'rect');
+        shadowRect.setAttribute('x', -half + 5); shadowRect.setAttribute('y', -half + 5);
+        shadowRect.setAttribute('width', side); shadowRect.setAttribute('height', side);
+        shadowRect.setAttribute('rx', 6);
+        shadowRect.setAttribute('fill', color.shadow);
+        group.appendChild(shadowRect);
       }
 
-      // Tile Shadow Rect
-      const shadow = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-      shadow.setAttribute('x', -half);
-      shadow.setAttribute('y', -half);
-      shadow.setAttribute('width', side);
-      shadow.setAttribute('height', side);
-      shadow.setAttribute('rx', 6);
-      shadow.setAttribute('fill', 'none');
-      shadow.setAttribute('filter', 'url(#tile-shadow)');
-      group.appendChild(shadow);
-
-      // Tile Main Rect
-      const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-      rect.setAttribute('x', -half);
-      rect.setAttribute('y', -half);
-      rect.setAttribute('width', side);
-      rect.setAttribute('height', side);
+      const rect = document.createElementNS(svgNS, 'rect');
+      rect.setAttribute('class', 'tile-face');
+      rect.setAttribute('x', -half); rect.setAttribute('y', -half);
+      rect.setAttribute('width', side); rect.setAttribute('height', side);
       rect.setAttribute('rx', 6);
-      
-      let fillVal = colors[i % colors.length];
-      if (i === 0) fillVal = 'url(#candy-lavender)'; // Start tile
-      rect.setAttribute('fill', fillVal);
-      if (isStop) {
-        rect.setAttribute('stroke', '#fff');
-        rect.setAttribute('stroke-width', '3');
+      if (isFog) {
+        rect.setAttribute('fill', '#101221');
+        rect.setAttribute('stroke', '#7C7C7C');
+        rect.setAttribute('stroke-width', '2');
+        rect.setAttribute('stroke-dasharray', '5 5');
+        group.setAttribute('opacity', '0.5');
+      } else {
+        rect.setAttribute('fill', color.fill);
+        rect.setAttribute('stroke', isStop ? '#fff' : 'rgba(255,255,255,0.85)');
+        rect.setAttribute('stroke-width', isStop ? '3.5' : '2');
       }
       group.appendChild(rect);
 
-      // Gloss Overlay
-      const gloss = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-      gloss.setAttribute('x', -half);
-      gloss.setAttribute('y', -half);
-      gloss.setAttribute('width', side);
-      gloss.setAttribute('height', side);
-      gloss.setAttribute('rx', 6);
-      gloss.setAttribute('fill', 'url(#tile-gloss)');
-      group.appendChild(gloss);
-
-      // Label details inside stop tiles
       if (isStop) {
-        const stopIndex = stopIndices.indexOf(i);
-        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        text.setAttribute('x', 0);
-        text.setAttribute('y', 0);
-        text.setAttribute('transform', `rotate(${-angle})`); // Keep numbers upright
-        text.setAttribute('class', 'stop-num');
-        text.setAttribute('fill', (i === 0 || stopIndex === 8) ? '#000' : '#fff');
-        text.textContent = stopIndex === 0 ? "S" : stopIndex;
-        group.appendChild(text);
+        group.classList.add('interactive-tile-group');
+        group.addEventListener('click', () => {
+          const beat = document.getElementById(`beat-${stopIdx}`);
+          if (beat) window.scrollTo({ top: beat.offsetTop, behavior: 'smooth' });
+        });
 
-        // Counter-rotated text label for city names
-        const labelWidth = stopLabelsText[stopIndex].length * 7 + 16;
-        
-        const labelGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-        labelGroup.setAttribute('transform', `rotate(${-angle}) translate(0, -56)`);
+        const icon = document.createElementNS(svgNS, 'text');
+        icon.setAttribute('class', 'tile-icon');
+        icon.setAttribute('transform', `rotate(${-angle})`);
+        icon.textContent = stop.icon;
+        group.appendChild(icon);
 
-        const labelRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-        labelRect.setAttribute('x', -labelWidth / 2);
-        labelRect.setAttribute('y', -9);
-        labelRect.setAttribute('width', labelWidth);
-        labelRect.setAttribute('height', 18);
-        labelRect.setAttribute('rx', 9);
-        labelRect.setAttribute('fill', 'rgba(6, 8, 20, 0.88)');
-        labelRect.setAttribute('stroke', 'rgba(255, 255, 255, 0.16)');
-        labelRect.setAttribute('stroke-width', '1');
+        const labelWidth = stop.label.length * 8 + 20;
+        const labelY = stop.labelBelow ? 62 : -60;
+        const labelGroup = document.createElementNS(svgNS, 'g');
+        labelGroup.setAttribute('class', 'tile-label');
+        labelGroup.setAttribute('transform', `rotate(${-angle}) translate(0, ${labelY})`);
+
+        const labelShadow = document.createElementNS(svgNS, 'rect');
+        labelShadow.setAttribute('x', -labelWidth / 2 + 3); labelShadow.setAttribute('y', -8);
+        labelShadow.setAttribute('width', labelWidth); labelShadow.setAttribute('height', 22);
+        labelShadow.setAttribute('rx', 4);
+        labelShadow.setAttribute('fill', '#3066BE');
+        labelGroup.appendChild(labelShadow);
+
+        const labelRect = document.createElementNS(svgNS, 'rect');
+        labelRect.setAttribute('x', -labelWidth / 2); labelRect.setAttribute('y', -11);
+        labelRect.setAttribute('width', labelWidth); labelRect.setAttribute('height', 22);
+        labelRect.setAttribute('rx', 4);
+        labelRect.setAttribute('fill', '#fff');
         labelGroup.appendChild(labelRect);
 
-        const labelText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        labelText.setAttribute('x', 0);
-        labelText.setAttribute('y', 0);
+        const labelText = document.createElementNS(svgNS, 'text');
         labelText.setAttribute('class', 'tile-label-text');
         labelText.setAttribute('text-anchor', 'middle');
-        labelText.textContent = stopLabelsText[stopIndex];
+        labelText.setAttribute('dominant-baseline', 'central');
+        labelText.textContent = stop.label;
         labelGroup.appendChild(labelText);
-
         group.appendChild(labelGroup);
       }
 
       tilesGroup.appendChild(group);
-    }
-
-    // 2. SCROLL ANIMATION SYSTEM
-    let targetScrollIndex = 0;
-    let currentScrollIndex = 0;
-
-    let lastX = 150;
-    let lastFlipX = 1;
-
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const lerpFactor = prefersReducedMotion ? 1.0 : 0.08;
-
-    window.addEventListener('scroll', () => {
-      const scrollY = window.scrollY;
-      const scrollMax = document.documentElement.scrollHeight - window.innerHeight;
-      const pct = scrollMax > 0 ? scrollY / scrollMax : 0;
-      targetScrollIndex = pct * (totalTiles - 1);
     });
 
-    // Main animation ticking
-    function tick() {
-      currentScrollIndex += (targetScrollIndex - currentScrollIndex) * lerpFactor;
+    // Star dust
+    const starsGroup = document.getElementById('stars');
+    for (let s = 0; s < 46; s++) {
+      const c = document.createElementNS(svgNS, 'circle');
+      c.setAttribute('cx', Math.random() * 1000);
+      c.setAttribute('cy', Math.random() * 1000);
+      c.setAttribute('r', 0.8 + Math.random() * 1.6);
+      c.setAttribute('fill', '#fff');
+      c.setAttribute('opacity', (0.12 + Math.random() * 0.25).toFixed(2));
+      starsGroup.appendChild(c);
+    }
 
-      if (Math.abs(targetScrollIndex - currentScrollIndex) < 0.0005) {
-        currentScrollIndex = targetScrollIndex;
+    // Confetti sprinkles, brand colors
+    const sprinkleColors = ['#D7263D', '#3066BE', '#6E9075', '#CCC9DC'];
+    const sprinklesGroup = document.getElementById('sprinkles');
+    for (let s = 0; s < 30; s++) {
+      const r = document.createElementNS(svgNS, 'rect');
+      const x = 40 + Math.random() * 920, y = 40 + Math.random() * 920;
+      r.setAttribute('x', x); r.setAttribute('y', y);
+      r.setAttribute('width', 9); r.setAttribute('height', 3.5);
+      r.setAttribute('rx', 1.75);
+      r.setAttribute('fill', sprinkleColors[s % sprinkleColors.length]);
+      r.setAttribute('opacity', '0.4');
+      r.setAttribute('transform', `rotate(${Math.random() * 180}, ${x}, ${y})`);
+      sprinklesGroup.appendChild(r);
+    }
+
+    // Wisteria mist over the fogged half
+    const mistGroup = document.getElementById('mist');
+    [[865, 700, 70], [810, 805, 65], [745, 760, 50]].forEach(([cx, cy, rr]) => {
+      const m = document.createElementNS(svgNS, 'g');
+      m.setAttribute('class', 'mist-cloud');
+      [[0, 0, rr], [-rr * 0.7, 8, rr * 0.6], [rr * 0.7, 10, rr * 0.55]].forEach(([ox, oy, orr]) => {
+        const c = document.createElementNS(svgNS, 'ellipse');
+        c.setAttribute('cx', cx + ox); c.setAttribute('cy', cy + oy);
+        c.setAttribute('rx', orr); c.setAttribute('ry', orr * 0.45);
+        c.setAttribute('fill', '#CCC9DC'); c.setAttribute('opacity', '0.16');
+        m.appendChild(c);
+      });
+      mistGroup.appendChild(m);
+    });
+
+    // ---- Scroll beats + travel spacers ----
+    const VH_PER_TILE = 18, TRAVEL_MIN = 100, TRAVEL_MAX = 240;
+    STOPS.forEach((stop, k) => {
+      if (k > 0) {
+        const legTiles = stopTileIndex[k] - stopTileIndex[k - 1];
+        const h = Math.max(TRAVEL_MIN, Math.min(TRAVEL_MAX, legTiles * VH_PER_TILE));
+        const travel = document.createElement('div');
+        travel.className = 'travel';
+        travel.style.height = h + 'vh';
+        scrollTrack.appendChild(travel);
+      }
+      const beat = document.createElement('section');
+      beat.className = 'beat';
+      beat.id = `beat-${k}`;
+      scrollTrack.appendChild(beat);
+    });
+
+    let beatTops = [];
+    function measure() {
+      beatTops = STOPS.map((_, k) => document.getElementById(`beat-${k}`).offsetTop);
+    }
+    measure();
+    window.addEventListener('resize', measure);
+
+    function scrollToTileIndex(y) {
+      const vh = window.innerHeight;
+      if (y <= beatTops[0]) return 0;
+      for (let k = 0; k < beatTops.length - 1; k++) {
+        const departAt = beatTops[k] + vh * 0.55;
+        const arriveAt = beatTops[k + 1];
+        if (y < departAt) return stopTileIndex[k];
+        if (y < arriveAt) {
+          const f = (y - departAt) / (arriveAt - departAt);
+          return stopTileIndex[k] + (stopTileIndex[k + 1] - stopTileIndex[k]) * f;
+        }
+      }
+      return stopTileIndex[stopTileIndex.length - 1];
+    }
+
+    // ---- Overlays ----
+    const cardBand = document.getElementById('card-band');
+    const cardIcon = document.getElementById('card-icon');
+    const cardCity = document.getElementById('card-city');
+    const cardLine = document.getElementById('card-line');
+    let shownCard = -1;
+
+    function updateOverlays(y, currentIndex) {
+      const vh = window.innerHeight;
+      titleOverlay.classList.toggle('hidden', y > vh * 0.3);
+
+      let active = -1;
+      for (let k = 1; k < beatTops.length; k++) {
+        if (Math.abs(y - beatTops[k]) < vh * 0.3 && Math.abs(currentIndex - stopTileIndex[k]) < 0.6) {
+          active = k;
+          break;
+        }
       }
 
-      const indexFloor = Math.floor(currentScrollIndex);
-      const indexCeil = Math.min(totalTiles - 1, indexFloor + 1);
-      const f = currentScrollIndex - indexFloor;
+      const outroIdx = STOPS.length - 1;
+      outroOverlay.classList.toggle('visible', active === outroIdx);
 
-      // Monopoly style hop transition curves
+      const cardActive = active > 0 && active < outroIdx;
+      cardOverlay.classList.toggle('visible', cardActive);
+      if (cardActive && shownCard !== active) {
+        shownCard = active;
+        const stop = STOPS[active];
+        cardBand.style.backgroundColor = stop.accent;
+        cardBand.style.color = stop.accentText;
+        cardIcon.textContent = stop.icon;
+        cardCity.textContent = stop.label;
+        cardLine.textContent = stop.line;
+      }
+      if (!cardActive) shownCard = -1;
+      return active;
+    }
+
+    // ---- Animation loop. All DOM writes are gated on value change so a
+    // parked pawn costs nothing per frame. ----
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const CAM_OVERRIDE = new URLSearchParams(location.search).get('cam');
+    const lerpFactor = prefersReducedMotion ? 1.0 : 0.08;
+    const camLerp = (prefersReducedMotion || CAM_OVERRIDE) ? 1.0 : 0.055;
+
+    let targetIndex = 0;
+    let currentIndex = 0;
+    let lastX = 110, lastFlipX = 1;
+    const cam = { x: 500, y: 500, k: 1.0, ax: 500, ay: 500 };
+    const lastWrite = { token: '', shadow: '', trail: '', cam: '', activeTile: -2 };
+
+    window.addEventListener('scroll', () => {
+      targetIndex = scrollToTileIndex(window.scrollY);
+    }, { passive: true });
+
+    function tick(now) {
+      currentIndex += (targetIndex - currentIndex) * lerpFactor;
+      if (Math.abs(targetIndex - currentIndex) < 0.0005) currentIndex = targetIndex;
+
+      const indexFloor = Math.floor(currentIndex);
+      const indexCeil = Math.min(totalTiles - 1, indexFloor + 1);
+      const f = currentIndex - indexFloor;
+
       let t_eased = 0;
       if (f > 0.15 && f < 0.85) {
-        let t = (f - 0.15) / 0.7;
+        const t = (f - 0.15) / 0.7;
         t_eased = t * t * (3 - 2 * t);
       } else if (f >= 0.85) {
         t_eased = 1.0;
       }
 
-      const distFloor = (indexFloor / (totalTiles - 1)) * pathLength;
-      const distCeil = (indexCeil / (totalTiles - 1)) * pathLength;
-      const targetDistance = distFloor + (distCeil - distFloor) * t_eased;
+      const distFloor = tileDistances[indexFloor];
+      const distCeil = tileDistances[indexCeil];
+      const pawnDistance = distFloor + (distCeil - distFloor) * t_eased;
+      const point = boardPath.getPointAtLength(pawnDistance);
 
-      const point = boardPath.getPointAtLength(targetDistance);
+      const jumpY = -66 * 4 * t_eased * (1 - t_eased);
+      const midAir = Math.sin(t_eased * Math.PI);
+      let stretchY = 1.0 + 0.20 * midAir;
+      const squashX = 1.0 - 0.08 * midAir;
 
-      // Parabolic Hop height & squash stretch scaling
-      const maxJumpHeight = 60;
-      const jumpY = -maxJumpHeight * 4 * t_eased * (1 - t_eased);
+      // Idle breathing while parked
+      if (midAir < 0.01 && Math.abs(targetIndex - currentIndex) < 0.01) {
+        stretchY += 0.018 * Math.sin(now / 320);
+      }
 
-      const midAirFactor = Math.sin(t_eased * Math.PI);
-      const stretchY = 1.0 + 0.20 * midAirFactor;
-      const squashX = 1.0 - 0.08 * midAirFactor;
-
-      // Token facing flip
       let flipX = lastFlipX;
       const deltaX = point.x - lastX;
-      if (Math.abs(deltaX) > 0.3) {
-        flipX = deltaX > 0 ? 1 : -1;
+      if (Math.abs(deltaX) > 0.3) flipX = deltaX > 0 ? 1 : -1;
+      lastX = point.x; lastFlipX = flipX;
+
+      const tokenT = `translate(${point.x.toFixed(1)}, ${(point.y + jumpY).toFixed(1)}) scale(${(flipX * squashX).toFixed(3)}, ${stretchY.toFixed(3)})`;
+      if (tokenT !== lastWrite.token) {
+        tokenInstance.setAttribute('transform', tokenT);
+        lastWrite.token = tokenT;
       }
-      lastX = point.x;
-      lastFlipX = flipX;
 
-      // Transform Pawn (Translate, scale jump squashes)
-      tokenInstance.setAttribute('transform', `translate(${point.x}, ${point.y + jumpY}) scale(${flipX * squashX}, ${stretchY})`);
+      // Grounded shadow shrinks while the pawn is airborne — this is what
+      // sells the hop as physical
+      const air = Math.min(1, -jumpY / 66);
+      const shadowKey = `${point.x.toFixed(1)},${point.y.toFixed(1)},${air.toFixed(2)}`;
+      if (shadowKey !== lastWrite.shadow) {
+        pawnShadow.setAttribute('cx', point.x.toFixed(1));
+        pawnShadow.setAttribute('cy', (point.y + 6).toFixed(1));
+        pawnShadow.setAttribute('rx', (20 * (1 - 0.4 * air)).toFixed(1));
+        pawnShadow.setAttribute('ry', (7 * (1 - 0.4 * air)).toFixed(1));
+        pawnShadow.setAttribute('opacity', (0.5 * (1 - 0.55 * air)).toFixed(2));
+        lastWrite.shadow = shadowKey;
+      }
 
-      // 3. STATIC FULL-MAP SCALING
-      // The board viewport CSS handles responsive aspect-ratio containment statically.
-      // We set a fixed viewBox="0 0 1000 1000" to keep the entire map visible.
-      boardSvg.setAttribute('viewBox', '0 0 1000 1000');
+      const trailOffset = Math.max(0, pathLength - pawnDistance).toFixed(1);
+      if (trailOffset !== lastWrite.trail) {
+        trailCasing.setAttribute('stroke-dashoffset', trailOffset);
+        trailCore.setAttribute('stroke-dashoffset', trailOffset);
+        lastWrite.trail = trailOffset;
+      }
 
-      // Sync active state in tile classes
-      const roundedIndex = Math.round(currentScrollIndex);
-      const allTileGroups = tilesGroup.querySelectorAll('.interactive-tile-group');
-      allTileGroups.forEach((tg, idx) => {
-        const stopTile = stopIndices[idx];
-        if (stopTile === roundedIndex) {
-          tg.classList.add('active');
-        } else {
-          tg.classList.remove('active');
-        }
-      });
+      const active = updateOverlays(window.scrollY, currentIndex);
+
+      const isOutro = active === STOPS.length - 1;
+      let tgt = isOutro
+        ? { x: 500, y: 500, k: 1.02, ax: 500, ay: 500 }
+        : { x: point.x, y: point.y, k: 2.15, ax: 500, ay: 640 };
+      // Debug override: ?cam=wide or ?cam=<zoom factor>
+      if (CAM_OVERRIDE === 'wide') tgt = { x: 500, y: 500, k: 1.0, ax: 500, ay: 500 };
+      else if (CAM_OVERRIDE) tgt = { x: point.x, y: point.y, k: parseFloat(CAM_OVERRIDE) || 2.15, ax: 500, ay: 560 };
+      cam.x += (tgt.x - cam.x) * camLerp;
+      cam.y += (tgt.y - cam.y) * camLerp;
+      cam.k += (tgt.k - cam.k) * camLerp;
+      cam.ax += (tgt.ax - cam.ax) * camLerp;
+      cam.ay += (tgt.ay - cam.ay) * camLerp;
+      const camT = `translate(${cam.ax.toFixed(1)}, ${cam.ay.toFixed(1)}) scale(${cam.k.toFixed(3)}) translate(${(-cam.x).toFixed(1)}, ${(-cam.y).toFixed(1)})`;
+      if (camT !== lastWrite.cam) {
+        camera.setAttribute('transform', camT);
+        lastWrite.cam = camT;
+      }
+
+      const rounded = Math.round(currentIndex);
+      if (rounded !== lastWrite.activeTile) {
+        tilesGroup.querySelectorAll('.interactive-tile-group').forEach((tg, idx) => {
+          tg.classList.toggle('active', stopTileIndex[idx] === rounded);
+        });
+        lastWrite.activeTile = rounded;
+      }
 
       requestAnimationFrame(tick);
     }
-
     requestAnimationFrame(tick);
-
-    // ---- Game of Life Spinner Click Action ----
-    const spinnerWheel = document.getElementById('spinner-wheel');
-    let spinnerRotation = 0;
-    let isSpinning = false;
-
-    spinnerWheel.addEventListener('click', () => {
-      if (isSpinning) return;
-      isSpinning = true;
-
-      const spinAngle = 1080 + Math.random() * 720;
-      spinnerRotation += spinAngle;
-      spinnerWheel.style.transform = `rotate(${spinnerRotation}deg)`;
-
-      // Spin end triggers alert
-      setTimeout(() => {
-        isSpinning = false;
-        const landingDegrees = (360 - (spinnerRotation % 360)) % 360;
-        const segmentIndex = Math.floor(landingDegrees / 36);
-        const rolledNumber = (segmentIndex % 10) + 1;
-        showToastAlert(rolledNumber);
-      }, 3500);
-    });
-
-    function showToastAlert(num) {
-      const existing = document.querySelector('.spin-toast');
-      if (existing) existing.remove();
-
-      const toast = document.createElement('div');
-      toast.className = 'spin-toast';
-      toast.innerHTML = `
-        <div class="toast-title">🎡 Spinner Result</div>
-        <div class="toast-num"></div>
-      `;
-      toast.querySelector('.toast-num').textContent = num;
-      document.body.appendChild(toast);
-      
-      setTimeout(() => toast.classList.add('visible'), 50);
-
-      setTimeout(() => {
-        toast.classList.remove('visible');
-        setTimeout(() => toast.remove(), 400);
-      }, 3000);
-    }
   });
 </script>
 </body>
