@@ -122,7 +122,9 @@ body:not(.ed-doors-near) .ed-portal { animation-play-state: paused; }
       <!-- Spacers to trigger IntersectionObserver as you scroll down -->
       <div ref="{{ beats[0].setRef }}" style="height: 75vh; scroll-snap-align: start;"></div>
       <div ref="{{ beats[1].setRef }}" style="height: 75vh; scroll-snap-align: start;"></div>
-      <div ref="{{ beats[2].setRef }}" style="height: 75vh; scroll-snap-align: start;"></div>
+      <!-- Last hero beat: shorter tail — once the line has landed, the leftover
+           runway is dead scroll before the burn group. -->
+      <div ref="{{ beats[2].setRef }}" style="height: 50vh; scroll-snap-align: start;"></div>
     </section>
 
     <!-- BURN GROUP -->
@@ -139,7 +141,8 @@ body:not(.ed-doors-near) .ed-portal { animation-play-state: paused; }
       </div>
       <!-- Spacers for Burn Group -->
       <div ref="{{ beats[3].setRef }}" style="height: 75vh; scroll-snap-align: start;"></div>
-      <div ref="{{ beats[4].setRef }}" style="height: 75vh; scroll-snap-align: start;"></div>
+      <!-- Last burn beat: shorter tail for the same reason as the hero's. -->
+      <div ref="{{ beats[4].setRef }}" style="height: 50vh; scroll-snap-align: start;"></div>
     </section>
 
     <!-- CIRCLE GROUP -->
@@ -1139,7 +1142,11 @@ class Component extends DCLogic {
       },
       beats,
       remainingBeats: beats.slice(12),
-      burnSectionStyle: { position: 'relative', width: '100%' },
+      // The -50vh overlap pulls this section into the previous one's 100vh
+      // sticky slide-out, so the next line fades in while the old one exits
+      // instead of after a full blank viewport. Skipped under reduced motion,
+      // where every beat renders at once and overlapping would stack text.
+      burnSectionStyle: { position: 'relative', width: '100%', ...(reduced ? {} : { marginTop: '-50vh' }) },
       burnStickyStyle: { 
         position: 'sticky', top: 0, height: '100vh', 
         display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', 
@@ -1299,7 +1306,8 @@ class Component extends DCLogic {
         position: 'absolute', bottom: 0, left: 0, right: 0, height: '0px',
         background: '#87CEEB', willChange: 'height'
       },
-      circleSectionStyle: { position: 'relative', width: '100%' },
+      // Same -50vh overlap trick as burnSectionStyle (see comment there).
+      circleSectionStyle: { position: 'relative', width: '100%', ...(reduced ? {} : { marginTop: '-50vh' }) },
       circleStickyStyle: { 
         position: 'sticky', top: 0, height: '100vh', 
         display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', 
