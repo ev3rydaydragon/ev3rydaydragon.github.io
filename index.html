@@ -89,14 +89,13 @@ body:not(.ed-doors-near) .ed-portal { animation-play-state: paused; }
 /* Avalanche runway. The choreography is fraction-driven (see the phase
    constants in updateScrollEffects()), so the same beats play at either
    height — the runway just sets how much scroll effort the scene costs.
-   Desktop was 800vh (~9 viewports) which, even after the phases were
-   rebalanced to keep the back half dense, is more scroll than the scene
-   earns; 560vh (~6 viewports) keeps mouse-wheel motion smooth without the
-   long tail. Phones stay at 420vh — a thumb-flick covers more per gesture,
-   so that already lands at ~5 tight viewports. */
-.ed-avalanche-spacer { height: 560vh; }
+   Trimmed to keep swipe count down now that the back half is a continuous
+   camera push-in (no dead slide to pad): desktop 480vh (~5 viewports) still
+   gives mouse-wheel motion room to breathe; phones 360vh (~4.3 viewports)
+   since a thumb-flick covers more ground per gesture. */
+.ed-avalanche-spacer { height: 480vh; }
 @media (max-width: 767px) {
-  .ed-avalanche-spacer { height: 420vh; }
+  .ed-avalanche-spacer { height: 360vh; }
 }
 </style>
 <link rel="stylesheet" href="assets/style.css?v=20260715">
@@ -150,12 +149,13 @@ body:not(.ed-doors-near) .ed-portal { animation-play-state: paused; }
         </div>
       </div>
       <!-- Spacers to trigger IntersectionObserver as you scroll down.
-           Normalized to one ~70vh beat per mobile swipe. Beat 2 carries a
+           Uniform 60vh beats — controlled, even pacing at a tighter unit so
+           the whole page costs fewer swipes. Beat 2 carries a
            native scroll-snap catch — see the .ed-catch rule and the
            scroll-snap-type note near the top of this stylesheet. -->
-      <div ref="{{ beats[0].setRef }}" style="height: 70vh;"></div>
-      <div ref="{{ beats[1].setRef }}" style="height: 70vh;"></div>
-      <div ref="{{ beats[2].setRef }}" class="ed-catch" style="height: 70vh;"></div>
+      <div ref="{{ beats[0].setRef }}" style="height: 60vh;"></div>
+      <div ref="{{ beats[1].setRef }}" style="height: 60vh;"></div>
+      <div ref="{{ beats[2].setRef }}" class="ed-catch" style="height: 60vh;"></div>
     </section>
 
     <!-- BURN GROUP -->
@@ -170,9 +170,9 @@ body:not(.ed-doors-near) .ed-portal { animation-play-state: paused; }
           </div>
         </div>
       </div>
-      <!-- Spacers for Burn Group — one ~70vh beat per swipe. Beat 4 catches. -->
-      <div ref="{{ beats[3].setRef }}" style="height: 70vh;"></div>
-      <div ref="{{ beats[4].setRef }}" class="ed-catch" style="height: 70vh;"></div>
+      <!-- Spacers for Burn Group — uniform 60vh beats. Beat 4 catches. -->
+      <div ref="{{ beats[3].setRef }}" style="height: 60vh;"></div>
+      <div ref="{{ beats[4].setRef }}" class="ed-catch" style="height: 60vh;"></div>
     </section>
 
     <!-- CIRCLE GROUP -->
@@ -268,16 +268,16 @@ body:not(.ed-doors-near) .ed-portal { animation-play-state: paused; }
       </div>
       <!-- Pre-map runway: beat 5 carries the "waiting for permission" line; 6 and 7
            are empty pacing beats for the rotating circle. Every beat here is a
-           normalized ~70vh swipe; see updateScrollEffects() for the matching
-           beat-boundary math. Beat 9 catches. -->
-      <div ref="{{ beats[5].setRef }}" style="height: 70vh;"></div>
-      <div ref="{{ beats[6].setRef }}" style="height: 70vh;"></div>
-      <div ref="{{ beats[7].setRef }}" style="height: 70vh;"></div>
-      <div ref="{{ beats[8].setRef }}" style="height: 70vh;"></div>
-      <div ref="{{ beats[9].setRef }}" class="ed-catch" style="height: 70vh;"></div>
-      <div ref="{{ mapLineSpacerRef }}" style="height: 70vh;"></div>
-      <div ref="{{ beats[10].setRef }}" style="height: 70vh;"></div>
-      <div style="height: 70vh;"></div>
+           uniform 60vh unit (kept in sync with BEAT in updateScrollEffects()).
+           Beat 9 catches. -->
+      <div ref="{{ beats[5].setRef }}" style="height: 60vh;"></div>
+      <div ref="{{ beats[6].setRef }}" style="height: 60vh;"></div>
+      <div ref="{{ beats[7].setRef }}" style="height: 60vh;"></div>
+      <div ref="{{ beats[8].setRef }}" style="height: 60vh;"></div>
+      <div ref="{{ beats[9].setRef }}" class="ed-catch" style="height: 60vh;"></div>
+      <div ref="{{ mapLineSpacerRef }}" style="height: 60vh;"></div>
+      <div ref="{{ beats[10].setRef }}" style="height: 60vh;"></div>
+      <div style="height: 60vh;"></div>
     </section>
 
     <!-- CEMENT TRUCK SCENE (Beat 11) -->
@@ -312,10 +312,10 @@ body:not(.ed-doors-near) .ed-portal { animation-play-state: paused; }
         <div ref="{{ groundConcreteRef }}" style="{{ groundConcreteStyle }}"></div>
       </div>
       
-      <!-- Free-scroll spacer for the cinematic scene: 5 normalized ~70vh
-           beats, one per action — text-in, drive, lift, pour, ground-fill.
+      <!-- Free-scroll spacer for the cinematic scene: 5 equal action beats
+           (~60vh each) — text-in, drive, lift, pour, ground-fill.
            See updateScrollEffects() for the matching fifths-based math. -->
-      <div ref="{{ beats[11].setRef }}" style="height: 350vh; width: 100%;"></div>
+      <div ref="{{ beats[11].setRef }}" style="height: 300vh; width: 100%;"></div>
     </section>
 
     <!-- AVALANCHE SCENE -->
@@ -544,7 +544,10 @@ function hash(n) {
 
 class Component extends DCLogic {
   state = {
-    typedText: '', typedText2: '', flash: false, activeIdx: -1,
+    // "WAIT." is seeded full so it's on screen the instant the component
+    // hydrates — no typewriter lead-in before the hook lands. (The typed
+    // reveal of the second line, "YOU ACTUALLY TYPED IT.", still plays.)
+    typedText: FULL_TEXT, typedText2: '', flash: false, activeIdx: -1,
     glitchOn: {}, slamOn: {}, screenshotOn: {},
     goatDoor: ['a', 'b', 'c'][Math.floor(Math.random() * 3)],
     doorOpen: { a: false, b: false, c: false },
@@ -627,12 +630,11 @@ class Component extends DCLogic {
           const startScroll = window.innerHeight; // Offset for sticky 100vh
           let scrolledVh = (-rect.top - startScroll) / window.innerHeight;
           if (scrolledVh < 0) scrolledVh = 0;
-          // Every beat in this scene is a normalized 0.7 unit (70vh), so
-          // beat boundaries land at clean multiples of BEAT below instead of
-          // needing a remap. Pre-map runway = beats 5-7 (3 beats, 0-2.1);
-          // beat 8 = 2.1-2.8; beat 9 = 2.8-3.5; map-line spacer = 3.5-4.2;
-          // beat 10 = 4.2-4.9; trailing spacer = 4.9-5.6.
-          const BEAT = 0.7;
+          // Every beat in this scene is a uniform unit (BEAT viewports tall,
+          // matching the spacer heights below), so beat boundaries land at
+          // clean multiples of BEAT instead of needing a remap. Keep BEAT in
+          // sync with the .height of the beat spacers in the markup.
+          const BEAT = 0.6;
 
           let cProg = Math.min(1, Math.max(0, scrolledVh / (BEAT * 3)));
           
@@ -975,17 +977,10 @@ class Component extends DCLogic {
     const beat = BEATS[idx];
     if (!beat) return;
     if (beat.typing && !this.playedTyping) {
+      // "WAIT." lands immediately (seeded in initial state); no per-character
+      // delay before the hook is readable.
       this.playedTyping = true;
-      if (this.reducedMotion) {
-        this.setState({ typedText: FULL_TEXT });
-      } else {
-        let i = 0;
-        this.typeTimer = setInterval(() => {
-          i++;
-          this.setState({ typedText: FULL_TEXT.slice(0, i) });
-          if (i >= FULL_TEXT.length) clearInterval(this.typeTimer);
-        }, 140);
-      }
+      this.setState({ typedText: FULL_TEXT });
     }
     if (idx === 1 && !this.playedTyping2) {
       this.playedTyping2 = true;
