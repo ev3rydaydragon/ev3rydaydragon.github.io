@@ -40,6 +40,23 @@
   animation: ed-bounce-down 2s infinite ease-in-out;
 }
 
+/* Scroll-catch: a native CSS snap point on the three "hesitation/forge"
+   beats, instead of a JS-driven scroll freeze. A JS approach (position:fixed
+   freeze, or preventDefault on wheel/touch) was tried first and both fought
+   the browser's own scroll-momentum physics — one queued the blocked scroll
+   input and dumped it all at once on release (the page would jump back
+   toward the top), the other fought in-flight momentum and settled short.
+   scroll-snap-type + scroll-snap-stop:always is the browser's own built-in
+   mechanism for exactly this "catch a fling here, but the very next scroll
+   input continues past it normally" behavior, so it has none of that custom
+   timing to get wrong. `proximity` (not `mandatory`) means it only pulls
+   scroll position when it's already coming to rest near a snap point, so it
+   never fights or redirects a scroll gesture that's headed elsewhere —
+   .ed-catch is the only element carrying scroll-snap-align, so the other
+   ~20 beat spacers on the page are untouched by this. */
+html { scroll-snap-type: y proximity; }
+.ed-catch { scroll-snap-align: start; scroll-snap-stop: always; }
+
 .ed-portal {
   position: absolute;
   top: -50%; left: -50%; width: 200%; height: 200%;
@@ -129,10 +146,12 @@ body:not(.ed-doors-near) .ed-portal { animation-play-state: paused; }
         </div>
       </div>
       <!-- Spacers to trigger IntersectionObserver as you scroll down.
-           Normalized to one ~70vh beat per mobile swipe. -->
-      <div ref="{{ beats[0].setRef }}" style="height: 70vh; scroll-snap-align: start;"></div>
-      <div ref="{{ beats[1].setRef }}" style="height: 70vh; scroll-snap-align: start;"></div>
-      <div ref="{{ beats[2].setRef }}" style="height: 70vh; scroll-snap-align: start;"></div>
+           Normalized to one ~70vh beat per mobile swipe. Beat 2 carries a
+           native scroll-snap catch — see the .ed-catch rule and the
+           scroll-snap-type note near the top of this stylesheet. -->
+      <div ref="{{ beats[0].setRef }}" style="height: 70vh;"></div>
+      <div ref="{{ beats[1].setRef }}" style="height: 70vh;"></div>
+      <div ref="{{ beats[2].setRef }}" class="ed-catch" style="height: 70vh;"></div>
     </section>
 
     <!-- BURN GROUP -->
@@ -147,9 +166,9 @@ body:not(.ed-doors-near) .ed-portal { animation-play-state: paused; }
           </div>
         </div>
       </div>
-      <!-- Spacers for Burn Group — one ~70vh beat per swipe. -->
-      <div ref="{{ beats[3].setRef }}" style="height: 70vh; scroll-snap-align: start;"></div>
-      <div ref="{{ beats[4].setRef }}" style="height: 70vh; scroll-snap-align: start;"></div>
+      <!-- Spacers for Burn Group — one ~70vh beat per swipe. Beat 4 catches. -->
+      <div ref="{{ beats[3].setRef }}" style="height: 70vh;"></div>
+      <div ref="{{ beats[4].setRef }}" class="ed-catch" style="height: 70vh;"></div>
     </section>
 
     <!-- CIRCLE GROUP -->
@@ -246,15 +265,15 @@ body:not(.ed-doors-near) .ed-portal { animation-play-state: paused; }
       <!-- Pre-map runway: beat 5 carries the "waiting for permission" line; 6 and 7
            are empty pacing beats for the rotating circle. Every beat here is a
            normalized ~70vh swipe; see updateScrollEffects() for the matching
-           beat-boundary math. -->
-      <div ref="{{ beats[5].setRef }}" style="height: 70vh; scroll-snap-align: start;"></div>
-      <div ref="{{ beats[6].setRef }}" style="height: 70vh; scroll-snap-align: start;"></div>
-      <div ref="{{ beats[7].setRef }}" style="height: 70vh; scroll-snap-align: start;"></div>
-      <div ref="{{ beats[8].setRef }}" style="height: 70vh; scroll-snap-align: start;"></div>
-      <div ref="{{ beats[9].setRef }}" style="height: 70vh; scroll-snap-align: start;"></div>
-      <div ref="{{ mapLineSpacerRef }}" style="height: 70vh; scroll-snap-align: start;"></div>
-      <div ref="{{ beats[10].setRef }}" style="height: 70vh; scroll-snap-align: start;"></div>
-      <div style="height: 70vh; scroll-snap-align: start;"></div>
+           beat-boundary math. Beat 9 catches. -->
+      <div ref="{{ beats[5].setRef }}" style="height: 70vh;"></div>
+      <div ref="{{ beats[6].setRef }}" style="height: 70vh;"></div>
+      <div ref="{{ beats[7].setRef }}" style="height: 70vh;"></div>
+      <div ref="{{ beats[8].setRef }}" style="height: 70vh;"></div>
+      <div ref="{{ beats[9].setRef }}" class="ed-catch" style="height: 70vh;"></div>
+      <div ref="{{ mapLineSpacerRef }}" style="height: 70vh;"></div>
+      <div ref="{{ beats[10].setRef }}" style="height: 70vh;"></div>
+      <div style="height: 70vh;"></div>
     </section>
 
     <!-- CEMENT TRUCK SCENE (Beat 11) -->
@@ -493,14 +512,14 @@ const FULL_TEXT = 'WAIT.';
 const BEATS = [
   { text: 'WAIT.', tone: 'hero', typing: true, styleOverrides: { textAlign: 'center' } },
   { text: 'YOU ACTUALLY TYPED IT.', tone: 'huge', styleOverrides: { textAlign: 'center' } },
-  { text: 'I RESPECT YOUR COMPLETE LACK OF HESITATION.', tone: 'med', pause: true, styleOverrides: { textAlign: 'center', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 800, color: 'rgba(255,255,255,0.85)' } },
+  { text: 'I RESPECT YOUR COMPLETE LACK OF HESITATION.', tone: 'med', styleOverrides: { textAlign: 'center', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 800, color: 'rgba(255,255,255,0.85)' } },
   { text: 'Let\'s Burn The', tone: 'hero', styleOverrides: { textAlign: 'left', whiteSpace: 'nowrap', fontSize: 'clamp(40px, 8vw, 110px)' } },
-  { text: 'Small Talk', tone: 'huge', pause: true, styleOverrides: { textAlign: 'left', fontSize: 'clamp(28px, 5.5vw, 75px)' } },
+  { text: 'Small Talk', tone: 'huge', styleOverrides: { textAlign: 'left', fontSize: 'clamp(28px, 5.5vw, 75px)' } },
   { text: 'Most people are busy waiting for permission.', tone: 'med', styleOverrides: { textAlign: 'left', maxWidth: '100%', fontSize: 'clamp(26px, 4.5vw, 48px)' } },
   { text: '', tone: 'body' },
   { text: '', tone: 'body' },
   { text: 'I DON\'T NEED A MAP.', tone: 'accentBig', slam: true },
-  { text: 'I FORGE THE PATH.', tone: 'accentBig', slam: true, pause: true },
+  { text: 'I FORGE THE PATH.', tone: 'accentBig', slam: true },
   { text: 'I run with the signal while the room is terrified of the noise.', tone: 'huge', glitch: true },
   { text: 'While everyone else is debating the risk, I am cementing the outcome.', tone: 'body' }
 ];
@@ -591,35 +610,6 @@ class Component extends DCLogic {
         });
       };
       window.addEventListener('mousemove', this.onMove, { passive: true });
-
-      // Momentary scroll-catch on select beats: freeze the viewport in place
-      // (the same body-position-fixed trick modal scroll-locks use) rather
-      // than intercepting wheel/touch deltas, since fighting an in-flight
-      // scroll gesture with preventDefault produces visible backward
-      // corrections once released. A frozen frame has nothing to correct —
-      // the next scroll input after the freeze just continues normally.
-      this.scrollLock = null;
-      this.catchScroll = () => {
-        if (this.scrollLock) {
-          clearTimeout(this.scrollLock.timer);
-        } else {
-          const y = window.scrollY;
-          document.body.style.position = 'fixed';
-          document.body.style.top = `-${y}px`;
-          document.body.style.left = '0';
-          document.body.style.right = '0';
-          this.scrollLock = { y };
-        }
-        this.scrollLock.timer = setTimeout(() => {
-          const { y } = this.scrollLock;
-          document.body.style.position = '';
-          document.body.style.top = '';
-          document.body.style.left = '';
-          document.body.style.right = '';
-          this.scrollLock = null;
-          window.scrollTo(0, y);
-        }, 200);
-      };
 
       this.updateScrollEffects = () => {
         if (this.circleGroupEl && this.circleSvgEl) {
@@ -960,24 +950,11 @@ class Component extends DCLogic {
     if (this.moveRaf) cancelAnimationFrame(this.moveRaf);
     if (this.onScroll) window.removeEventListener('scroll', this.onScroll);
     if (this.scrollRaf) cancelAnimationFrame(this.scrollRaf);
-    if (this.scrollLock) {
-      clearTimeout(this.scrollLock.timer);
-      document.body.style.position = '';
-      document.body.style.top = '';
-      document.body.style.left = '';
-      document.body.style.right = '';
-    }
     if (this.goatTimer) clearTimeout(this.goatTimer);
   }
 
   onActivate(idx) {
-    const prevIdx = this.state.activeIdx;
     this.setState({ activeIdx: idx });
-    // Catch forward scroll for a beat on beats that should land before the
-    // visitor skates past them; only while advancing downward.
-    if (idx > prevIdx && BEATS[idx] && BEATS[idx].pause && this.catchScroll) {
-      this.catchScroll();
-    }
     // Pause the hint arrow's bounce loop once the visitor moves past the hero
     // (its wrapper is already at opacity 0 by then, but the animation kept ticking).
     document.body.classList.toggle('ed-hero-done', idx > 0);
