@@ -491,14 +491,14 @@ const FULL_TEXT = 'WAIT.';
 const BEATS = [
   { text: 'WAIT.', tone: 'hero', typing: true, styleOverrides: { textAlign: 'center' } },
   { text: 'YOU ACTUALLY TYPED IT.', tone: 'huge', styleOverrides: { textAlign: 'center' } },
-  { text: 'I RESPECT YOUR COMPLETE LACK OF HESITATION.', tone: 'med', styleOverrides: { textAlign: 'center', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 800, color: 'rgba(255,255,255,0.85)' } },
+  { text: 'I RESPECT YOUR COMPLETE LACK OF HESITATION.', tone: 'med', pause: true, styleOverrides: { textAlign: 'center', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 800, color: 'rgba(255,255,255,0.85)' } },
   { text: 'Let\'s Burn The', tone: 'hero', styleOverrides: { textAlign: 'left', whiteSpace: 'nowrap', fontSize: 'clamp(40px, 8vw, 110px)' } },
-  { text: 'Small Talk', tone: 'huge', styleOverrides: { textAlign: 'left', fontSize: 'clamp(28px, 5.5vw, 75px)' } },
+  { text: 'Small Talk', tone: 'huge', pause: true, styleOverrides: { textAlign: 'left', fontSize: 'clamp(28px, 5.5vw, 75px)' } },
   { text: 'Most people are busy waiting for permission.', tone: 'med', styleOverrides: { textAlign: 'left', maxWidth: '100%', fontSize: 'clamp(26px, 4.5vw, 48px)' } },
   { text: '', tone: 'body' },
   { text: '', tone: 'body' },
   { text: 'I DON\'T NEED A MAP.', tone: 'accentBig', slam: true },
-  { text: 'I FORGE THE PATH.', tone: 'accentBig', slam: true },
+  { text: 'I FORGE THE PATH.', tone: 'accentBig', slam: true, pause: true },
   { text: 'I run with the signal while the room is terrified of the noise.', tone: 'huge', glitch: true },
   { text: 'While everyone else is debating the risk, I am cementing the outcome.', tone: 'body' }
 ];
@@ -589,6 +589,35 @@ class Component extends DCLogic {
         });
       };
       window.addEventListener('mousemove', this.onMove, { passive: true });
+
+      // Momentary scroll-catch on select beats: freeze the viewport in place
+      // (the same body-position-fixed trick modal scroll-locks use) rather
+      // than intercepting wheel/touch deltas, since fighting an in-flight
+      // scroll gesture with preventDefault produces visible backward
+      // corrections once released. A frozen frame has nothing to correct —
+      // the next scroll input after the freeze just continues normally.
+      this.scrollLock = null;
+      this.catchScroll = () => {
+        if (this.scrollLock) {
+          clearTimeout(this.scrollLock.timer);
+        } else {
+          const y = window.scrollY;
+          document.body.style.position = 'fixed';
+          document.body.style.top = `-${y}px`;
+          document.body.style.left = '0';
+          document.body.style.right = '0';
+          this.scrollLock = { y };
+        }
+        this.scrollLock.timer = setTimeout(() => {
+          const { y } = this.scrollLock;
+          document.body.style.position = '';
+          document.body.style.top = '';
+          document.body.style.left = '';
+          document.body.style.right = '';
+          this.scrollLock = null;
+          window.scrollTo(0, y);
+        }, 200);
+      };
 
       this.updateScrollEffects = () => {
         if (this.circleGroupEl && this.circleSvgEl) {
@@ -915,11 +944,24 @@ class Component extends DCLogic {
     if (this.moveRaf) cancelAnimationFrame(this.moveRaf);
     if (this.onScroll) window.removeEventListener('scroll', this.onScroll);
     if (this.scrollRaf) cancelAnimationFrame(this.scrollRaf);
+    if (this.scrollLock) {
+      clearTimeout(this.scrollLock.timer);
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.left = '';
+      document.body.style.right = '';
+    }
     if (this.goatTimer) clearTimeout(this.goatTimer);
   }
 
   onActivate(idx) {
+    const prevIdx = this.state.activeIdx;
     this.setState({ activeIdx: idx });
+    // Catch forward scroll for a beat on beats that should land before the
+    // visitor skates past them; only while advancing downward.
+    if (idx > prevIdx && BEATS[idx] && BEATS[idx].pause && this.catchScroll) {
+      this.catchScroll();
+    }
     // Pause the hint arrow's bounce loop once the visitor moves past the hero
     // (its wrapper is already at opacity 0 by then, but the animation kept ticking).
     document.body.classList.toggle('ed-hero-done', idx > 0);
