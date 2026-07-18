@@ -69,13 +69,13 @@ body:not(.ed-doors-near) .ed-portal { animation-play-state: paused; }
   .ed-cement-narrow { display: inline; }
 }
 
-/* Avalanche runway: 800vh of mouse-wheel scroll is fine on desktop, but on a
-   phone that's ~8-10 flicks for one scene. Thumb-flicks cover more ground per
-   gesture, so the runway shrinks on phones; the scene plays the same beats,
-   just over fewer swipes. */
+/* Avalanche runway: 800vh of mouse-wheel scroll is fine on desktop. On phones
+   the scene is broken into 6 normalized ~70vh beats (one swipe each) — see
+   updateScrollEffects() for the matching sixths-based math; the choreography
+   is fraction-driven so both breakpoints play the same beats either way. */
 .ed-avalanche-spacer { height: 800vh; }
 @media (max-width: 767px) {
-  .ed-avalanche-spacer { height: 450vh; }
+  .ed-avalanche-spacer { height: 420vh; }
 }
 </style>
 <link rel="stylesheet" href="assets/style.css?v=20260715">
@@ -128,12 +128,11 @@ body:not(.ed-doors-near) .ed-portal { animation-play-state: paused; }
           </svg>
         </div>
       </div>
-      <!-- Spacers to trigger IntersectionObserver as you scroll down -->
-      <div ref="{{ beats[0].setRef }}" style="height: 75vh; scroll-snap-align: start;"></div>
-      <div ref="{{ beats[1].setRef }}" style="height: 75vh; scroll-snap-align: start;"></div>
-      <!-- Last hero beat: shorter tail — once the line has landed, the leftover
-           runway is dead scroll before the burn group. -->
-      <div ref="{{ beats[2].setRef }}" style="height: 50vh; scroll-snap-align: start;"></div>
+      <!-- Spacers to trigger IntersectionObserver as you scroll down.
+           Normalized to one ~70vh beat per mobile swipe. -->
+      <div ref="{{ beats[0].setRef }}" style="height: 70vh; scroll-snap-align: start;"></div>
+      <div ref="{{ beats[1].setRef }}" style="height: 70vh; scroll-snap-align: start;"></div>
+      <div ref="{{ beats[2].setRef }}" style="height: 70vh; scroll-snap-align: start;"></div>
     </section>
 
     <!-- BURN GROUP -->
@@ -148,10 +147,9 @@ body:not(.ed-doors-near) .ed-portal { animation-play-state: paused; }
           </div>
         </div>
       </div>
-      <!-- Spacers for Burn Group -->
-      <div ref="{{ beats[3].setRef }}" style="height: 75vh; scroll-snap-align: start;"></div>
-      <!-- Last burn beat: shorter tail for the same reason as the hero's. -->
-      <div ref="{{ beats[4].setRef }}" style="height: 50vh; scroll-snap-align: start;"></div>
+      <!-- Spacers for Burn Group — one ~70vh beat per swipe. -->
+      <div ref="{{ beats[3].setRef }}" style="height: 70vh; scroll-snap-align: start;"></div>
+      <div ref="{{ beats[4].setRef }}" style="height: 70vh; scroll-snap-align: start;"></div>
     </section>
 
     <!-- CIRCLE GROUP -->
@@ -246,15 +244,17 @@ body:not(.ed-doors-near) .ed-portal { animation-play-state: paused; }
         </div>
       </div>
       <!-- Pre-map runway: beat 5 carries the "waiting for permission" line; 6 and 7
-           are empty pacing beats for the rotating circle, so they get the deepest trim. -->
-      <div ref="{{ beats[5].setRef }}" style="height: 75vh; scroll-snap-align: start;"></div>
-      <div ref="{{ beats[6].setRef }}" style="height: 50vh; scroll-snap-align: start;"></div>
-      <div ref="{{ beats[7].setRef }}" style="height: 50vh; scroll-snap-align: start;"></div>
-      <div ref="{{ beats[8].setRef }}" style="height: 100vh; scroll-snap-align: start;"></div>
-      <div ref="{{ beats[9].setRef }}" style="height: 100vh; scroll-snap-align: start;"></div>
-      <div ref="{{ mapLineSpacerRef }}" style="height: 100vh; scroll-snap-align: start;"></div>
-      <div ref="{{ beats[10].setRef }}" style="height: 100vh; scroll-snap-align: start;"></div>
-      <div style="height: 100vh; scroll-snap-align: start;"></div>
+           are empty pacing beats for the rotating circle. Every beat here is a
+           normalized ~70vh swipe; see updateScrollEffects() for the matching
+           beat-boundary math. -->
+      <div ref="{{ beats[5].setRef }}" style="height: 70vh; scroll-snap-align: start;"></div>
+      <div ref="{{ beats[6].setRef }}" style="height: 70vh; scroll-snap-align: start;"></div>
+      <div ref="{{ beats[7].setRef }}" style="height: 70vh; scroll-snap-align: start;"></div>
+      <div ref="{{ beats[8].setRef }}" style="height: 70vh; scroll-snap-align: start;"></div>
+      <div ref="{{ beats[9].setRef }}" style="height: 70vh; scroll-snap-align: start;"></div>
+      <div ref="{{ mapLineSpacerRef }}" style="height: 70vh; scroll-snap-align: start;"></div>
+      <div ref="{{ beats[10].setRef }}" style="height: 70vh; scroll-snap-align: start;"></div>
+      <div style="height: 70vh; scroll-snap-align: start;"></div>
     </section>
 
     <!-- CEMENT TRUCK SCENE (Beat 11) -->
@@ -289,8 +289,10 @@ body:not(.ed-doors-near) .ed-portal { animation-play-state: paused; }
         <div ref="{{ groundConcreteRef }}" style="{{ groundConcreteStyle }}"></div>
       </div>
       
-      <!-- Free-scroll spacer for the cinematic scene -->
-      <div ref="{{ beats[11].setRef }}" style="height: 400vh; width: 100%;"></div>
+      <!-- Free-scroll spacer for the cinematic scene: 5 normalized ~70vh
+           beats, one per action — text-in, drive, lift, pour, ground-fill.
+           See updateScrollEffects() for the matching fifths-based math. -->
+      <div ref="{{ beats[11].setRef }}" style="height: 350vh; width: 100%;"></div>
     </section>
 
     <!-- AVALANCHE SCENE -->
@@ -631,15 +633,14 @@ class Component extends DCLogic {
           const startScroll = window.innerHeight; // Offset for sticky 100vh
           let scrolledVh = (-rect.top - startScroll) / window.innerHeight;
           if (scrolledVh < 0) scrolledVh = 0;
-          // The pre-map runway (beats 5-7) was trimmed from 3 viewports to 1.75
-          // (75vh + 50vh + 50vh), so "I don't need a map" arrives sooner. The
-          // thresholds below still assume the original geometry, where that
-          // runway ended at scrolledVh = 2; it now ends at 0.75. Stretch the
-          // pre-map segment back onto 0..2 and shift the rest by a constant, so
-          // every beat from the map title onward keeps its original pacing.
-          scrolledVh = scrolledVh <= 0.75 ? scrolledVh * (2 / 0.75) : 2 + (scrolledVh - 0.75);
+          // Every beat in this scene is a normalized 0.7 unit (70vh), so
+          // beat boundaries land at clean multiples of BEAT below instead of
+          // needing a remap. Pre-map runway = beats 5-7 (3 beats, 0-2.1);
+          // beat 8 = 2.1-2.8; beat 9 = 2.8-3.5; map-line spacer = 3.5-4.2;
+          // beat 10 = 4.2-4.9; trailing spacer = 4.9-5.6.
+          const BEAT = 0.7;
 
-          let cProg = Math.min(1, Math.max(0, scrolledVh / 2));
+          let cProg = Math.min(1, Math.max(0, scrolledVh / (BEAT * 3)));
           
           let angle = 0;
           if (cProg <= 0.5) {
@@ -653,8 +654,8 @@ class Component extends DCLogic {
           const cRect = this.circleSvgEl.getBoundingClientRect();
           this.circleSvgEl.style.transform = `rotate(${angle}deg)`;
           
-          let mProg = Math.min(1, Math.max(0, scrolledVh - 2));
-          let earlyFadeOut = Math.min(1, Math.max(0, (scrolledVh - 4.5) / 0.5));
+          let mProg = Math.min(1, Math.max(0, (scrolledVh - BEAT * 3) / BEAT));
+          let earlyFadeOut = Math.min(1, Math.max(0, (scrolledVh - BEAT * 5.5) / (BEAT * 0.5)));
           let mFade = Math.max(0, mProg - earlyFadeOut);
           
           if (this.circleLeftEl) {
@@ -676,7 +677,7 @@ class Component extends DCLogic {
           const endX = isMobile ? w * 0.85 : w * 0.85;
           const endY = isMobile ? h * 0.3 : h * 0.15;
           
-          let b10FadeIn = Math.min(1, Math.max(0, scrolledVh - 5));
+          let b10FadeIn = Math.min(1, Math.max(0, (scrolledVh - BEAT * 6) / BEAT));
           
           if (this.mapHereGroupEl) {
             this.mapHereGroupEl.style.opacity = Math.max(0, mProg - b10FadeIn);
@@ -697,7 +698,7 @@ class Component extends DCLogic {
              this.mapThereTextEl.setAttribute('y', -20);
           }
           
-          let lProg = Math.min(1, Math.max(0, (scrolledVh - 3) / 2));
+          let lProg = Math.min(1, Math.max(0, (scrolledVh - BEAT * 4) / (BEAT * 2)));
           
           if (this.mapLineEl) {
             const path = `M ${hereX} ${hereY} 
@@ -727,12 +728,12 @@ class Component extends DCLogic {
             this.staticNoiseEl.style.opacity = b10FadeIn;
           }
           if (this.mapBeat10TitleEl) {
-            let title1Fade = Math.min(1, Math.max(0, scrolledVh - 5));
+            let title1Fade = Math.min(1, Math.max(0, (scrolledVh - BEAT * 6) / BEAT));
             this.mapBeat10TitleEl.style.opacity = title1Fade;
             this.mapBeat10TitleEl.style.transform = `translateY(${(1 - title1Fade) * 20}px)`;
           }
           if (this.mapBeat10Title2El) {
-            let title2Fade = Math.min(1, Math.max(0, scrolledVh - 6));
+            let title2Fade = Math.min(1, Math.max(0, (scrolledVh - BEAT * 7) / BEAT));
             this.mapBeat10Title2El.style.opacity = title2Fade;
             this.mapBeat10Title2El.style.transform = `translateY(${(1 - title2Fade) * 20}px)`;
           }
@@ -760,42 +761,42 @@ class Component extends DCLogic {
             this.cementTopLeftEl.style.transform = `translateY(${(1 - topLeftFade) * 20}px)`;
           }
           
-          // 0 to 0.15: Mid Right Text fades in (triggered by pin scrolling)
+          // Beat 12.1 [0, 0.2]: Mid Right Text fades in (triggered by pin scrolling)
           if (this.cementMidRightEl) {
-            let midRightFade = Math.min(1, Math.max(0, pinnedProgress / 0.15));
+            let midRightFade = Math.min(1, Math.max(0, pinnedProgress / 0.2));
             this.cementMidRightEl.style.opacity = midRightFade;
             this.cementMidRightEl.style.transform = `translateY(${(1 - midRightFade) * 20}px)`;
           }
-          
-          // 0.15 to 0.45: Truck drives in
-          let driveProg = Math.min(1, Math.max(0, (pinnedProgress - 0.15) / 0.3));
+
+          // Beat 12.2 [0.2, 0.4]: Truck drives in
+          let driveProg = Math.min(1, Math.max(0, (pinnedProgress - 0.2) / 0.2));
           let truckTranslateX = driveProg * -(window.innerWidth * 0.75);
           if (this.truckContainerEl) {
             this.truckContainerEl.style.transform = `translateX(${truckTranslateX}px)`;
           }
-          
-          // 0.45 to 0.6: Lift drum and Tilt hatch
-          let liftProg = Math.min(1, Math.max(0, (pinnedProgress - 0.45) / 0.15));
+
+          // Beat 12.3 [0.4, 0.6]: Lift drum and Tilt hatch
+          let liftProg = Math.min(1, Math.max(0, (pinnedProgress - 0.4) / 0.2));
           let drumRot = liftProg * 25;
           if (this.truckDrumEl) {
             this.truckDrumEl.style.transform = `rotate(${drumRot}deg)`;
           }
-          
+
           let tiltProg = liftProg;
           let hatchRot = tiltProg * 45; // Positive angle to point DOWN
           if (this.truckHatchEl) {
             this.truckHatchEl.style.transform = `rotate(${hatchRot}deg)`;
           }
-          
-          // 0.6 to 0.705: Pour (30% faster than the original 0.6-0.75 window)
-          let pourProg = Math.min(1, Math.max(0, (pinnedProgress - 0.6) / 0.105));
+
+          // Beat 12.4 [0.6, 0.8]: Pour
+          let pourProg = Math.min(1, Math.max(0, (pinnedProgress - 0.6) / 0.2));
           if (this.concretePourEl) {
             this.concretePourEl.style.opacity = pourProg;
             this.concretePourEl.style.transform = `scaleY(${pourProg})`;
           }
-          
-          // 0.75 to 0.9: Fill ground
-          let groundProg = Math.min(1, Math.max(0, (pinnedProgress - 0.75) / 0.15));
+
+          // Beat 12.5 [0.8, 1.0]: Fill ground
+          let groundProg = Math.min(1, Math.max(0, (pinnedProgress - 0.8) / 0.2));
           if (this.groundConcreteEl) {
             this.groundConcreteEl.style.height = `${groundProg * 20}px`;
           }
@@ -811,11 +812,18 @@ class Component extends DCLogic {
           if (pinnedProgress < 0) pinnedProgress = 0;
           if (pinnedProgress > 1) pinnedProgress = 1;
 
+          // 6 normalized beats, each 1/6 of the scene: 1 "You caught the
+          // before." hold, 2 "THE MOMENT", 3 "BEFORE THE AVALANCHE", 4 texts
+          // fly off / slide begins, 5 slide into the jump / zoom begins,
+          // 6 land the jump, zoom finishes, "SO SCREENSHOT IT." + flash.
+          const SIXTH = 1 / 6;
+
           let t1Fade = 1;
-          let t2Fade = Math.min(1, Math.max(0, (pinnedProgress - 0.15) / 0.15));
-          let t3Fade = Math.min(1, Math.max(0, (pinnedProgress - 0.30) / 0.15));
-          
-          let flyUpProg = Math.min(1, Math.max(0, (pinnedProgress - 0.45) / 0.15));
+          let t2Fade = Math.min(1, Math.max(0, (pinnedProgress - SIXTH) / SIXTH));
+          let t3Fade = Math.min(1, Math.max(0, (pinnedProgress - SIXTH * 2) / SIXTH));
+
+          // Beat 4: texts fly off.
+          let flyUpProg = Math.min(1, Math.max(0, (pinnedProgress - SIXTH * 3) / SIXTH));
           let yOffset = flyUpProg * -100;
           let fadeOut = 1 - flyUpProg;
 
@@ -833,8 +841,8 @@ class Component extends DCLogic {
           }
 
           if (this.avalancheMountainEl) {
-            // Rumble stops at 0.70
-            if (pinnedProgress > 0.30 && pinnedProgress < 0.70) {
+            // Rumbles through beats 4-5, the slide.
+            if (pinnedProgress > SIXTH * 3 && pinnedProgress < SIXTH * 5) {
               this.avalancheMountainEl.style.animation = 'ed-rumble 200ms infinite';
             } else {
               this.avalancheMountainEl.style.animation = 'none';
@@ -850,25 +858,27 @@ class Component extends DCLogic {
           const slideStartX = isMobileAv ? 250 : 350;
           const jumpDX = isMobileAv ? 140 : 300;
 
-          // Avalanche Progress (Sliding down)
-          // 0.35 to 0.75
-          let slideProg = Math.min(1, Math.max(0, (pinnedProgress - 0.35) / 0.40));
+          // Beats 4-5: sliding down (SIXTH*3 to SIXTH*5).
+          let slideProg = Math.min(1, Math.max(0, (pinnedProgress - SIXTH * 3) / (SIXTH * 2)));
           if (this.avalancheSnowEl) {
             const snowX = (isMobileAv ? 260 : 400) * slideProg;
             this.avalancheSnowEl.style.transform = `translate(${snowX}px, ${350 + slideProg * 200}px)`;
           }
 
-          // Skiers slide, then jump!
+          // Skiers slide (beats 4-5), then jump — jump only takes the first
+          // 60% of beat 6 so the payoff (zoom landing, then text, then
+          // flash) still arrives in sequence rather than all at once.
+          const jumpStart = SIXTH * 5;
+          const jumpWidth = SIXTH * 0.6;
           let skierX = slideStartX;
           let skierY = 500 + slideStartX / 2;
           let skierRot = 0;
-          if (pinnedProgress > 0.35 && pinnedProgress <= 0.75) {
-            let p = (pinnedProgress - 0.35) / 0.40;
+          if (pinnedProgress > SIXTH * 3 && pinnedProgress <= jumpStart) {
+            let p = (pinnedProgress - SIXTH * 3) / (SIXTH * 2);
             skierX = slideStartX + p * (slideEndX - slideStartX);
             skierY = 500 + skierX / 2; // stay on the ridge
-          } else if (pinnedProgress > 0.75) {
-            // Jump! 30% faster than the original 0.20-wide window.
-            let p = Math.min(1, (pinnedProgress - 0.75) / 0.14);
+          } else if (pinnedProgress > jumpStart) {
+            let p = Math.min(1, (pinnedProgress - jumpStart) / jumpWidth);
             skierX = slideEndX + p * jumpDX;
             // Parabola trajectory launching off the ridge
             skierY = (500 + slideEndX / 2) - p * 500 + p * p * 200;
@@ -878,7 +888,9 @@ class Component extends DCLogic {
             this.avalancheSkiersEl.style.transform = `translate(${skierX}px, ${skierY}px) rotate(${skierRot}deg)`;
           }
 
-          // Camera
+          // Camera: zooms/pans across beats 5-6, completing as the jump lands.
+          const zoomStart = SIXTH * 4;
+          const zoomWidth = jumpStart + jumpWidth - zoomStart;
           if (this.avalancheZoomWrapperEl) {
             if (isMobileAv) {
               // Pan the "camera" to track the skiers so they stay heroed centre-frame
@@ -886,7 +898,7 @@ class Component extends DCLogic {
               const vw = window.innerWidth, vhpx = window.innerHeight;
               const unit = vhpx / 1000; // slice scale is height-driven in portrait
               const sx = skierX * unit, sy = skierY * unit;
-              let follow = Math.min(1, Math.max(0, (pinnedProgress - 0.68) / 0.22));
+              let follow = Math.min(1, Math.max(0, (pinnedProgress - zoomStart) / zoomWidth));
               follow = follow * follow * (3 - 2 * follow); // smoothstep ease-in
               const scale = 1 + follow * 1.0;
               const tx = follow * (vw / 2 - sx * scale);
@@ -894,25 +906,29 @@ class Component extends DCLogic {
               this.avalancheZoomWrapperEl.style.transformOrigin = '0 0';
               this.avalancheZoomWrapperEl.style.transform = `translate(${tx}px, ${ty}px) scale(${scale})`;
             } else {
-              let zoomProg = Math.min(1, Math.max(0, (pinnedProgress - 0.65) / 0.25));
+              let zoomProg = Math.min(1, Math.max(0, (pinnedProgress - zoomStart) / zoomWidth));
               let scale = 1 + zoomProg * 1.5;
               this.avalancheZoomWrapperEl.style.transformOrigin = '40vw 80vh';
               this.avalancheZoomWrapperEl.style.transform = `scale(${scale})`;
             }
           }
 
-          // Flash and text
-          let textProg = Math.min(1, Math.max(0, (pinnedProgress - 0.90) / 0.05));
+          // Beat 6, last 40%: text lands as the jump completes, then flash.
+          const textStart = jumpStart + jumpWidth;
+          const textWidth = SIXTH * 0.2;
+          let textProg = Math.min(1, Math.max(0, (pinnedProgress - textStart) / textWidth));
           if (this.avalancheShotTextEl) {
             this.avalancheShotTextEl.style.opacity = textProg;
           }
 
           if (this.avalancheFlashEl) {
             let flashOpacity = 0;
-            if (pinnedProgress > 0.95 && pinnedProgress <= 1.0) {
-              let fProg = (pinnedProgress - 0.95) / 0.05;
+            const flashStart = textStart + textWidth;
+            const flashWidth = 1.0 - flashStart;
+            if (pinnedProgress > flashStart && pinnedProgress <= 1.0) {
+              let fProg = (pinnedProgress - flashStart) / flashWidth;
               // Flash goes to 1 quickly then fades slightly, or just quick spike
-              flashOpacity = 1 - fProg; 
+              flashOpacity = 1 - fProg;
             }
             this.avalancheFlashEl.style.opacity = flashOpacity;
           }
