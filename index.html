@@ -86,11 +86,15 @@ body:not(.ed-doors-near) .ed-portal { animation-play-state: paused; }
   .ed-cement-narrow { display: inline; }
 }
 
-/* Avalanche runway: 800vh of mouse-wheel scroll is fine on desktop. On phones
-   the scene is broken into 6 normalized ~70vh beats (one swipe each) — see
-   updateScrollEffects() for the matching sixths-based math; the choreography
-   is fraction-driven so both breakpoints play the same beats either way. */
-.ed-avalanche-spacer { height: 800vh; }
+/* Avalanche runway. The choreography is fraction-driven (see the phase
+   constants in updateScrollEffects()), so the same beats play at either
+   height — the runway just sets how much scroll effort the scene costs.
+   Desktop was 800vh (~9 viewports) which, even after the phases were
+   rebalanced to keep the back half dense, is more scroll than the scene
+   earns; 560vh (~6 viewports) keeps mouse-wheel motion smooth without the
+   long tail. Phones stay at 420vh — a thumb-flick covers more per gesture,
+   so that already lands at ~5 tight viewports. */
+.ed-avalanche-spacer { height: 560vh; }
 @media (max-width: 767px) {
   .ed-avalanche-spacer { height: 420vh; }
 }
@@ -802,18 +806,29 @@ class Component extends DCLogic {
           if (pinnedProgress < 0) pinnedProgress = 0;
           if (pinnedProgress > 1) pinnedProgress = 1;
 
-          // 6 normalized beats, each 1/6 of the scene: 1 "You caught the
-          // before." hold, 2 "THE MOMENT", 3 "BEFORE THE AVALANCHE", 4 texts
-          // fly off / slide begins, 5 slide into the jump / zoom begins,
-          // 6 land the jump, zoom finishes, "SO SCREENSHOT IT." + flash.
-          const SIXTH = 1 / 6;
+          // Phase boundaries across the pinned runway (0..1). The three
+          // captions read out in the first ~half, then the back half is kept
+          // dense: the camera push-in (ZOOM..JUMP_END) runs continuously
+          // from the instant the captions clear all the way to the jump, so
+          // there is never a flat "skiers slide with nothing else happening"
+          // stretch. The old even-sixths timeline left that stretch at ~0.4
+          // of the runway, which on desktop's long runway read as ~2.5
+          // viewports of near-static stick figures.
+          const CAP2 = 0.15;      // "THE MOMENT" starts fading in
+          const CAP3 = 0.30;      // "BEFORE THE AVALANCHE" starts fading in
+          const FLY = 0.45;       // captions fly off; slide + rumble begin
+          const FLY_END = 0.54;   // captions fully gone; camera push-in begins
+          const JUMP = 0.80;      // ski jump launches
+          const JUMP_END = 0.90;  // jump lands; camera push-in completes here
+          const SHOT_END = 0.94;  // "SO SCREENSHOT IT." fully in
+          const FLASH = 0.94;     // shutter flash
 
           let t1Fade = 1;
-          let t2Fade = Math.min(1, Math.max(0, (pinnedProgress - SIXTH) / SIXTH));
-          let t3Fade = Math.min(1, Math.max(0, (pinnedProgress - SIXTH * 2) / SIXTH));
+          let t2Fade = Math.min(1, Math.max(0, (pinnedProgress - CAP2) / (CAP3 - CAP2)));
+          let t3Fade = Math.min(1, Math.max(0, (pinnedProgress - CAP3) / (FLY - CAP3)));
 
-          // Beat 4: texts fly off.
-          let flyUpProg = Math.min(1, Math.max(0, (pinnedProgress - SIXTH * 3) / SIXTH));
+          // Captions fly off together over FLY..FLY_END.
+          let flyUpProg = Math.min(1, Math.max(0, (pinnedProgress - FLY) / (FLY_END - FLY)));
           let yOffset = flyUpProg * -100;
           let fadeOut = 1 - flyUpProg;
 
@@ -831,8 +846,8 @@ class Component extends DCLogic {
           }
 
           if (this.avalancheMountainEl) {
-            // Rumbles through beats 4-5, the slide.
-            if (pinnedProgress > SIXTH * 3 && pinnedProgress < SIXTH * 5) {
+            // Rumbles through the slide (FLY..JUMP).
+            if (pinnedProgress > FLY && pinnedProgress < JUMP) {
               this.avalancheMountainEl.style.animation = 'ed-rumble 200ms infinite';
             } else {
               this.avalancheMountainEl.style.animation = 'none';
@@ -848,27 +863,25 @@ class Component extends DCLogic {
           const slideStartX = isMobileAv ? 250 : 350;
           const jumpDX = isMobileAv ? 140 : 300;
 
-          // Beats 4-5: sliding down (SIXTH*3 to SIXTH*5).
-          let slideProg = Math.min(1, Math.max(0, (pinnedProgress - SIXTH * 3) / (SIXTH * 2)));
+          // Slide runs FLY..JUMP.
+          let slideProg = Math.min(1, Math.max(0, (pinnedProgress - FLY) / (JUMP - FLY)));
           if (this.avalancheSnowEl) {
             const snowX = (isMobileAv ? 260 : 400) * slideProg;
             this.avalancheSnowEl.style.transform = `translate(${snowX}px, ${350 + slideProg * 200}px)`;
           }
 
-          // Skiers slide (beats 4-5), then jump — jump only takes the first
-          // 60% of beat 6 so the payoff (zoom landing, then text, then
-          // flash) still arrives in sequence rather than all at once.
-          const jumpStart = SIXTH * 5;
-          const jumpWidth = SIXTH * 0.6;
+          // Skiers slide (FLY..JUMP), then jump (JUMP..JUMP_END) — the jump
+          // finishes before the screenshot text so the payoff arrives in
+          // sequence rather than all at once.
           let skierX = slideStartX;
           let skierY = 500 + slideStartX / 2;
           let skierRot = 0;
-          if (pinnedProgress > SIXTH * 3 && pinnedProgress <= jumpStart) {
-            let p = (pinnedProgress - SIXTH * 3) / (SIXTH * 2);
+          if (pinnedProgress > FLY && pinnedProgress <= JUMP) {
+            let p = (pinnedProgress - FLY) / (JUMP - FLY);
             skierX = slideStartX + p * (slideEndX - slideStartX);
             skierY = 500 + skierX / 2; // stay on the ridge
-          } else if (pinnedProgress > jumpStart) {
-            let p = Math.min(1, (pinnedProgress - jumpStart) / jumpWidth);
+          } else if (pinnedProgress > JUMP) {
+            let p = Math.min(1, (pinnedProgress - JUMP) / (JUMP_END - JUMP));
             skierX = slideEndX + p * jumpDX;
             // Parabola trajectory launching off the ridge
             skierY = (500 + slideEndX / 2) - p * 500 + p * p * 200;
@@ -878,9 +891,12 @@ class Component extends DCLogic {
             this.avalancheSkiersEl.style.transform = `translate(${skierX}px, ${skierY}px) rotate(${skierRot}deg)`;
           }
 
-          // Camera: zooms/pans across beats 5-6, completing as the jump lands.
-          const zoomStart = SIXTH * 4;
-          const zoomWidth = jumpStart + jumpWidth - zoomStart;
+          // Camera: continuous push-in from FLY_END (captions clear) to
+          // JUMP_END (jump lands), so the whole slide reads as the camera
+          // pressing in on the skiers — no dead runway between caption and
+          // payoff.
+          const zoomStart = FLY_END;
+          const zoomWidth = JUMP_END - FLY_END;
           if (this.avalancheZoomWrapperEl) {
             if (isMobileAv) {
               // Pan the "camera" to track the skiers so they stay heroed centre-frame
@@ -897,26 +913,24 @@ class Component extends DCLogic {
               this.avalancheZoomWrapperEl.style.transform = `translate(${tx}px, ${ty}px) scale(${scale})`;
             } else {
               let zoomProg = Math.min(1, Math.max(0, (pinnedProgress - zoomStart) / zoomWidth));
-              let scale = 1 + zoomProg * 1.5;
+              zoomProg = zoomProg * zoomProg * (3 - 2 * zoomProg); // smoothstep so the push-in is felt immediately
+              let scale = 1 + zoomProg * 1.6;
               this.avalancheZoomWrapperEl.style.transformOrigin = '40vw 80vh';
               this.avalancheZoomWrapperEl.style.transform = `scale(${scale})`;
             }
           }
 
-          // Beat 6, last 40%: text lands as the jump completes, then flash.
-          const textStart = jumpStart + jumpWidth;
-          const textWidth = SIXTH * 0.2;
-          let textProg = Math.min(1, Math.max(0, (pinnedProgress - textStart) / textWidth));
+          // "SO SCREENSHOT IT." lands as the jump completes (JUMP_END..SHOT_END), then flash.
+          let textProg = Math.min(1, Math.max(0, (pinnedProgress - JUMP_END) / (SHOT_END - JUMP_END)));
           if (this.avalancheShotTextEl) {
             this.avalancheShotTextEl.style.opacity = textProg;
           }
 
           if (this.avalancheFlashEl) {
             let flashOpacity = 0;
-            const flashStart = textStart + textWidth;
-            const flashWidth = 1.0 - flashStart;
-            if (pinnedProgress > flashStart && pinnedProgress <= 1.0) {
-              let fProg = (pinnedProgress - flashStart) / flashWidth;
+            const flashWidth = 1.0 - FLASH;
+            if (pinnedProgress > FLASH && pinnedProgress <= 1.0) {
+              let fProg = (pinnedProgress - FLASH) / flashWidth;
               // Flash goes to 1 quickly then fades slightly, or just quick spike
               flashOpacity = 1 - fProg;
             }
