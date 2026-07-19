@@ -130,12 +130,12 @@ body:not(.ed-doors-near) .ed-portal { animation-play-state: paused; }
           <div style="{{ beats[0].innerStyle }}">
             <p style="{{ beats[0].style }}">{{ typedText }}<span style="{{ cursorStyle }}">|</span></p>
           </div>
-          <div style="margin-top: 3vh; width: 100%;">
+          <div style="margin-top: 1.5vh; width: 100%;">
             <div style="{{ beats[1].innerStyle }}">
               <p style="{{ beats[1].style }}">{{ typedText2 }}<span style="{{ cursorStyle2 }}">|</span></p>
             </div>
           </div>
-          <div style="margin-top: 8vh; width: 100%;">
+          <div style="margin-top: 4vh; width: 100%;">
             <div style="{{ beats[2].innerStyle }}">
               <p style="{{ beats[2].style }}">{{ beats[2].text }}</p>
             </div>
@@ -277,7 +277,12 @@ body:not(.ed-doors-near) .ed-portal { animation-play-state: paused; }
       <div ref="{{ beats[9].setRef }}" class="ed-catch" style="height: 60vh;"></div>
       <div ref="{{ mapLineSpacerRef }}" style="height: 60vh;"></div>
       <div ref="{{ beats[10].setRef }}" style="height: 60vh;"></div>
-      <div style="height: 60vh;"></div>
+      <!-- Scroll-catch for the two beat-10 lines ("I RUN WITH THE SIGNAL" /
+           "...TERRIFIED OF THE NOISE.") — without it, a fling that clears the
+           forge catch (beat 9) sails straight through both of them before they
+           can be read. This spacer's top aligns with where the first of those
+           lines lands; the cement section below carries the second catch. -->
+      <div class="ed-catch" style="height: 60vh;"></div>
     </section>
 
     <!-- CEMENT TRUCK SCENE (Beat 11) -->
@@ -1192,7 +1197,7 @@ class Component extends DCLogic {
       },
       heroInnerStyle: {
         display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%',
-        transform: `translateY(${active === 0 ? '15vh' : active === 1 ? '6vh' : '0'})`,
+        transform: `translateY(${active === 0 ? '3vh' : active === 1 ? '1vh' : '0'})`,
         transition: 'transform 550ms cubic-bezier(0.16,1,0.3,1)',
       },
       beats,
@@ -1332,7 +1337,7 @@ class Component extends DCLogic {
         fontSize: 'clamp(18px, 4.5vw, 56px)', opacity: 0, willChange: 'opacity, transform',
         transform: 'translateY(20px)', maxWidth: '600px', lineHeight: 1.1, zIndex: 10, textAlign: 'right', whiteSpace: 'nowrap'
       },
-      cementSectionStyle: { position: 'relative', width: '100%', zIndex: 6, scrollSnapAlign: 'start' },
+      cementSectionStyle: { position: 'relative', width: '100%', zIndex: 6, scrollSnapAlign: 'start', scrollSnapStop: 'always' },
       cementStickyStyle: {
         position: 'sticky', top: 0, height: '100vh', 
         overflow: 'hidden', pointerEvents: 'none'
