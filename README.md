@@ -9,6 +9,8 @@ This is a static website deployed via [GitHub Pages](https://pages.github.com/).
 - **`index.html`** (`/`) — the main homepage: a scroll-driven, cinematic tour through doors, an avalanche scene, and a cement-truck scene, built on React + a custom Design Composer runtime.
 - **`now/index.html`** (`/now/`) — a self-contained [now page](https://nownownow.com/about) with its own chat-style intro animation and vanilla-JS interactive bits (a pencil-trade widget, a coaster-track progress tracker), no dependency on the homepage's runtime.
 
+- **`redesign/index.html`** (`/redesign/`) — the “Mission: Easy” personal-site redesign, with stacked assignment files, animated off-duty tickets, and a playful search intro. Uses vanilla HTML/CSS/JavaScript with self-hosted fonts and artwork.
+
 ## Tech Stack
 - **HTML5** (Structure and custom `x-dc` elements on the homepage)
 - **Vanilla CSS** (Variables, custom tokens, and base styling isolated in `assets/style.css`; the Now page keeps its own scoped styles inline)
